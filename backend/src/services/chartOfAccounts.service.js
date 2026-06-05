@@ -154,7 +154,7 @@ class ChartOfAccountsService {
       // Equity
       { code: '3000', name: 'Owner\'s Capital', type: 'Equity', subtype: 'Equity', normalBalance: 'credit' },
       { code: '3100', name: 'Retained Earnings', type: 'Equity', subtype: 'Equity', normalBalance: 'credit' },
-      { code: '3900', name: 'Owner\'s Drawings', type: 'Equity', subtype: 'Equity', normalBalance: 'debit' },
+      { code: '3900', name: 'Owner\'s Drawings', type: 'Expense', subtype: 'Contra Equity', normalBalance: 'debit' },
 
       // Income
       { code: '4000', name: 'Sales Revenue', type: 'Income', subtype: 'Operating Revenue', normalBalance: 'credit' },

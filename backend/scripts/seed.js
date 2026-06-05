@@ -157,6 +157,35 @@ const seedDatabase = async () => {
     await ledgerService.postJournalEntry(entry4._id, accountant._id);
     logger.info('Sample entry 4 created and posted');
 
+    // Create company settings FIRST — required for GST calculations in invoice/expense
+    await CompanySettings.create({
+      companyName: 'Artha Accounting Pvt Ltd',
+      legalName: 'Artha Accounting Private Limited',
+      address: {
+        street: '123 Business Park, Sector 5',
+        city: 'Mumbai',
+        state: 'MH',
+        postalCode: '400001',
+        country: 'India'
+      },
+      phone: '+91-22-12345678',
+      email: 'info@artha.local',
+      gstin: '27AABCU9603R1ZX',
+      pan: 'AABCU9603R',
+      tan: 'MUMA12345E',
+      gstSettings: {
+        isRegistered: true,
+        filingFrequency: 'monthly',
+        compositionScheme: false
+      },
+      tdsSettings: {
+        isTANActive: true,
+        defaultTDSRate: 10,
+        autoCalculateTDS: true
+      }
+    });
+    logger.info('Company settings created');
+
     // Create sample invoice
     const sampleInvoice = await Invoice.create({
       invoiceNumber: 'INV-2025-001',
@@ -164,6 +193,8 @@ const seedDatabase = async () => {
       dueDate: new Date('2025-02-20'),
       customerName: 'Acme Corporation',
       customerEmail: 'billing@acme.com',
+      customerGSTIN: '27AABCA1234A1Z5',
+      customerState: 'MH',
       customerAddress: {
         street: '123 Business Park',
         city: 'Mumbai',
@@ -206,8 +237,8 @@ const seedDatabase = async () => {
       vendor: 'Office Depot',
       description: 'Office supplies and stationery',
       amount: '5000.00',
-      taxAmount: '900.00',
-      totalAmount: '5900.00',
+      taxAmount: '0.00',
+      totalAmount: '5000.00',
       paymentMethod: 'credit_card',
       status: 'approved',
       submittedBy: accountant._id,
@@ -220,35 +251,6 @@ const seedDatabase = async () => {
     // Record expense in ledger
     await expenseService.recordExpense(sampleExpense._id, admin._id);
     logger.info('Sample expense created and recorded');
-
-    // Create company settings for India compliance
-    await CompanySettings.create({
-      companyName: 'Artha Accounting Pvt Ltd',
-      legalName: 'Artha Accounting Private Limited',
-      address: {
-        street: '123 Business Park, Sector 5',
-        city: 'Mumbai',
-        state: 'Maharashtra',
-        postalCode: '400001',
-        country: 'India'
-      },
-      phone: '+91-22-12345678',
-      email: 'info@artha.local',
-      gstin: '27AABCU9603R1ZX',
-      pan: 'AABCU9603R',
-      tan: 'MUMA12345E',
-      gstSettings: {
-        isRegistered: true,
-        filingFrequency: 'monthly',
-        compositionScheme: false
-      },
-      tdsSettings: {
-        isTANActive: true,
-        defaultTDSRate: 10,
-        autoCalculateTDS: true
-      }
-    });
-    logger.info('Company settings created');
 
     // Create sample GST return
     const sampleGSTReturn = await GSTReturn.create({

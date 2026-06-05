@@ -404,7 +404,7 @@ class LedgerService {
       {
         code: '4010',
         name: 'Sales Returns',
-        type: 'Income',
+        type: 'Expense',
         subtype: 'Contra Revenue',
         normalBalance: 'debit',
       },
