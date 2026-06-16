@@ -1,0 +1,56 @@
+{
+  "name": "Configuration Audit",
+  "checks": [
+    {
+      "name": "Environment File",
+      "passed": true,
+      "detail": ".env file exists",
+      "score": 15,
+      "max": 15
+    },
+    {
+      "name": "Package Configuration",
+      "passed": true,
+      "detail": "package.json valid",
+      "score": 15,
+      "max": 15
+    },
+    {
+      "name": "Docker Configuration",
+      "passed": true,
+      "detail": "Dockerfile found",
+      "score": 15,
+      "max": 15
+    },
+    {
+      "name": "Docker Compose",
+      "passed": false,
+      "detail": "No docker-compose",
+      "score": 0,
+      "max": 15
+    },
+    {
+      "name": "Seed Scripts",
+      "passed": true,
+      "detail": "Seed script found",
+      "score": 10,
+      "max": 10
+    },
+    {
+      "name": "Test Scripts",
+      "passed": false,
+      "detail": "No test files",
+      "score": 0,
+      "max": 15
+    },
+    {
+      "name": "Health Endpoints",
+      "passed": true,
+      "detail": "Health routes present",
+      "score": 15,
+      "max": 15
+    }
+  ],
+  "score": 70,
+  "max_score": 100
+}

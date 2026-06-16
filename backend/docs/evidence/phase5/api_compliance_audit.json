@@ -1,0 +1,35 @@
+{
+  "name": "API Compliance Audit",
+  "checks": [
+    {
+      "name": "Route Files Present",
+      "passed": true,
+      "detail": "11/11 route files found",
+      "score": 25,
+      "max": 25
+    },
+    {
+      "name": "Controller Files Present",
+      "passed": true,
+      "detail": "9/9 controllers found",
+      "score": 25,
+      "max": 25
+    },
+    {
+      "name": "Auth Middleware",
+      "passed": true,
+      "detail": "Auth middleware present",
+      "score": 25,
+      "max": 25
+    },
+    {
+      "name": "Validation Middleware",
+      "passed": true,
+      "detail": "Validation middleware present",
+      "score": 25,
+      "max": 25
+    }
+  ],
+  "score": 100,
+  "max_score": 100
+}

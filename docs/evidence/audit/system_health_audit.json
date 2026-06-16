@@ -1,0 +1,42 @@
+{
+  "name": "System Health Audit",
+  "checks": [
+    {
+      "name": "MongoDB Connection",
+      "passed": true,
+      "detail": "Connection state: Connected",
+      "score": 20,
+      "max": 20
+    },
+    {
+      "name": "Required Collections",
+      "passed": false,
+      "detail": "21 collections found",
+      "score": 20,
+      "max": 20
+    },
+    {
+      "name": "Database Indexes",
+      "passed": true,
+      "detail": "147 indexes across 21 collections",
+      "score": 20,
+      "max": 20
+    },
+    {
+      "name": "Data Presence",
+      "passed": true,
+      "detail": "Journal entries: 18, Chart of Accounts: 36",
+      "score": 20,
+      "max": 20
+    },
+    {
+      "name": "Memory Usage",
+      "passed": true,
+      "detail": "24MB heap used",
+      "score": 20,
+      "max": 20
+    }
+  ],
+  "score": 100,
+  "max_score": 100
+}

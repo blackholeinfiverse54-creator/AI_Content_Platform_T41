@@ -1,0 +1,56 @@
+{
+  "name": "Security Audit",
+  "checks": [
+    {
+      "name": "JWT Secret Configured",
+      "passed": true,
+      "detail": "JWT_SECRET is set",
+      "score": 20,
+      "max": 20
+    },
+    {
+      "name": "HMAC Secret Configured",
+      "passed": true,
+      "detail": "HMAC_SECRET is set",
+      "score": 20,
+      "max": 20
+    },
+    {
+      "name": "Database Connection Security",
+      "passed": true,
+      "detail": "Production URI",
+      "score": 15,
+      "max": 15
+    },
+    {
+      "name": "Helmet Security Headers",
+      "passed": true,
+      "detail": "Helmet configured in server.js",
+      "score": 15,
+      "max": 15
+    },
+    {
+      "name": "Rate Limiting",
+      "passed": true,
+      "detail": "Rate limiting configured",
+      "score": 15,
+      "max": 15
+    },
+    {
+      "name": "CORS Configuration",
+      "passed": true,
+      "detail": "CORS configured",
+      "score": 15,
+      "max": 15
+    },
+    {
+      "name": "Password Hashing",
+      "passed": true,
+      "detail": "bcrypt password hashing",
+      "score": 15,
+      "max": 15
+    }
+  ],
+  "score": 115,
+  "max_score": 100
+}

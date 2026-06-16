@@ -1,0 +1,163 @@
+# ARTHA Maintainer Guide
+
+**For:** Incoming engineers maintaining ARTHA  
+**Prerequisite:** Zero context assumed. Start here.
+
+---
+
+## Quick Start (5 minutes)
+
+```bash
+# 1. Install
+cd backend && npm install
+
+# 2. Configure
+cp .env.example .env
+# Edit .env: set MONGODB_URI, JWT_SECRET, HMAC_SECRET
+
+# 3. Seed & Start
+node scripts/seed.js
+npm run dev
+
+# 4. Verify
+node scripts/verify-integrity.js
+```
+
+Frontend: `cd frontend && npm install && npm run dev`
+
+---
+
+## Where to Look
+
+| You want to... | Look at... |
+|-----------------|------------|
+| Add a new API endpoint | `src/routes/` → `src/controllers/` → `src/services/` |
+| Modify a data model | `src/models/` (Mongoose schemas) |
+| Change GST calculation | `src/services/gstEngine.service.js` (pure functions) |
+| Modify ledger behavior | `src/services/ledger.service.js` (1538 lines — core) |
+| Add a compliance signal | `src/services/signalEngine.service.js` → `RECOMMENDATIONS` map |
+| Change TDS rates | `src/services/tds.service.js` → `getTDSRate()` |
+| Modify a frontend page | `frontend/src/pages/` |
+| Change API client methods | `frontend/src/services/index.js` |
+
+---
+
+## Critical Files (Top 10)
+
+1. **`backend/src/services/ledger.service.js`** — Core accounting engine. Hash chain, double-entry, posting.
+2. **`backend/src/models/JournalEntry.js`** — Journal entry model with hash chain, pre-save middleware.
+3. **`backend/src/services/gstEngine.service.js`** — GST calculation (CGST/SGST/IGST).
+4. **`backend/src/services/traceability.service.js`** — Unified trace, lineage, replay.
+5. **`backend/src/services/signalEngine.service.js`** — Compliance signal emission and persistence.
+6. **`backend/src/services/setu.pipeline.js`** — Signal normalization → validation → mapping → serialization.
+7. **`backend/src/models/UnifiedTrace.js`** — Trace lifecycle stages and linked entities.
+8. **`backend/src/services/expense.service.js`** — Expense workflow with GST validation.
+9. **`backend/src/services/invoice.service.js`** — Invoice lifecycle with journal entry creation.
+10. **`backend/src/config/database.js`** — MongoDB connection, transaction wrapper.
+
+---
+
+## Common Tasks
+
+### Adding a New Expense Category
+
+1. Update `Expense.js` model: add to `category` enum
+2. Update `expense.service.js`: add category-to-account mapping in `recordExpense()`
+3. Update frontend `ExpenseCreate.jsx`: add category option
+
+### Adding a New TDS Section
+
+1. Update `tds.service.js`: add rate in `getTDSRate()` and `getSectionName()`
+2. Update `TDSEntry.js` model: add to `section` enum
+3. Seed: `node scripts/seed-tds.js`
+
+### Adding a New Compliance Signal
+
+1. Add signal type to `signalEngine.service.js`: `RECOMMENDATIONS` map
+2. Add evaluation logic in the signal engine
+3. Update `signal.routes.js` if new endpoint needed
+
+### Debugging Ledger Issues
+
+```bash
+# Check chain integrity
+node scripts/verify-hash-chain.js
+
+# Check data integrity
+node scripts/verify-integrity.js
+
+# Check seed data
+node scripts/verify-seed-data.js
+```
+
+---
+
+## Architecture Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| **String amounts** (not Number) | Decimal.js precision for financial calculations |
+| **Hash chain** (HMAC-SHA256) | Tamper-proof audit trail |
+| **Singleton services** | Consistent state across requests |
+| **Pre-save middleware** | Auto-generates entry numbers, hashes, balances |
+| **Embedded subdocuments** | Journal lines, invoice items, payment records |
+| **Separate LedgerEntry** | Immutable individual debit/credit records |
+
+---
+
+## Database Schema (Key Relationships)
+
+```
+User ──────────── AuditLog
+  │
+ChartOfAccounts ──┬── AccountBalance
+                  │
+JournalEntry ─────┼── LedgerEntry (per line)
+  │               │
+  └── hash chain ─┘
+  
+Invoice ────── JournalEntry (on send)
+Expense ────── JournalEntry (on record)
+TDSEntry ───── JournalEntry (on deduct)
+
+UnifiedTrace ─┬── linked_entities.journal_entries
+              ├── linked_entities.signals
+              ├── linked_entities.filings
+              └── stages[] (lifecycle)
+
+ComplianceFiling ── ComplianceValidationLog
+ComplianceSignal ── trace_id (links to UnifiedTrace)
+```
+
+---
+
+## Running Proof Scripts
+
+```bash
+# Run all phases (requires running MongoDB)
+cd backend
+node scripts/proof-all.js
+
+# Individual phases
+node scripts/proof-replay.js       # Phase 1: Replay
+node scripts/proof-compliance.js   # Phase 2: Compliance
+node scripts/proof-audit.js        # Phase 3: Audit
+node scripts/proof-certify.js      # Phase 4: Certification
+```
+
+---
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `MongoServerSelectionError` | Check MongoDB is running and MONGODB_URI is correct |
+| `HMAC_SECRET undefined` | Set HMAC_SECRET in .env |
+| Ledger balance mismatch | Run `node scripts/verify-integrity.js` |
+| Hash chain broken | Run `node scripts/migrate-hash-chain.js` |
+| Missing accounts | Run `node scripts/seed.js` |
+| Frontend can't reach API | Check VITE_API_URL in frontend .env |
+
+---
+
+*Generated by ARTHA Certification System*

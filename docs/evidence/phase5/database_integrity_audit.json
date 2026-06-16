@@ -1,0 +1,37 @@
+{
+  "name": "Database Integrity Audit",
+  "checks": [
+    {
+      "name": "Double-Entry Balance",
+      "passed": true,
+      "detail": "17/17 entries balanced",
+      "unbalanced": [],
+      "score": 25,
+      "max": 25
+    },
+    {
+      "name": "Hash Chain Integrity",
+      "passed": true,
+      "detail": "Chain length: 43, Valid: true",
+      "score": 25,
+      "max": 25
+    },
+    {
+      "name": "Account Balance Consistency",
+      "passed": true,
+      "detail": "10 account balances checked, 0 inconsistent",
+      "inconsistent": [],
+      "score": 25,
+      "max": 25
+    },
+    {
+      "name": "Chart of Accounts",
+      "passed": true,
+      "detail": "36 active accounts",
+      "score": 25,
+      "max": 25
+    }
+  ],
+  "score": 100,
+  "max_score": 100
+}

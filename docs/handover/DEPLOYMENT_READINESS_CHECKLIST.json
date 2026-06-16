@@ -1,0 +1,108 @@
+{
+  "checklist_id": "CHECKLIST-1781614027439",
+  "generated_at": "2026-06-16T12:47:07.439Z",
+  "system": "ARTHA v0.1",
+  "items": [
+    {
+      "category": "Replay Proof",
+      "item": "Deterministic replay verified",
+      "status": "PASS",
+      "evidence": "docs/evidence/phase4/replay_verification_results.json"
+    },
+    {
+      "category": "Replay Proof",
+      "item": "Journal hashes match on replay",
+      "status": "PASS",
+      "evidence": "docs/evidence/phase4/replay_verification_results.json"
+    },
+    {
+      "category": "Replay Proof",
+      "item": "Chain integrity maintained after replay",
+      "status": "FAIL",
+      "evidence": "docs/evidence/phase4/replay_verification_results.json"
+    },
+    {
+      "category": "Compliance",
+      "item": "Full compliance chain (Transaction → Journal → Signal → Filing → Validation → Dispatch)",
+      "status": "PASS",
+      "evidence": "docs/evidence/phase4/full_compliance_trace_evidence.json"
+    },
+    {
+      "category": "Compliance",
+      "item": "No missing compliance stages",
+      "status": "PASS",
+      "evidence": "docs/evidence/phase4/full_compliance_trace_evidence.json"
+    },
+    {
+      "category": "Compliance",
+      "item": "Trace continuity verified",
+      "status": "FAIL",
+      "evidence": "docs/evidence/phase4/full_compliance_trace_evidence.json"
+    },
+    {
+      "category": "Security",
+      "item": "JWT authentication configured",
+      "status": "PASS",
+      "evidence": "docs/evidence/phase5/security_audit.json"
+    },
+    {
+      "category": "Security",
+      "item": "HMAC secret configured",
+      "status": "PASS",
+      "evidence": "docs/evidence/phase5/security_audit.json"
+    },
+    {
+      "category": "Security",
+      "item": "Rate limiting enabled",
+      "status": "PASS",
+      "evidence": "docs/evidence/phase5/security_audit.json"
+    },
+    {
+      "category": "Database",
+      "item": "Double-entry balance verified",
+      "status": "PASS",
+      "evidence": "docs/evidence/phase5/database_integrity_audit.json"
+    },
+    {
+      "category": "Database",
+      "item": "Hash chain integrity verified",
+      "status": "PASS",
+      "evidence": "docs/evidence/phase5/database_integrity_audit.json"
+    },
+    {
+      "category": "Database",
+      "item": "Account balances consistent",
+      "status": "PASS",
+      "evidence": "docs/evidence/phase5/database_integrity_audit.json"
+    },
+    {
+      "category": "API",
+      "item": "All route files present",
+      "status": "PASS",
+      "evidence": "docs/evidence/phase5/api_compliance_audit.json"
+    },
+    {
+      "category": "API",
+      "item": "All controller files present",
+      "status": "PASS",
+      "evidence": "docs/evidence/phase5/api_compliance_audit.json"
+    },
+    {
+      "category": "Configuration",
+      "item": "Environment file exists",
+      "status": "PASS",
+      "evidence": "docs/evidence/phase5/configuration_audit.json"
+    },
+    {
+      "category": "Configuration",
+      "item": "Docker configuration present",
+      "status": "PASS",
+      "evidence": "docs/evidence/phase5/configuration_audit.json"
+    }
+  ],
+  "summary": {
+    "total": 16,
+    "passed": 14,
+    "failed": 2
+  }
+}

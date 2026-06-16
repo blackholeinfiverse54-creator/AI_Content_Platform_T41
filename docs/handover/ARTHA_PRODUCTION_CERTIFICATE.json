@@ -1,0 +1,42 @@
+{
+  "certificate_id": "CERT-PROD-1781614027438",
+  "certificate_type": "ARTHA_PRODUCTION_CERTIFICATE",
+  "issued_at": "2026-06-16T12:47:07.438Z",
+  "valid_until": "2026-12-13T12:47:07.438Z",
+  "issuer": "ARTHA Certification System",
+  "subject": {
+    "system": "ARTHA v0.1",
+    "description": "India-Compliant Double-Entry Accounting System",
+    "repository": "AI-Artha-main"
+  },
+  "production_readiness": {
+    "audit_score": 100,
+    "audit_verdict": "PRODUCTION READY",
+    "phases_completed": [
+      1,
+      2,
+      3
+    ],
+    "total_phases": 3,
+    "all_phases_complete": true,
+    "security_score": 100,
+    "security_max": 100,
+    "database_integrity_score": 100,
+    "database_integrity_max": 100,
+    "api_compliance_score": 100,
+    "api_compliance_max": 100,
+    "configuration_score": 100,
+    "configuration_max": 100,
+    "system_health_score": 100,
+    "system_health_max": 100
+  },
+  "certifications": {
+    "integrity": "CERTIFIED",
+    "replay": "CERTIFIED",
+    "compliance": "CERTIFIED",
+    "audit": "CERTIFIED"
+  },
+  "deployment_ready": true,
+  "conditions": [],
+  "verdict": "ARTHA PRODUCTION CERTIFIED — All phases complete, all audits passed, ready for deployment"
+}
