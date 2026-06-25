@@ -1,0 +1,115 @@
+{
+  "matrix_id": "SCHEMA-VERSION-MATRIX-001",
+  "generated": "2025-02-19",
+  "description": "Version compatibility matrix for all ARTHA capabilities. All capabilities currently share the same version (1.0.0) and are compatible with each other.",
+
+  "capabilities": {
+    "ARTHA-LEDGER-001": {
+      "name": "Ledger Engine",
+      "current_version": "1.0.0",
+      "semver": "MAJOR.MINOR.PATCH",
+      "breaking_change_policy": "MAJOR version bump required for breaking input/output schema changes",
+      "backward_compatibility": "MINOR version bumps for new optional fields, PATCH for bug fixes",
+      "contract_file": "capability_contracts/ledger_capability_contract.json"
+    },
+    "ARTHA-AUDIT-001": {
+      "name": "Audit Engine",
+      "current_version": "1.0.0",
+      "semver": "MAJOR.MINOR.PATCH",
+      "breaking_change_policy": "MAJOR version bump required for breaking changes",
+      "backward_compatibility": "New event types can be added as MINOR bumps",
+      "contract_file": "capability_contracts/audit_capability_contract.json"
+    },
+    "ARTHA-TRACE-001": {
+      "name": "Trace Engine",
+      "current_version": "1.0.0",
+      "semver": "MAJOR.MINOR.PATCH",
+      "breaking_change_policy": "MAJOR version bump for new stage types or trace_id format changes",
+      "backward_compatibility": "New stages can be added as MINOR bumps",
+      "contract_file": "capability_contracts/trace_capability_contract.json"
+    },
+    "ARTHA-EVIDENCE-001": {
+      "name": "Evidence Engine",
+      "current_version": "1.0.0",
+      "semver": "MAJOR.MINOR.PATCH",
+      "breaking_change_policy": "MAJOR version bump for proof_type changes",
+      "backward_compatibility": "New proof types can be added as MINOR bumps",
+      "contract_file": "capability_contracts/evidence_capability_contract.json"
+    },
+    "ARTHA-OBSERVE-001": {
+      "name": "Observability Engine",
+      "current_version": "1.0.0",
+      "semver": "MAJOR.MINOR.PATCH",
+      "breaking_change_policy": "MAJOR version bump for metrics format changes",
+      "backward_compatibility": "New metrics can be added as MINOR bumps",
+      "contract_file": "capability_contracts/observability_capability_contract.json"
+    },
+    "ARTHA-FINREPORT-001": {
+      "name": "Financial Reporting Engine",
+      "current_version": "1.0.0",
+      "semver": "MAJOR.MINOR.PATCH",
+      "breaking_change_policy": "MAJOR version bump for report format changes",
+      "backward_compatibility": "New report types can be added as MINOR bumps",
+      "contract_file": "capability_contracts/financial_reporting_capability_contract.json"
+    },
+    "ARTHA-SIGNAL-001": {
+      "name": "Compliance Signal Engine",
+      "current_version": "1.0.0",
+      "semver": "MAJOR.MINOR.PATCH",
+      "breaking_change_policy": "MAJOR version bump for signal type changes",
+      "backward_compatibility": "New signal types can be added as MINOR bumps",
+      "contract_file": "capability_contracts/signal_capability_contract.json"
+    },
+    "ARTHA-MULTICOMPANY-001": {
+      "name": "Multi-Company Engine",
+      "current_version": "1.0.0",
+      "semver": "MAJOR.MINOR.PATCH",
+      "breaking_change_policy": "MAJOR version bump for company schema changes",
+      "backward_compatibility": "New company fields can be added as MINOR bumps",
+      "contract_file": "capability_contracts/multicompany_capability_contract.json"
+    },
+    "ARTHA-TALLY-001": {
+      "name": "Tally Compatibility Engine",
+      "current_version": "1.0.0",
+      "semver": "MAJOR.MINOR.PATCH",
+      "breaking_change_policy": "MAJOR version bump for XML format changes",
+      "backward_compatibility": "New voucher types can be added as MINOR bumps",
+      "contract_file": "capability_contracts/tally_capability_contract.json"
+    }
+  },
+
+  "cross_compatibility": {
+    "all_capabilities_v1": true,
+    "mutual_compatibility": "All v1.0.0 capabilities are mutually compatible",
+    "upgrade_policy": "All capabilities must be upgraded together if any MAJOR version bump occurs"
+  },
+
+  "consumer_compatibility": {
+    "SETU": {
+      "compatible_versions": {
+        "ARTHA-SIGNAL-001": "1.x.x",
+        "ARTHA-TRACE-001": "1.x.x",
+        "ARTHA-EVIDENCE-001": "1.x.x"
+      }
+    },
+    "TANTRA": {
+      "compatible_versions": {
+        "ARTHA-TRACE-001": "1.x.x",
+        "ARTHA-EVIDENCE-001": "1.x.x",
+        "ARTHA-OBSERVE-001": "1.x.x"
+      }
+    },
+    "MITRA": {
+      "compatible_versions": {
+        "ARTHA-LEDGER-001": "1.x.x",
+        "ARTHA-FINREPORT-001": "1.x.x"
+      }
+    },
+    "UniGuru": {
+      "compatible_versions": {
+        "ARTHA-FINREPORT-001": "1.x.x",
+        "ARTHA-SIGNAL-001": "1.x.x"
+      }
+    }
+  }
+}

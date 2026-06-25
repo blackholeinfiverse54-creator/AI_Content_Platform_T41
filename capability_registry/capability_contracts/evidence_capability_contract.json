@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "capability_id": "ARTHA-EVIDENCE-001",
+  "capability_name": "Evidence Engine",
+  "version": "1.0.0",
+  "status": "STABLE",
+  "owner": "Ashmit",
+  "authority_owned": [
+    "Runtime proof capture (API, DB state, chain verification, balance sheet)",
+    "Multi-stage workflow evidence packages",
+    "Evidence retrieval by trace_id",
+    "Evidence summary and analytics",
+    "Request/response sanitization",
+    "Proof verification (assertion-based)"
+  ],
+  "authority_explicitly_not_owned": [
+    "Proof storage schema (owned by RuntimeProof model)",
+    "Trace lifecycle (owned by Trace Engine)",
+    "Signal dispatch (owned by Signal Engine)",
+    "Business logic that triggers evidence capture"
+  ],
+  "description": "Evidence capture and verification engine. Creates verifiable runtime proofs for API responses, database states, chain verifications, and balance sheet assertions. Supports multi-stage workflow evidence packages.",
+  "provider_service": "backend/src/services/evidenceAutomation.service.js",
+  "provider_model": ["backend/src/models/RuntimeProof.js"],
+  "api_endpoints": {
+    "get_evidence_by_trace": {
+      "method": "GET",
+      "path": "/api/v1/trace/:traceId/proofs",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "capture_terminal_proof": {
+      "method": "POST",
+      "path": "/api/v1/trace/:traceId/proof/terminal",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    },
+    "capture_curl_proof": {
+      "method": "POST",
+      "path": "/api/v1/trace/:traceId/proof/curl",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    },
+    "verify_proof": {
+      "method": "POST",
+      "path": "/api/v1/trace/proofs/:proofId/verify",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    },
+    "get_proof_report": {
+      "method": "GET",
+      "path": "/api/v1/trace/proofs/report",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    }
+  },
+  "input_schemas": {
+    "capture_api_response": {
+      "type": "object",
+      "required": ["traceId", "endpoint", "method", "statusCode"],
+      "properties": {
+        "traceId": { "type": "string" },
+        "endpoint": { "type": "string" },
+        "method": { "type": "string", "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"] },
+        "statusCode": { "type": "integer" },
+        "requestBody": { "type": "object" },
+        "responseBody": { "type": "object" },
+        "responseTime": { "type": "number" }
+      }
+    },
+    "capture_db_state": {
+      "type": "object",
+      "required": ["traceId", "collection", "documentId", "operation"],
+      "properties": {
+        "traceId": { "type": "string" },
+        "collection": { "type": "string" },
+        "documentId": { "type": "string" },
+        "operation": { "type": "string", "enum": ["READ", "CREATE", "UPDATE", "DELETE"] }
+      }
+    },
+    "capture_chain_verification": {
+      "type": "object",
+      "required": ["traceId", "verificationResult"],
+      "properties": {
+        "traceId": { "type": "string" },
+        "verificationResult": {
+          "type": "object",
+          "required": ["isValid", "message"],
+          "properties": {
+            "isValid": { "type": "boolean" },
+            "message": { "type": "string" }
+          }
+        }
+      }
+    },
+    "generate_workflow_evidence": {
+      "type": "object",
+      "required": ["traceId", "workflowData"],
+      "properties": {
+        "traceId": { "type": "string" },
+        "workflowData": {
+          "type": "object",
+          "properties": {
+            "invoice": { "type": "object" },
+            "expense": { "type": "object" },
+            "journalEntry": { "type": "object" },
+            "ledgerEntries": { "type": "array" },
+            "complianceSignal": { "type": "object" },
+            "filing": { "type": "object" },
+            "setuDispatch": { "type": "object" },
+            "verification": { "type": "object" }
+          }
+        }
+      }
+    }
+  },
+  "output_schemas": {
+    "runtime_proof": {
+      "type": "object",
+      "properties": {
+        "_id": { "type": "string" },
+        "proof_id": { "type": "string", "pattern": "^PROOF-[a-f0-9\\-]+$" },
+        "trace_id": { "type": "string" },
+        "proof_type": { "type": "string" },
+        "request": { "type": "object" },
+        "response": { "type": "object" },
+        "db_state": { "type": "object" },
+        "assertions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "expected": { "type": "string" },
+              "actual": { "type": "string" },
+              "passed": { "type": "boolean" }
+            }
+          }
+        },
+        "verified": { "type": "boolean" },
+        "content_hash": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "evidence_package": {
+      "type": "object",
+      "properties": {
+        "traceId": { "type": "string" },
+        "trace": { "type": "object" },
+        "proofs": { "type": "array" },
+        "totalProofs": { "type": "integer" },
+        "allVerified": { "type": "boolean" }
+      }
+    }
+  },
+  "authentication": {
+    "type": "JWT",
+    "header": "Authorization: Bearer <token>"
+  },
+  "trace_requirements": {
+    "trace_id_required": true,
+    "proofs_linked_to_trace": true
+  },
+  "evidence_requirements": {
+    "content_hash": "SHA-256 of proof payload for tamper detection",
+    "assertion_model": "Each proof can have N assertions with expected/actual/passed",
+    "sanitization": "Passwords and tokens stripped from request/response bodies",
+    "truncation": "Response bodies truncated to 10k chars"
+  },
+  "failure_behavior": {
+    "trace_not_found": "Returns null (graceful degradation)",
+    "proof_creation_failure": "Returns null, does not throw",
+    "assertion_failure": "passed: false recorded, proof not marked as verified"
+  },
+  "dependencies": {
+    "internal": [],
+    "models": ["RuntimeProof", "UnifiedTrace", "JournalEntry", "LedgerEntry", "Invoice", "Expense", "TDSEntry", "ComplianceFiling", "ComplianceSignal"]
+  },
+  "consumers": [
+    { "product": "ARTHA", "modules": ["All services capture evidence at key workflow stages"] },
+    { "product": "SETU", "modules": ["Dispatch evidence and delivery receipts"] },
+    { "product": "TANTRA", "modules": ["Proof verification and replay"] }
+  ],
+  "replay_compatibility": {
+    "deterministic": true,
+    "replay_method": "getEvidenceByTrace(traceId) returns all proofs for a trace",
+    "verification": "verifyProof(proofId) checks all assertions pass",
+    "prerequisites": ["RuntimeProof documents must exist for the trace"]
+  },
+  "version_history": [
+    { "version": "1.0.0", "date": "2025-02-19", "changes": "Initial capability extraction" }
+  ]
+}

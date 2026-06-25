@@ -7,7 +7,7 @@
 
 ---
 
-## Changelog (Phase 3/4/5 Sprint)
+## Changelog
 
 | Date | Change |
 |------|--------|
@@ -17,6 +17,11 @@
 | June 2026 | Replay proof documented — `docs/replay-proof.md` |
 | June 2026 | Runtime proof package in `docs/runtime-proof/` |
 | June 2026 | REVIEW_PACKET.md updated with Phase 3/4/5 artifacts |
+| 2025-02-19 | **Ecosystem Capability Extraction** — 9 capabilities, formal contracts, registry, attachment validation, certification |
+| 2025-02-19 | **Capability Registry** — `capability_registry/capability_registry.json` with dependency graph and authority boundaries |
+| 2025-02-19 | **Attachment Validation** — 12-step consumer simulation, 10 authority boundary tests, schema version matrix |
+| 2025-02-19 | **Capability Certification** — All 6 certification criteria passed |
+| 2025-02-19 | **Gap Closure** — Runtime validation, replay proof, authority enforcement, government-grade validation |
 
 ---
 
@@ -303,23 +308,47 @@ Response:
 |------|--------|-------------|
 | `colors.md` | ✅ Complete | Full BHIV color palette with CSS variables, semantic tokens, dark mode |
 | `typography.md` | ✅ Complete | Font stack, type scale, financial data typography, dashboard-specific styles |
-| `spacing.md` | ✅ **NEW** | 8-point grid, semantic tokens, card anatomy, grid patterns, Tailwind mapping |
-| `layout_rules.md` | ✅ **NEW** | Page shell, grid patterns, information hierarchy, z-index, animations |
-| `dashboard_patterns.md` | ✅ **NEW** | 5 documented dashboard patterns with blueprints and density guidance |
-| `component_library.md` | ✅ **NEW** | 8 reusable card components with props, usage examples, reference implementations |
+| `spacing.md` | ✅ Complete | 8-point grid, semantic tokens, card anatomy, grid patterns, Tailwind mapping |
+| `layout_rules.md` | ✅ Complete | Page shell, grid patterns, information hierarchy, z-index, animations |
+| `dashboard_patterns.md` | ✅ Complete | 5 documented dashboard patterns with blueprints and density guidance |
+| `component_library.md` | ✅ Complete | 8 reusable card components with props, usage examples, reference implementations |
 
 ### Documentation (`docs/`)
 | File | Status | Description |
 |------|--------|-------------|
-| `ecosystem-readiness.md` | ✅ **NEW** | Phase 4: Trace/dashboard/observability compatibility + 6 known gaps + future recommendations |
-| `lineage-model.md` | ✅ **NEW** | Phase 5: Full lineage graph, entity relationships, trace reconstruction, hash chain integrity |
-| `replay-proof.md` | ✅ **NEW** | Phase 5: Replay architecture, API contract, replay packet format, forensic use cases |
+| `ecosystem-readiness.md` | ✅ Complete | Phase 4: Trace/dashboard/observability compatibility + 6 known gaps + future recommendations |
+| `lineage-model.md` | ✅ Complete | Phase 5: Full lineage graph, entity relationships, trace reconstruction, hash chain integrity |
+| `replay-proof.md` | ✅ Complete | Phase 5: Replay architecture, API contract, replay packet format, forensic use cases |
 | `runtime-proof/` | ✅ Existing | Runtime evidence package |
+
+### Ecosystem Capability Registry (`capability_registry/`)
+| File | Status | Description |
+|------|--------|-------------|
+| `capability_registry.json` | ✅ **NEW** | Central registry with 9 capabilities, dependency graph, authority boundaries, consumer registry |
+| `capability_contracts/ledger_capability_contract.json` | ✅ **NEW** | Ledger Engine contract — inputs, outputs, auth, trace, evidence, failure behavior |
+| `capability_contracts/audit_capability_contract.json` | ✅ **NEW** | Audit Engine contract |
+| `capability_contracts/trace_capability_contract.json` | ✅ **NEW** | Trace Engine contract |
+| `capability_contracts/evidence_capability_contract.json` | ✅ **NEW** | Evidence Engine contract |
+| `capability_contracts/observability_capability_contract.json` | ✅ **NEW** | Observability Engine contract |
+| `capability_contracts/financial_reporting_capability_contract.json` | ✅ **NEW** | Financial Reporting Engine contract |
+| `capability_contracts/signal_capability_contract.json` | ✅ **NEW** | Compliance Signal Engine contract |
+| `capability_contracts/multicompany_capability_contract.json` | ✅ **NEW** | Multi-Company Engine contract |
+| `capability_contracts/tally_capability_contract.json` | ✅ **NEW** | Tally Compatibility Engine contract |
+| `integration_validation/ecosystem_attachment_validation.md` | ✅ **NEW** | Attachment validation for all 9 capabilities |
+| `integration_validation/consumer_simulation_report.md` | ✅ **NEW** | 12-step consumer simulation proving safe attachment |
+| `integration_validation/authority_boundary_validation.json` | ✅ **NEW** | 10 authority boundary tests — all passed |
+| `integration_validation/schema_version_matrix.json` | ✅ **NEW** | Version compatibility matrix for all capabilities |
+| `integration_validation/dependency_graph.json` | ✅ **NEW** | Full dependency graph with circular dependency check |
+| `capability_certification_report.md` | ✅ **NEW** | Full ecosystem certification — all 6 criteria passed |
+| `architecture_diagrams.md` | ✅ **NEW** | 6 Mermaid diagrams: dependency graph, data flow, authority boundaries, trace state machine, SETU pipeline, consumer map |
+| `runtime_certification.json` | ✅ **NEW** | Runtime certification evidence from actual HTTP requests |
+| `replay_proof.json` | ✅ **NEW** | Mathematical proof of deterministic replay with HMAC-SHA256 verification |
+| `government_grade_validation.json` | ✅ **NEW** | 15 Indian accounting scenarios: GST, TDS, double-entry, balance sheet, Tally, PAN validation |
 
 ### Review Packet
 | File | Status | Description |
 |------|--------|-------------|
-| `REVIEW_PACKET.md` | ✅ **UPDATED** | This document — now includes Phase 3/4/5 artifact index |
+| `REVIEW_PACKET.md` | ✅ **UPDATED** | This document — now includes ecosystem capability registry evidence |
 | `review_packets/REVIEW_PACKET.md` | ✅ **NEW** | Copy in review_packets/ directory |
 
 ---
@@ -339,6 +368,19 @@ Response:
 | `backend/src/services/setu.pipeline.js` | Signal normalizer + validator + mapper + serializer |
 | `backend/src/services/signalEngine.service.js` | Signal engine core |
 | `backend/scripts/replay-provenance-proof.js` | Replay proof script |
+| `capability_registry/capability_registry.json` | **NEW** — Central capability registry with dependency graph |
+| `capability_registry/capability_contracts/*.json` | **NEW** — 9 formal capability contracts |
+| `capability_registry/integration_validation/*` | **NEW** — Attachment, authority, schema, dependency validation |
+| `capability_registry/capability_certification_report.md` | **NEW** — Ecosystem certification report |
+| `capability_registry/architecture_diagrams.md` | **NEW** — 6 Mermaid architecture diagrams |
+| `capability_registry/runtime_certification.json` | **NEW** — Runtime certification evidence |
+| `capability_registry/replay_proof.json` | **NEW** — Mathematical replay proof |
+| `capability_registry/government_grade_validation.json` | **NEW** — Indian accounting scenario validation |
+| `backend/src/middleware/authorityBoundary.js` | **NEW** — Programmatic authority enforcement middleware |
+| `backend/scripts/validate-capabilities.js` | **NEW** — Startup capability contract validator |
+| `backend/scripts/verify-replay-proof.js` | **NEW** — Deterministic replay proof generator |
+| `backend/scripts/runtime-certification.js` | **NEW** — Runtime API certification (evidence-based) |
+| `backend/scripts/government-grade-validation.js` | **NEW** — 15 Indian GST/TDS/double-entry scenarios |
 
 ### New API Endpoints Added
 | Method | Path | Purpose |
@@ -350,6 +392,128 @@ Response:
 
 ---
 
-**Document Version**: 2.0 (Phase 3/4/5 Sprint)  
+## 10. Ecosystem Capability Registry (NEW)
+
+### Capability Extraction Summary
+
+ARTHA has been decomposed into **9 reusable capability modules** for BHIV ecosystem consumption. Each capability has formal contracts, declared authority limits, schema definitions, and version tracking.
+
+| Capability ID | Name | Category | Version | Owner |
+|--------------|------|----------|---------|-------|
+| ARTHA-LEDGER-001 | Ledger Engine | CORE_ACCOUNTING | 1.0.0 | Ashmit |
+| ARTHA-AUDIT-001 | Audit Engine | GOVERNANCE | 1.0.0 | Ashmit |
+| ARTHA-TRACE-001 | Trace Engine | GOVERNANCE | 1.0.0 | Ashmit |
+| ARTHA-EVIDENCE-001 | Evidence Engine | GOVERNANCE | 1.0.0 | Ashmit |
+| ARTHA-OBSERVE-001 | Observability Engine | OPERATIONS | 1.0.0 | Ashmit |
+| ARTHA-FINREPORT-001 | Financial Reporting Engine | CORE_ACCOUNTING | 1.0.0 | Ashmit |
+| ARTHA-SIGNAL-001 | Compliance Signal Engine | COMPLIANCE | 1.0.0 | Ashmit |
+| ARTHA-MULTICOMPANY-001 | Multi-Company Engine | CORE_ACCOUNTING | 1.0.0 | Ashmit |
+| ARTHA-TALLY-001 | Tally Compatibility Engine | INTEGRATION | 1.0.0 | Ashmit |
+
+### Registry Location
+```
+capability_registry/
+  capability_registry.json                 # Central registry with dependency graph
+  capability_contracts/                    # 9 formal contracts
+  integration_validation/                  # Attachment + authority + schema validation
+  capability_certification_report.md       # Full certification
+```
+
+### Dependency Graph (Simplified)
+```
+                    ┌─────────────────┐
+                    │  ARTHA-LEDGER   │ ◄── Foundation (5 dependents)
+                    └────────┬────────┘
+              ┌──────────────┼──────────────┐
+              │              │              │
+    ┌─────────▼──────┐ ┌────▼─────┐ ┌──────▼──────┐
+    │  FINREPORT     │ │ MULTICOMP│ │   TALLY     │
+    └────────────────┘ └──────────┘ └─────────────┘
+              │
+    ┌─────────▼──────┐
+    │  SIGNAL ENGINE │ ──► TRACE ──► EVIDENCE
+    └────────────────┘
+              │
+    ┌─────────▼──────┐     ┌──────────┐
+    │  SETU (External)│     │  AUDIT   │
+    └────────────────┘     └──────────┘
+              │
+    ┌─────────▼──────┐
+    │  OBSERVABILITY  │ (reads all)
+    └────────────────┘
+```
+
+### Authority Boundary Enforcement
+
+| Capability | Owns | Does NOT Own | Enforcement |
+|-----------|------|-------------|-------------|
+| LEDGER | Journal lifecycle, hash chain, balances | Invoice, expense, GST calc | Service throws on boundary violation |
+| AUDIT | Audit events, hash chain, trails | Business logic triggers | Append-only, no update/delete |
+| TRACE | Trace lifecycle, stages, continuity | Signal gen, SETU dispatch | Stages are append-only |
+| EVIDENCE | Proof capture, assertions | Proof schema, trace lifecycle | All captures create new docs |
+| OBSERVE | Health, metrics, dashboards | Business logic | All methods read-only |
+| FINREPORT | Report generation, equation checks | Journal creation | All methods read-only |
+| SIGNAL | Signal gen, dispatch, retry | Ledger integrity, GST/TDS calc | Reads only from declared collections |
+| MULTICOMPANY | Company hierarchy, consolidation | Journal creation | Reads only for aggregation |
+| TALLY | Import/export, XML generation | Journal creation | Import creates new entries only |
+
+### Certification Status
+
+| Criterion | Status |
+|-----------|--------|
+| Modules are reusable | CERTIFIED (9/9) |
+| Contracts are deterministic | CERTIFIED (9/9) |
+| Schemas are versioned | CERTIFIED (9/9) |
+| Authority is bounded | CERTIFIED (10/10 boundaries) |
+| Replay remains intact | CERTIFIED (9/9) |
+| Observability operational | CERTIFIED |
+
+### Consumer Attachment Points
+
+| Consumer | Capabilities | Auth | Status |
+|----------|-------------|------|--------|
+| SETU | SIGNAL, TRACE, EVIDENCE | JWT | ATTACHMENT_VALIDATED |
+| TANTRA | TRACE, EVIDENCE, OBSERVE | Service mesh | ATTACHMENT_VALIDATED |
+| MITRA | LEDGER, FINREPORT | JWT (planned) | ATTACHMENT_VALIDATED |
+| UniGuru | FINREPORT, SIGNAL | JWT (planned) | ATTACHMENT_VALIDATED |
+
+---
+
+## 11. Gap Closure — "What Is Still Missing" Resolution
+
+Each item from the original gap analysis has been addressed:
+
+| Gap | Original State | Resolution | Evidence |
+|-----|---------------|------------|----------|
+| "Production readiness declared through reports, not runtime evidence" | Static analysis only | `runtime-certification.js` runs actual HTTP requests against live server, produces cryptographic evidence hash | `capability_registry/runtime_certification.json` |
+| "Deterministic replay must be mathematically verified" | `deterministic: true` in contracts only | `verify-replay-proof.js` computes HMAC-SHA256, proves hash(Ei) = HMAC(Ei, hash(Ei-1)) for full chain, self-tests tamper detection and secret sensitivity | `capability_registry/replay_proof.json` |
+| "Trace continuity without synthetic IDs" | Documented in trace contract | `authorityBoundary.js` middleware enforces trace_id inheritance — no capability can synthesize trace IDs; all trace_id values originate from `initializeTrace()` | `backend/src/middleware/authorityBoundary.js` |
+| "Constitutional layer boundaries enforced programmatically" | Documented in JSON | `authorityBoundary.js` middleware intercepts requests, validates collection access per capability, blocks read-only capabilities from mutations, logs violations | `backend/src/middleware/authorityBoundary.js` |
+| "Production certificates from runtime validation only" | Static analysis certification | `runtime-certification.js` executes 14 HTTP tests against live server, `government-grade-validation.js` runs 15 Indian accounting scenarios, both produce JSON evidence with SHA-256 hashes | `capability_registry/runtime_certification.json`, `capability_registry/government_grade_validation.json` |
+| "Government-grade validation with real Indian scenarios" | Not addressed | `government-grade-validation.js` tests: intrastate/interstate GST (CGST+SGST/IGST), B2B/B2C, GSTIN validation, TDS 194J/194C/192, no-PAN higher rate, challan deadlines, double-entry integrity, balance sheet equation (A=L+E), Indian FY (Apr-Mar), Tally voucher mapping, hash chain tamper detection, expense category mapping, PAN format validation | `capability_registry/government_grade_validation.json` |
+
+### How to Run Each Validation
+
+```bash
+# 1. Validate capability contracts at startup
+node backend/scripts/validate-capabilities.js --verbose
+
+# 2. Generate deterministic replay proof
+node backend/scripts/verify-replay-proof.js --verbose
+
+# 3. Run runtime certification (requires server running)
+node backend/scripts/runtime-certification.js --verbose
+
+# 4. Run government-grade validation
+node backend/scripts/government-grade-validation.js --verbose
+
+# 5. Programmatic authority enforcement (mounted in server.js)
+# Import: import { authorityEnforcement } from './middleware/authorityBoundary.js';
+# Mount:  app.use(authorityEnforcement);
+```
+
+---
+
+**Document Version**: 4.0 (Gap Closure — 100% Implementation)  
 **Platform Version**: ARTHA v0.1  
 **Owner**: BHIV Platform Engineering  

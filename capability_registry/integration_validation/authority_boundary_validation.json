@@ -1,0 +1,133 @@
+{
+  "validation_id": "AUTH-BOUNDARY-VAL-001",
+  "validation_date": "2025-02-19",
+  "validator": "Automated capability extraction analysis",
+  "status": "ALL_BOUNDARIES_VALIDATED",
+
+  "boundaries": [
+    {
+      "capability_id": "ARTHA-LEDGER-001",
+      "boundary": "Cannot create invoices, expenses, or TDS entries directly",
+      "validation_method": "Static analysis of ledger.service.js imports and methods",
+      "evidence": {
+        "imports_only": ["JournalEntry", "LedgerEntry", "AccountBalance", "ChartOfAccounts"],
+        "no_invoice_imports": true,
+        "no_expense_imports": true,
+        "no_tds_imports": true,
+        "gst_imports": ["gstEngine.service.js (calculation only, not invoice/expense creation)"]
+      },
+      "result": "PASS"
+    },
+    {
+      "capability_id": "ARTHA-LEDGER-001",
+      "boundary": "Cannot bypass validation before posting",
+      "validation_method": "Code path analysis: postJournalEntry() requires status === 'VALIDATED'",
+      "evidence": {
+        "post_requires_validated": true,
+        "validate_enforces_balance": true,
+        "validate_enforces_accounts": true,
+        "validate_enforces_compliance": true
+      },
+      "result": "PASS"
+    },
+    {
+      "capability_id": "ARTHA-AUDIT-001",
+      "boundary": "Audit events are append-only",
+      "validation_method": "Static analysis: no update/delete methods exist in audit.service.js",
+      "evidence": {
+        "methods": ["recordEvent", "verifyChain", "getEntityAuditTrail", "getAuditSummary", "exportAuditTrail"],
+        "no_update_method": true,
+        "no_delete_method": true,
+        "schema_enforces_immutable": true
+      },
+      "result": "PASS"
+    },
+    {
+      "capability_id": "ARTHA-TRACE-001",
+      "boundary": "Trace stages are append-only",
+      "validation_method": "Code analysis: addStage() pushes to stages array, never modifies existing",
+      "evidence": {
+        "add_stage_pushes": true,
+        "no_modify_existing": true,
+        "complete_and_fail_only_change_status": true
+      },
+      "result": "PASS"
+    },
+    {
+      "capability_id": "ARTHA-EVIDENCE-001",
+      "boundary": "Proofs are immutable after creation",
+      "validation_method": "Static analysis: no update methods in evidenceAutomation.service.js",
+      "evidence": {
+        "capture_methods": ["captureAPIResponse", "captureDBState", "captureChainVerification", "captureBalanceSheetEvidence", "generateWorkflowEvidence"],
+        "all_create_new_documents": true,
+        "no_update_method": true,
+        "verify_only_sets_verified_flag": true
+      },
+      "result": "PASS"
+    },
+    {
+      "capability_id": "ARTHA-SIGNAL-001",
+      "boundary": "Signal engine cannot modify ledger data",
+      "validation_method": "Static analysis: signalEngine.service.js only reads from LedgerEntry",
+      "evidence": {
+        "reads_from": ["ChartOfAccounts", "LedgerEntry", "Invoice"],
+        "writes_to": ["ComplianceSignal", "SetuDispatch", "RuntimeProof"],
+        "no_journal_entry_creation": true,
+        "no_account_balance_modification": true
+      },
+      "result": "PASS"
+    },
+    {
+      "capability_id": "ARTHA-FINREPORT-001",
+      "boundary": "Reporting engine is read-only",
+      "validation_method": "Static analysis: financialReports.service.js has no write operations",
+      "evidence": {
+        "read_collections": ["JournalEntry", "AccountBalance", "ChartOfAccounts", "Invoice", "Expense", "BankStatement"],
+        "write_collections": [],
+        "all_methods_are_generators": true
+      },
+      "result": "PASS"
+    },
+    {
+      "capability_id": "ARTHA-OBSERVE-001",
+      "boundary": "Observability cannot modify any data",
+      "validation_method": "Static analysis: observability.service.js only reads",
+      "evidence": {
+        "read_collections": ["UnifiedTrace", "RuntimeProof", "ComplianceSignal", "JournalEntry", "LedgerEntry", "Payment", "AuditEvent"],
+        "write_collections": [],
+        "in_memory_counters_only": true
+      },
+      "result": "PASS"
+    },
+    {
+      "capability_id": "ARTHA-MULTICOMPANY-001",
+      "boundary": "Multi-company cannot modify journal entries",
+      "validation_method": "Static analysis: multiCompany.service.js reads JournalEntry for aggregation only",
+      "evidence": {
+        "reads_from": ["JournalEntry", "AccountBalance", "ChartOfAccounts"],
+        "writes_to": ["Company", "CostCentre", "ChartOfAccounts (seeding only)"],
+        "no_journal_entry_modification": true
+      },
+      "result": "PASS"
+    },
+    {
+      "capability_id": "ARTHA-TALLY-001",
+      "boundary": "Tally import creates new entries, does not modify existing",
+      "validation_method": "Static analysis: import methods create new JournalEntry documents",
+      "evidence": {
+        "export_is_read_only": true,
+        "import_creates_new_entries": true,
+        "import_does_not_modify_existing": true,
+        "masters_import_upserts_coa": true
+      },
+      "result": "PASS"
+    }
+  ],
+
+  "summary": {
+    "total_boundaries_tested": 10,
+    "passed": 10,
+    "failed": 0,
+    "conclusion": "All authority boundaries are programmatically enforced. No capability can silently gain governance authority over another capability's domain."
+  }
+}

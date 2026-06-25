@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "capability_id": "ARTHA-OBSERVE-001",
+  "capability_name": "Observability Engine",
+  "version": "1.0.0",
+  "status": "STABLE",
+  "owner": "Ashmit",
+  "authority_owned": [
+    "System health monitoring across 8 components",
+    "Prometheus-compatible metrics exposition",
+    "Grafana-compatible dashboard data",
+    "Request duration and error tracking",
+    "Memory and GC monitoring",
+    "Audit chain integrity verification",
+    "Trace health detection (stuck traces)",
+    "Component-level health checks (DB, Redis, traces, proofs, signals, journals, payments, audit)"
+  ],
+  "authority_explicitly_not_owned": [
+    "Business logic that generates traces/signals/proofs",
+    "Audit event creation (owned by Audit Engine)",
+    "Cache management (owned by Cache layer)",
+    "Health check endpoint routing (owned by health.routes.js)"
+  ],
+  "description": "System-wide observability engine providing health monitoring, Prometheus metrics, Grafana dashboards, and component-level diagnostics. Non-invasive — reads from collections without writing business data.",
+  "provider_service": "backend/src/services/observability.service.js",
+  "provider_model": [],
+  "api_endpoints": {
+    "system_health": {
+      "method": "GET",
+      "path": "/health/detailed",
+      "auth_required": false,
+      "roles": ["*"]
+    },
+    "observability": {
+      "method": "GET",
+      "path": "/observability",
+      "auth_required": false,
+      "roles": ["*"]
+    },
+    "prometheus_metrics": {
+      "method": "GET",
+      "path": "/prometheus",
+      "auth_required": false,
+      "roles": ["*"]
+    },
+    "dashboard_data": {
+      "method": "GET",
+      "path": "/dashboard",
+      "auth_required": false,
+      "roles": ["*"]
+    },
+    "runtime_status": {
+      "method": "GET",
+      "path": "/api/v1/runtime/status",
+      "auth_required": true,
+      "roles": ["*"]
+    }
+  },
+  "input_schemas": {
+    "record_request": {
+      "type": "object",
+      "required": ["durationMs"],
+      "properties": {
+        "durationMs": { "type": "number" },
+        "isError": { "type": "boolean" }
+      }
+    }
+  },
+  "output_schemas": {
+    "system_health": {
+      "type": "object",
+      "properties": {
+        "status": { "type": "string", "enum": ["healthy", "degraded", "unhealthy"] },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "version": { "type": "string" },
+        "environment": { "type": "string" },
+        "uptime": { "type": "number" },
+        "memory": { "type": "object" },
+        "components": {
+          "type": "object",
+          "properties": {
+            "database": { "type": "object" },
+            "redis": { "type": "object" },
+            "traces": { "type": "object" },
+            "proofs": { "type": "object" },
+            "signals": { "type": "object" },
+            "journals": { "type": "object" },
+            "payments": { "type": "object" },
+            "audit": { "type": "object" }
+          }
+        },
+        "metrics": { "type": "object" }
+      }
+    },
+    "prometheus_metrics": {
+      "type": "string",
+      "format": "text/plain",
+      "description": "Prometheus exposition format"
+    },
+    "dashboard_data": {
+      "type": "object",
+      "properties": {
+        "traces": { "type": "object" },
+        "signals": { "type": "object" },
+        "payments": { "type": "object" },
+        "audit": { "type": "object" },
+        "metrics": { "type": "object" }
+      }
+    }
+  },
+  "authentication": {
+    "type": "None for /health, /observability, /prometheus, /dashboard; JWT for /api/v1/runtime/status"
+  },
+  "trace_requirements": {
+    "trace_id_required": false,
+    "self_monitoring": true
+  },
+  "evidence_requirements": {
+    "health_snapshot": "Full component health at point in time",
+    "metrics_series": "Uptime, request count, error count, avg response time, memory",
+    "audit_chain_check": "First 100 events verified for hash chain integrity"
+  },
+  "failure_behavior": {
+    "redis_unavailable": "Degrades gracefully, reports redis status as unhealthy",
+    "db_unavailable": "Reports database as unhealthy, continues serving other checks",
+    "partial_failure": "Individual component failures do not crash the health endpoint"
+  },
+  "dependencies": {
+    "internal": [
+      { "service": "redis.js", "purpose": "Redis ping for health check" }
+    ],
+    "models": ["UnifiedTrace", "RuntimeProof", "ComplianceSignal", "JournalEntry", "LedgerEntry", "Payment", "AuditEvent"]
+  },
+  "consumers": [
+    { "product": "ARTHA", "modules": ["Health routes", "Runtime status endpoint", "Frontend RuntimeModeBanner"] },
+    { "product": "SETU", "modules": ["Health probe"] },
+    { "product": "TANTRA", "modules": ["Heartbeat metadata"] },
+    { "product": "Kubernetes", "modules": ["Liveness/readiness probes"] },
+    { "product": "Prometheus", "modules": ["Metrics scraping"] },
+    { "product": "Grafana", "modules": ["Dashboard visualization"] }
+  ],
+  "replay_compatibility": {
+    "deterministic": true,
+    "replay_method": "getSystemHealth() returns deterministic snapshot of current state",
+    "limitations": "Health is point-in-time; metrics are cumulative counters"
+  },
+  "version_history": [
+    { "version": "1.0.0", "date": "2025-02-19", "changes": "Initial capability extraction" }
+  ]
+}

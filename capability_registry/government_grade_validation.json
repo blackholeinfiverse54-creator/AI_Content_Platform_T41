@@ -1,0 +1,598 @@
+{
+  "report_id": "GOV-GRADE-1782319387577-c20d48f2",
+  "timestamp": "2026-06-24T16:43:07.578Z",
+  "duration_ms": 3,
+  "summary": {
+    "total_scenarios": 15,
+    "passed_scenarios": 15,
+    "failed_scenarios": 0,
+    "total_checks": 79,
+    "passed_checks": 79,
+    "failed_checks": 0,
+    "all_passed": true
+  },
+  "indian_accounting_coverage": {
+    "gst_intrastate": true,
+    "gst_interstate": true,
+    "gst_b2c": true,
+    "gstin_validation": true,
+    "tds_194j": true,
+    "tds_194c": true,
+    "tds_no_pan": true,
+    "tds_challan_deadlines": true,
+    "double_entry": true,
+    "balance_sheet_equation": true,
+    "indian_financial_year": true,
+    "tally_voucher_mapping": true,
+    "hash_chain_integrity": true,
+    "expense_category_mapping": true,
+    "pan_validation": true
+  },
+  "scenarios": [
+    {
+      "name": "GST: Intrastate B2B invoice — CGST+SGST split",
+      "passed": true,
+      "checks": [
+        {
+          "test": "CGST = 9% of taxable",
+          "expected": 9000,
+          "actual": 9000,
+          "pass": true
+        },
+        {
+          "test": "SGST = 9% of taxable",
+          "expected": 9000,
+          "actual": 9000,
+          "pass": true
+        },
+        {
+          "test": "IGST = 0 (intrastate)",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "test": "Total = 100000 + 18000",
+          "expected": 118000,
+          "actual": 118000,
+          "pass": true
+        },
+        {
+          "test": "Supply type = B2B_INTRASTATE",
+          "expected": "B2B_INTRASTATE",
+          "actual": "B2B_INTRASTATE",
+          "pass": true
+        }
+      ],
+      "detail": "Taxable: ₹100000, CGST: ₹9000, SGST: ₹9000, Total: ₹118000"
+    },
+    {
+      "name": "GST: Interstate B2B invoice — IGST only",
+      "passed": true,
+      "checks": [
+        {
+          "test": "CGST = 0 (interstate)",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "test": "SGST = 0 (interstate)",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "test": "IGST = 18% of taxable",
+          "expected": 36000,
+          "actual": 36000,
+          "pass": true
+        },
+        {
+          "test": "Supply type = B2B_INTERSTATE",
+          "expected": "B2B_INTERSTATE",
+          "actual": "B2B_INTERSTATE",
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "GST: B2C invoice — no GSTIN provided",
+      "passed": true,
+      "checks": [
+        {
+          "test": "Supply type = B2C",
+          "expected": "B2C",
+          "actual": "B2C",
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "GST: Invalid GSTIN format rejected",
+      "passed": true,
+      "checks": [
+        {
+          "test": "Reject invalid GSTIN: \"123456789012345\"",
+          "expected": false,
+          "actual": false,
+          "pass": true
+        },
+        {
+          "test": "Reject invalid GSTIN: \"27AAPFU0939F1Z\"",
+          "expected": false,
+          "actual": false,
+          "pass": true
+        },
+        {
+          "test": "Reject invalid GSTIN: \"27AAPFU0939F1ZVX\"",
+          "expected": false,
+          "actual": false,
+          "pass": true
+        },
+        {
+          "test": "Reject invalid GSTIN: \"27aaapfu0939f1zv\"",
+          "expected": false,
+          "actual": false,
+          "pass": true
+        },
+        {
+          "test": "Reject invalid GSTIN: \"\"",
+          "expected": false,
+          "actual": false,
+          "pass": true
+        },
+        {
+          "test": "Accept valid GSTIN: \"27AAPFU0939F1ZV\"",
+          "expected": true,
+          "actual": true,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "TDS: Section 194J — Professional services deduction",
+      "passed": true,
+      "checks": [
+        {
+          "test": "TDS rate = 10%",
+          "expected": 10,
+          "actual": 10,
+          "pass": true
+        },
+        {
+          "test": "TDS amount = ₹10,000",
+          "expected": 10000,
+          "actual": 10000,
+          "pass": true
+        },
+        {
+          "test": "Net payable = ₹90,000",
+          "expected": 90000,
+          "actual": 90000,
+          "pass": true
+        },
+        {
+          "test": "TDS < payment amount",
+          "expected": true,
+          "actual": true,
+          "pass": true
+        },
+        {
+          "test": "Double-entry balanced",
+          "expected": 100000,
+          "actual": 100000,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "TDS: Section 194C — Contractor deduction",
+      "passed": true,
+      "checks": [
+        {
+          "test": "TDS rate = 2%",
+          "expected": 2,
+          "actual": 2,
+          "pass": true
+        },
+        {
+          "test": "TDS amount = ₹1,000",
+          "expected": 1000,
+          "actual": 1000,
+          "pass": true
+        },
+        {
+          "test": "Net payable = ₹49,000",
+          "expected": 49000,
+          "actual": 49000,
+          "pass": true
+        },
+        {
+          "test": "Double-entry balanced",
+          "expected": 50000,
+          "actual": 50000,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "TDS: No PAN provided — higher deduction rate",
+      "passed": true,
+      "checks": [
+        {
+          "test": "Normal TDS = ₹10,000",
+          "expected": 10000,
+          "actual": 10000,
+          "pass": true
+        },
+        {
+          "test": "No-PAN TDS = ₹20,000",
+          "expected": 20000,
+          "actual": 20000,
+          "pass": true
+        },
+        {
+          "test": "No-PAN rate > normal rate",
+          "expected": true,
+          "actual": true,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "TDS: Challan deposit deadline validation",
+      "passed": true,
+      "checks": [
+        {
+          "test": "Q4 due date = May 31",
+          "expected": "2026-05-31",
+          "actual": "2026-05-31",
+          "pass": true
+        },
+        {
+          "test": "Q4 period = Jan-Mar",
+          "expected": "Jan-Mar",
+          "actual": "Jan-Mar",
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "LEDGER: Double-entry — Invoice + Payment cycle",
+      "passed": true,
+      "checks": [
+        {
+          "test": "Invoice: DR = CR",
+          "expected": 118000,
+          "actual": 118000,
+          "pass": true
+        },
+        {
+          "test": "Payment: DR = CR",
+          "expected": 118000,
+          "actual": 118000,
+          "pass": true
+        },
+        {
+          "test": "Invoice debit count = 1",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "test": "Invoice credit count = 3",
+          "expected": 3,
+          "actual": 3,
+          "pass": true
+        },
+        {
+          "test": "Payment debit count = 1",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "test": "Payment credit count = 1",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "LEDGER: Balance sheet equation — A = L + E",
+      "passed": true,
+      "checks": [
+        {
+          "test": "Assets = ₹836,000",
+          "expected": 836000,
+          "actual": 836000,
+          "pass": true
+        },
+        {
+          "test": "Liabilities = ₹78,000",
+          "expected": 78000,
+          "actual": 78000,
+          "pass": true
+        },
+        {
+          "test": "Equity = ₹758,000",
+          "expected": 758000,
+          "actual": 758000,
+          "pass": true
+        },
+        {
+          "test": "A = L + E",
+          "expected": 836000,
+          "actual": 836000,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "REPORTS: Indian financial year — April to March",
+      "passed": true,
+      "checks": [
+        {
+          "test": "FY starts April 1",
+          "expected": "2025-04-01",
+          "actual": "2025-04-01",
+          "pass": true
+        },
+        {
+          "test": "FY ends March 31",
+          "expected": "2026-03-31",
+          "actual": "2026-03-31",
+          "pass": true
+        },
+        {
+          "test": "FY = 365 days",
+          "expected": 365,
+          "actual": 365,
+          "pass": true
+        },
+        {
+          "test": "Q1 = Apr-Jun",
+          "expected": "Apr-Jun",
+          "actual": "Apr-Jun",
+          "pass": true
+        },
+        {
+          "test": "Q2 = Jul-Sep",
+          "expected": "Jul-Sep",
+          "actual": "Jul-Sep",
+          "pass": true
+        },
+        {
+          "test": "Q3 = Oct-Dec",
+          "expected": "Oct-Dec",
+          "actual": "Oct-Dec",
+          "pass": true
+        },
+        {
+          "test": "Q4 = Jan-Mar",
+          "expected": "Jan-Mar",
+          "actual": "Jan-Mar",
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "TALLY: Voucher type mapping",
+      "passed": true,
+      "checks": [
+        {
+          "test": "Voucher type \"sales\" maps to \"Sales\"",
+          "expected": "Sales",
+          "actual": "Sales",
+          "pass": true
+        },
+        {
+          "test": "Voucher type \"purchase\" maps to \"Purchase\"",
+          "expected": "Purchase",
+          "actual": "Purchase",
+          "pass": true
+        },
+        {
+          "test": "Voucher type \"receipt\" maps to \"Receipt\"",
+          "expected": "Receipt",
+          "actual": "Receipt",
+          "pass": true
+        },
+        {
+          "test": "Voucher type \"payment\" maps to \"Payment\"",
+          "expected": "Payment",
+          "actual": "Payment",
+          "pass": true
+        },
+        {
+          "test": "Voucher type \"journal\" maps to \"Journal\"",
+          "expected": "Journal",
+          "actual": "Journal",
+          "pass": true
+        },
+        {
+          "test": "Voucher type \"contra\" maps to \"Contra\"",
+          "expected": "Contra",
+          "actual": "Contra",
+          "pass": true
+        },
+        {
+          "test": "Voucher type \"credit_note\" maps to \"Credit Note\"",
+          "expected": "Credit Note",
+          "actual": "Credit Note",
+          "pass": true
+        },
+        {
+          "test": "Voucher type \"debit_note\" maps to \"Debit Note\"",
+          "expected": "Debit Note",
+          "actual": "Debit Note",
+          "pass": true
+        },
+        {
+          "test": "All 8 voucher types mapped",
+          "expected": 8,
+          "actual": 8,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "LEDGER: HMAC-SHA256 hash chain — tamper detection",
+      "passed": true,
+      "checks": [
+        {
+          "test": "Hash1 is unique",
+          "expected": true,
+          "actual": true,
+          "pass": true
+        },
+        {
+          "test": "Hash2 depends on Hash1",
+          "expected": true,
+          "actual": true,
+          "pass": true
+        },
+        {
+          "test": "Tamper detected",
+          "expected": true,
+          "actual": true,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "EXPENSE: Category-to-account mapping",
+      "passed": true,
+      "checks": [
+        {
+          "test": "Category \"travel\" → Account \"6700\"",
+          "expected": "6700",
+          "actual": "6700",
+          "pass": true
+        },
+        {
+          "test": "Category \"meals\" → Account \"6900\"",
+          "expected": "6900",
+          "actual": "6900",
+          "pass": true
+        },
+        {
+          "test": "Category \"supplies\" → Account \"6300\"",
+          "expected": "6300",
+          "actual": "6300",
+          "pass": true
+        },
+        {
+          "test": "Category \"utilities\" → Account \"6200\"",
+          "expected": "6200",
+          "actual": "6200",
+          "pass": true
+        },
+        {
+          "test": "Category \"rent\" → Account \"6100\"",
+          "expected": "6100",
+          "actual": "6100",
+          "pass": true
+        },
+        {
+          "test": "Category \"insurance\" → Account \"6600\"",
+          "expected": "6600",
+          "actual": "6600",
+          "pass": true
+        },
+        {
+          "test": "Category \"marketing\" → Account \"6500\"",
+          "expected": "6500",
+          "actual": "6500",
+          "pass": true
+        },
+        {
+          "test": "Category \"professional_services\" → Account \"6700\"",
+          "expected": "6700",
+          "actual": "6700",
+          "pass": true
+        },
+        {
+          "test": "Category \"equipment\" → Account \"1800\"",
+          "expected": "1800",
+          "actual": "1800",
+          "pass": true
+        },
+        {
+          "test": "Category \"software\" → Account \"6300\"",
+          "expected": "6300",
+          "actual": "6300",
+          "pass": true
+        },
+        {
+          "test": "Category \"other\" → Account \"6900\"",
+          "expected": "6900",
+          "actual": "6900",
+          "pass": true
+        },
+        {
+          "test": "All 11 categories mapped",
+          "expected": 11,
+          "actual": 11,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "TDS: PAN format validation",
+      "passed": true,
+      "checks": [
+        {
+          "test": "Accept valid PAN: \"AAPFU0939F\"",
+          "expected": true,
+          "actual": true,
+          "pass": true
+        },
+        {
+          "test": "Accept valid PAN: \"BCPMG1234K\"",
+          "expected": true,
+          "actual": true,
+          "pass": true
+        },
+        {
+          "test": "Accept valid PAN: \"ZZZZZ9999Z\"",
+          "expected": true,
+          "actual": true,
+          "pass": true
+        },
+        {
+          "test": "Reject invalid PAN: \"AAPFU093\"",
+          "expected": false,
+          "actual": false,
+          "pass": true
+        },
+        {
+          "test": "Reject invalid PAN: \"AAPFU0939F1\"",
+          "expected": false,
+          "actual": false,
+          "pass": true
+        },
+        {
+          "test": "Reject invalid PAN: \"aapfu0939f\"",
+          "expected": false,
+          "actual": false,
+          "pass": true
+        },
+        {
+          "test": "Reject invalid PAN: \"1234567890\"",
+          "expected": false,
+          "actual": false,
+          "pass": true
+        },
+        {
+          "test": "Reject invalid PAN: \"\"",
+          "expected": false,
+          "actual": false,
+          "pass": true
+        }
+      ]
+    }
+  ]
+}

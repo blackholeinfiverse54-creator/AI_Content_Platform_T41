@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "capability_id": "ARTHA-FINREPORT-001",
+  "capability_name": "Financial Reporting Engine",
+  "version": "1.0.0",
+  "status": "STABLE",
+  "owner": "Ashmit",
+  "authority_owned": [
+    "Profit & Loss statement generation",
+    "Balance Sheet generation with equation verification",
+    "Cash Flow statement with Operating/Investing/Financing classification",
+    "Trial Balance with debit/credit verification",
+    "Aged Receivables aging analysis",
+    "Dashboard summary (monthly + YTD P&L, balance sheet, bank flow)",
+    "KPI calculation (profit margin, ROA, ROE, expense ratio, working capital)",
+    "Revenue vs Expenses chart data",
+    "Expense breakdown by category",
+    "Bank transaction timeline",
+    "Indian financial year handling (April-March)",
+    "Report period context with presets"
+  ],
+  "authority_explicitly_not_owned": [
+    "Journal entry creation (owned by Ledger Engine)",
+    "Account balance computation (owned by Ledger Engine)",
+    "Bank statement upload and parsing (owned by BankStatement module)",
+    "GST/TDS statutory filing (owned by Compliance Engine)",
+    "Chart of accounts management (owned by COA module)"
+  ],
+  "description": "Read-only financial reporting engine. Generates all standard Indian financial statements from posted journal entries and account balances. Enforces accounting equation integrity (Assets = Liabilities + Equity).",
+  "provider_service": "backend/src/services/financialReports.service.js",
+  "provider_model": [],
+  "api_endpoints": {
+    "profit_loss": {
+      "method": "GET",
+      "path": "/api/v1/reports/profit-loss",
+      "auth_required": true,
+      "roles": ["*"],
+      "query_params": { "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD" }
+    },
+    "balance_sheet": {
+      "method": "GET",
+      "path": "/api/v1/reports/balance-sheet",
+      "auth_required": true,
+      "roles": ["*"],
+      "query_params": { "asOfDate": "YYYY-MM-DD" }
+    },
+    "cash_flow": {
+      "method": "GET",
+      "path": "/api/v1/reports/cash-flow",
+      "auth_required": true,
+      "roles": ["*"],
+      "query_params": { "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD" }
+    },
+    "trial_balance": {
+      "method": "GET",
+      "path": "/api/v1/reports/trial-balance",
+      "auth_required": true,
+      "roles": ["*"],
+      "query_params": { "asOfDate": "YYYY-MM-DD" }
+    },
+    "aged_receivables": {
+      "method": "GET",
+      "path": "/api/v1/reports/aged-receivables",
+      "auth_required": true,
+      "roles": ["*"],
+      "query_params": { "asOfDate": "YYYY-MM-DD" }
+    },
+    "dashboard": {
+      "method": "GET",
+      "path": "/api/v1/reports/dashboard",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "kpis": {
+      "method": "GET",
+      "path": "/api/v1/reports/kpis",
+      "auth_required": true,
+      "roles": ["*"],
+      "query_params": { "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD" }
+    },
+    "revenue_expenses_chart": {
+      "method": "GET",
+      "path": "/api/v1/reports/revenue-expenses-chart",
+      "auth_required": true,
+      "roles": ["*"],
+      "query_params": { "year": "YYYY" }
+    },
+    "expense_breakdown": {
+      "method": "GET",
+      "path": "/api/v1/reports/expense-breakdown",
+      "auth_required": true,
+      "roles": ["*"],
+      "query_params": { "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD" }
+    },
+    "period_context": {
+      "method": "GET",
+      "path": "/api/v1/reports/period-context",
+      "auth_required": true,
+      "roles": ["*"]
+    }
+  },
+  "input_schemas": {
+    "date_range": {
+      "type": "object",
+      "required": ["startDate", "endDate"],
+      "properties": {
+        "startDate": { "type": "string", "format": "date" },
+        "endDate": { "type": "string", "format": "date" }
+      }
+    },
+    "as_of_date": {
+      "type": "object",
+      "required": ["asOfDate"],
+      "properties": {
+        "asOfDate": { "type": "string", "format": "date" }
+      }
+    }
+  },
+  "output_schemas": {
+    "profit_loss": {
+      "type": "object",
+      "properties": {
+        "period": { "type": "object" },
+        "income": {
+          "type": "object",
+          "properties": {
+            "accounts": { "type": "array" },
+            "total": { "type": "string" },
+            "ledgerTotal": { "type": "string" },
+            "fetchedCredits": { "type": "string" }
+          }
+        },
+        "expenses": { "type": "object" },
+        "bankFlow": { "type": "object" },
+        "netIncome": { "type": "string" }
+      }
+    },
+    "balance_sheet": {
+      "type": "object",
+      "properties": {
+        "asOfDate": { "type": "string" },
+        "assets": { "type": "object" },
+        "liabilities": { "type": "object" },
+        "equity": { "type": "object" },
+        "totals": {
+          "type": "object",
+          "properties": {
+            "assets": { "type": "string" },
+            "liabilitiesAndEquity": { "type": "string" },
+            "isBalanced": { "type": "boolean" },
+            "difference": { "type": "string" }
+          }
+        }
+      }
+    },
+    "trial_balance": {
+      "type": "object",
+      "properties": {
+        "asOfDate": { "type": "string" },
+        "accounts": { "type": "array" },
+        "totals": {
+          "type": "object",
+          "properties": {
+            "debit": { "type": "string" },
+            "credit": { "type": "string" },
+            "isBalanced": { "type": "boolean" },
+            "difference": { "type": "string" }
+          }
+        }
+      }
+    }
+  },
+  "output_schemas": {},
+  "authentication": {
+    "type": "JWT",
+    "header": "Authorization: Bearer <token>"
+  },
+  "trace_requirements": {
+    "trace_id_required": false,
+    "read_only": true
+  },
+  "evidence_requirements": {
+    "accounting_equation": "Balance Sheet verifies Assets = Liabilities + Equity (0.01 tolerance)",
+    "trial_balance_check": "Total debits == Total credits (0.01 tolerance)",
+    "real_time_calculation": "All reports computed from live journal entries, not cached snapshots"
+  },
+  "failure_behavior": {
+    "no_data": "Returns empty accounts arrays with zero totals",
+    "balance_mismatch": "Returns isBalanced: false with difference amount",
+    "date_range_invalid": "Returns error with message"
+  },
+  "dependencies": {
+    "internal": [],
+    "models": ["JournalEntry", "AccountBalance", "ChartOfAccounts", "Invoice", "Expense", "BankStatement"]
+  },
+  "consumers": [
+    { "product": "ARTHA", "modules": ["Reports pages (React frontend)", "Dashboard", "PDF export"] },
+    { "product": "SETU", "modules": ["Indirect — report data for compliance signals"] },
+    { "product": "TANTRA", "modules": ["Indirect — financial health metrics"] }
+  ],
+  "replay_compatibility": {
+    "deterministic": true,
+    "replay_method": "Same inputs (date range) produce same outputs given identical journal entries",
+    "limitations": "Bank statement flow may change if statements are re-uploaded"
+  },
+  "version_history": [
+    { "version": "1.0.0", "date": "2025-02-19", "changes": "Initial capability extraction" }
+  ]
+}

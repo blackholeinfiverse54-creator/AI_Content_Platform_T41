@@ -1,0 +1,174 @@
+{
+  "graph_id": "DEPENDENCY-GRAPH-001",
+  "generated": "2025-02-19",
+  "description": "Complete dependency graph for ARTHA capabilities. Shows who depends on whom, dependency types, and authority flow direction.",
+
+  "nodes": [
+    {
+      "id": "ARTHA-LEDGER-001",
+      "label": "Ledger Engine",
+      "category": "CORE_ACCOUNTING",
+      "authority_level": "PRIMARY",
+      "dependencies_count": 2,
+      "dependents_count": 5,
+      "risk_level": "HIGH"
+    },
+    {
+      "id": "ARTHA-AUDIT-001",
+      "label": "Audit Engine",
+      "category": "GOVERNANCE",
+      "authority_level": "PRIMARY",
+      "dependencies_count": 0,
+      "dependents_count": 2,
+      "risk_level": "LOW"
+    },
+    {
+      "id": "ARTHA-TRACE-001",
+      "label": "Trace Engine",
+      "category": "GOVERNANCE",
+      "authority_level": "PRIMARY",
+      "dependencies_count": 0,
+      "dependents_count": 3,
+      "risk_level": "LOW"
+    },
+    {
+      "id": "ARTHA-EVIDENCE-001",
+      "label": "Evidence Engine",
+      "category": "GOVERNANCE",
+      "authority_level": "PRIMARY",
+      "dependencies_count": 0,
+      "dependents_count": 2,
+      "risk_level": "LOW"
+    },
+    {
+      "id": "ARTHA-OBSERVE-001",
+      "label": "Observability Engine",
+      "category": "OPERATIONS",
+      "authority_level": "SECONDARY",
+      "dependencies_count": 2,
+      "dependents_count": 0,
+      "risk_level": "LOW"
+    },
+    {
+      "id": "ARTHA-FINREPORT-001",
+      "label": "Financial Reporting Engine",
+      "category": "CORE_ACCOUNTING",
+      "authority_level": "PRIMARY",
+      "dependencies_count": 1,
+      "dependents_count": 0,
+      "risk_level": "MEDIUM"
+    },
+    {
+      "id": "ARTHA-SIGNAL-001",
+      "label": "Compliance Signal Engine",
+      "category": "COMPLIANCE",
+      "authority_level": "PRIMARY",
+      "dependencies_count": 3,
+      "dependents_count": 0,
+      "risk_level": "HIGH"
+    },
+    {
+      "id": "ARTHA-MULTICOMPANY-001",
+      "label": "Multi-Company Engine",
+      "category": "CORE_ACCOUNTING",
+      "authority_level": "SECONDARY",
+      "dependencies_count": 1,
+      "dependents_count": 0,
+      "risk_level": "LOW"
+    },
+    {
+      "id": "ARTHA-TALLY-001",
+      "label": "Tally Compatibility Engine",
+      "category": "INTEGRATION",
+      "authority_level": "SECONDARY",
+      "dependencies_count": 1,
+      "dependents_count": 0,
+      "risk_level": "LOW"
+    }
+  ],
+
+  "edges": [
+    {
+      "from": "ARTHA-LEDGER-001",
+      "to": "ARTHA-AUDIT-001",
+      "type": "OPTIONAL",
+      "purpose": "Audit trail recording on journal entry mutations",
+      "direction": "Ledger calls Audit (not reverse)"
+    },
+    {
+      "from": "ARTHA-LEDGER-001",
+      "to": "ARTHA-TRACE-001",
+      "type": "OPTIONAL",
+      "purpose": "Trace stage recording at lifecycle transitions",
+      "direction": "Ledger calls Trace (not reverse)"
+    },
+    {
+      "from": "ARTHA-SIGNAL-001",
+      "to": "ARTHA-LEDGER-001",
+      "type": "REQUIRED",
+      "purpose": "Reads ledger entries for financial state evaluation",
+      "direction": "Signal reads Ledger (not reverse)"
+    },
+    {
+      "from": "ARTHA-SIGNAL-001",
+      "to": "ARTHA-TRACE-001",
+      "type": "REQUIRED",
+      "purpose": "Creates trace stages on signal dispatch",
+      "direction": "Signal calls Trace (not reverse)"
+    },
+    {
+      "from": "ARTHA-SIGNAL-001",
+      "to": "ARTHA-EVIDENCE-001",
+      "type": "REQUIRED",
+      "purpose": "Creates runtime proofs on dispatch attempts",
+      "direction": "Signal calls Evidence (not reverse)"
+    },
+    {
+      "from": "ARTHA-FINREPORT-001",
+      "to": "ARTHA-LEDGER-001",
+      "type": "REQUIRED",
+      "purpose": "Reads journal entries for report generation",
+      "direction": "Report reads Ledger (not reverse)"
+    },
+    {
+      "from": "ARTHA-MULTICOMPANY-001",
+      "to": "ARTHA-LEDGER-001",
+      "type": "REQUIRED",
+      "purpose": "Reads journal entries for consolidation",
+      "direction": "MultiCompany reads Ledger (not reverse)"
+    },
+    {
+      "from": "ARTHA-TALLY-001",
+      "to": "ARTHA-LEDGER-001",
+      "type": "REQUIRED",
+      "purpose": "Reads journal entries for Tally export",
+      "direction": "Tally reads Ledger (not reverse)"
+    },
+    {
+      "from": "ARTHA-OBSERVE-001",
+      "to": "ARTHA-AUDIT-001",
+      "type": "OPTIONAL",
+      "purpose": "Audit chain integrity verification",
+      "direction": "Observe reads Audit (not reverse)"
+    },
+    {
+      "from": "ARTHA-OBSERVE-001",
+      "to": "ARTHA-TRACE-001",
+      "type": "OPTIONAL",
+      "purpose": "Trace health monitoring and stuck trace detection",
+      "direction": "Observe reads Trace (not reverse)"
+    }
+  ],
+
+  "analysis": {
+    "critical_path": "ARTHA-LEDGER-001 is the most depended-upon capability (5 dependents). It is the foundational capability.",
+    "leaf_nodes": ["ARTHA-FINREPORT-001", "ARTHA-MULTICOMPANY-001", "ARTHA-TALLY-001", "ARTHA-OBSERVE-001", "ARTHA-SIGNAL-001"],
+    "root_nodes": ["ARTHA-AUDIT-001", "ARTHA-TRACE-001", "ARTHA-EVIDENCE-001"],
+    "circular_dependencies": "NONE DETECTED — all edges are unidirectional",
+    "hidden_dependencies": "NONE DETECTED — all dependencies are declared",
+    "risk_assessment": {
+      "highest_risk": "ARTHA-LEDGER-001 (failure cascades to 5 dependents)",
+      "lowest_risk": "ARTHA-AUDIT-001, ARTHA-TRACE-001, ARTHA-EVIDENCE-001 (no dependents, standalone)"
+    }
+  }
+}

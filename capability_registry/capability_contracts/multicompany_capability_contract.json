@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "capability_id": "ARTHA-MULTICOMPANY-001",
+  "capability_name": "Multi-Company Engine",
+  "version": "1.0.0",
+  "status": "STABLE",
+  "owner": "Ashmit",
+  "authority_owned": [
+    "Company CRUD with default COA seeding",
+    "Branch/subsidiary management",
+    "Consolidated financial reporting",
+    "Inter-company elimination (simplified)",
+    "Cost centre management",
+    "Multi-company trial balance"
+  ],
+  "authority_explicitly_not_owned": [
+    "Journal entry creation (owned by Ledger Engine)",
+    "Consolidation accounting standards (currently simplified)",
+    "Transfer pricing logic",
+    "Currency conversion"
+  ],
+  "description": "Multi-company accounting engine supporting parent-subsidiary hierarchies, consolidated reporting, cost centres, and inter-company eliminations.",
+  "provider_service": "backend/src/services/multiCompany.service.js",
+  "provider_model": ["backend/src/models/Company.js", "backend/src/models/CostCentre.js"],
+  "api_endpoints": {
+    "create_company": { "method": "POST", "path": "/api/v1/multi-company/companies", "auth_required": true },
+    "list_companies": { "method": "GET", "path": "/api/v1/multi-company/companies", "auth_required": true },
+    "get_company": { "method": "GET", "path": "/api/v1/multi-company/companies/:id", "auth_required": true },
+    "update_company": { "method": "PUT", "path": "/api/v1/multi-company/companies/:id", "auth_required": true },
+    "create_branch": { "method": "POST", "path": "/api/v1/multi-company/companies/:companyId/branches", "auth_required": true },
+    "get_branches": { "method": "GET", "path": "/api/v1/multi-company/companies/:companyId/branches", "auth_required": true },
+    "consolidated_report": { "method": "POST", "path": "/api/v1/multi-company/companies/:companyId/consolidated-report", "auth_required": true },
+    "consolidated_trial_balance": { "method": "POST", "path": "/api/v1/multi-company/consolidated-trial-balance", "auth_required": true },
+    "create_cost_centre": { "method": "POST", "path": "/api/v1/multi-company/cost-centres", "auth_required": true },
+    "get_cost_centres": { "method": "GET", "path": "/api/v1/multi-company/cost-centres", "auth_required": true }
+  },
+  "authentication": { "type": "JWT" },
+  "trace_requirements": { "trace_id_required": false },
+  "evidence_requirements": {},
+  "input_schemas": {
+    "create_company": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "gstin": { "type": "string" },
+        "pan": { "type": "string" },
+        "state": { "type": "string" },
+        "parentCompany": { "type": "string" }
+      }
+    },
+    "date_range": {
+      "type": "object",
+      "required": ["startDate", "endDate"],
+      "properties": {
+        "startDate": { "type": "string", "format": "date" },
+        "endDate": { "type": "string", "format": "date" }
+      }
+    }
+  },
+  "output_schemas": {
+    "company": {
+      "type": "object",
+      "properties": {
+        "_id": { "type": "string" },
+        "name": { "type": "string" },
+        "gstin": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "inactive"] }
+      }
+    },
+    "consolidated_report": {
+      "type": "object",
+      "properties": {
+        "companies": { "type": "array" },
+        "totals": { "type": "object" }
+      }
+    }
+  },
+  "failure_behavior": {
+    "company_not_found": "Returns 404",
+    "consolidation_incomplete": "Returns partial data with warnings"
+  },
+  "dependencies": {
+    "internal": [
+      { "service": "ledger.service.js", "purpose": "Journal entry queries for consolidation" }
+    ],
+    "models": ["Company", "CostCentre", "ChartOfAccounts", "AccountBalance", "JournalEntry"]
+  },
+  "consumers": [
+    { "product": "ARTHA", "modules": ["Multi-company routes", "Consolidated reports"] }
+  ],
+  "replay_compatibility": {
+    "deterministic": true,
+    "replay_method": "Consolidation is deterministic given same underlying data"
+  },
+  "version_history": [
+    { "version": "1.0.0", "date": "2025-02-19", "changes": "Initial capability extraction" }
+  ]
+}

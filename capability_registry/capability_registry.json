@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "registry_id": "ARTHA-CAPABILITY-REGISTRY",
+  "version": "1.0.0",
+  "status": "ACTIVE",
+  "owner": "Ashmit",
+  "last_verified": "2025-02-19",
+  "ecosystem": "BHIV",
+  "platform": "ARTHA",
+  "description": "Central capability registry for all reusable ARTHA modules exposed to the BHIV ecosystem. Each capability is independently discoverable, versioned, and bounded by explicit authority limits.",
+
+  "capabilities": [
+    {
+      "capability_id": "ARTHA-LEDGER-001",
+      "name": "Ledger Engine",
+      "contract_file": "capability_contracts/ledger_capability_contract.json",
+      "version": "1.0.0",
+      "status": "STABLE",
+      "category": "CORE_ACCOUNTING"
+    },
+    {
+      "capability_id": "ARTHA-AUDIT-001",
+      "name": "Audit Engine",
+      "contract_file": "capability_contracts/audit_capability_contract.json",
+      "version": "1.0.0",
+      "status": "STABLE",
+      "category": "GOVERNANCE"
+    },
+    {
+      "capability_id": "ARTHA-TRACE-001",
+      "name": "Trace Engine",
+      "contract_file": "capability_contracts/trace_capability_contract.json",
+      "version": "1.0.0",
+      "status": "STABLE",
+      "category": "GOVERNANCE"
+    },
+    {
+      "capability_id": "ARTHA-EVIDENCE-001",
+      "name": "Evidence Engine",
+      "contract_file": "capability_contracts/evidence_capability_contract.json",
+      "version": "1.0.0",
+      "status": "STABLE",
+      "category": "GOVERNANCE"
+    },
+    {
+      "capability_id": "ARTHA-OBSERVE-001",
+      "name": "Observability Engine",
+      "contract_file": "capability_contracts/observability_capability_contract.json",
+      "version": "1.0.0",
+      "status": "STABLE",
+      "category": "OPERATIONS"
+    },
+    {
+      "capability_id": "ARTHA-FINREPORT-001",
+      "name": "Financial Reporting Engine",
+      "contract_file": "capability_contracts/financial_reporting_capability_contract.json",
+      "version": "1.0.0",
+      "status": "STABLE",
+      "category": "CORE_ACCOUNTING"
+    },
+    {
+      "capability_id": "ARTHA-SIGNAL-001",
+      "name": "Compliance Signal Engine",
+      "contract_file": "capability_contracts/signal_capability_contract.json",
+      "version": "1.0.0",
+      "status": "STABLE",
+      "category": "COMPLIANCE"
+    },
+    {
+      "capability_id": "ARTHA-MULTICOMPANY-001",
+      "name": "Multi-Company Engine",
+      "contract_file": "capability_contracts/multicompany_capability_contract.json",
+      "version": "1.0.0",
+      "status": "STABLE",
+      "category": "CORE_ACCOUNTING"
+    },
+    {
+      "capability_id": "ARTHA-TALLY-001",
+      "name": "Tally Compatibility Engine",
+      "contract_file": "capability_contracts/tally_capability_contract.json",
+      "version": "1.0.0",
+      "status": "STABLE",
+      "category": "INTEGRATION"
+    }
+  ],
+
+  "categories": {
+    "CORE_ACCOUNTING": "Fundamental accounting engine capabilities",
+    "GOVERNANCE": "Audit, trace, and evidence capabilities for compliance and replay",
+    "COMPLIANCE": "Regulatory filing and signal capabilities",
+    "OPERATIONS": "System health and observability capabilities",
+    "INTEGRATION": "External system compatibility capabilities"
+  },
+
+  "dependency_graph": {
+    "description": "Directed dependency graph. Edge A->B means A depends on B.",
+    "edges": [
+      { "from": "ARTHA-LEDGER-001", "to": "ARTHA-AUDIT-001", "type": "optional", "purpose": "Audit trail recording" },
+      { "from": "ARTHA-LEDGER-001", "to": "ARTHA-TRACE-001", "type": "optional", "purpose": "Trace stage recording" },
+      { "from": "ARTHA-SIGNAL-001", "to": "ARTHA-LEDGER-001", "type": "required", "purpose": "Reads ledger data for signal evaluation" },
+      { "from": "ARTHA-SIGNAL-001", "to": "ARTHA-TRACE-001", "type": "required", "purpose": "Creates trace stages on dispatch" },
+      { "from": "ARTHA-SIGNAL-001", "to": "ARTHA-EVIDENCE-001", "type": "required", "purpose": "Creates runtime proofs on dispatch" },
+      { "from": "ARTHA-FINREPORT-001", "to": "ARTHA-LEDGER-001", "type": "required", "purpose": "Reads journal entries for report generation" },
+      { "from": "ARTHA-MULTICOMPANY-001", "to": "ARTHA-LEDGER-001", "type": "required", "purpose": "Reads journal entries for consolidation" },
+      { "from": "ARTHA-TALLY-001", "to": "ARTHA-LEDGER-001", "type": "required", "purpose": "Reads journal entries for export" },
+      { "from": "ARTHA-OBSERVE-001", "to": "ARTHA-AUDIT-001", "type": "optional", "purpose": "Audit chain verification" },
+      { "from": "ARTHA-OBSERVE-001", "to": "ARTHA-TRACE-001", "type": "optional", "purpose": "Trace health monitoring" }
+    ],
+    "nodes": [
+      { "id": "ARTHA-LEDGER-001", "label": "Ledger Engine", "type": "core", "authority_level": "PRIMARY" },
+      { "id": "ARTHA-AUDIT-001", "label": "Audit Engine", "type": "governance", "authority_level": "PRIMARY" },
+      { "id": "ARTHA-TRACE-001", "label": "Trace Engine", "type": "governance", "authority_level": "PRIMARY" },
+      { "id": "ARTHA-EVIDENCE-001", "label": "Evidence Engine", "type": "governance", "authority_level": "PRIMARY" },
+      { "id": "ARTHA-OBSERVE-001", "label": "Observability Engine", "type": "operations", "authority_level": "SECONDARY" },
+      { "id": "ARTHA-FINREPORT-001", "label": "Financial Reporting Engine", "type": "core", "authority_level": "PRIMARY" },
+      { "id": "ARTHA-SIGNAL-001", "label": "Compliance Signal Engine", "type": "compliance", "authority_level": "PRIMARY" },
+      { "id": "ARTHA-MULTICOMPANY-001", "label": "Multi-Company Engine", "type": "core", "authority_level": "SECONDARY" },
+      { "id": "ARTHA-TALLY-001", "label": "Tally Compatibility Engine", "type": "integration", "authority_level": "SECONDARY" }
+    ]
+  },
+
+  "authority_boundaries": {
+    "description": "Programmatic enforcement of authority limits. Each capability declares what it OWNS and what it explicitly DOES NOT OWN.",
+    "boundaries": [
+      {
+        "capability_id": "ARTHA-LEDGER-001",
+        "owns": ["journal_entry_lifecycle", "double_entry_integrity", "hash_chain", "account_balances"],
+        "does_not_own": ["invoice_lifecycle", "expense_approval", "gst_calculation", "user_auth"],
+        "enforcement": "Service methods throw on boundary violations. validateComplianceRules() checks external account types but does not create them."
+      },
+      {
+        "capability_id": "ARTHA-AUDIT-001",
+        "owns": ["audit_event_creation", "hash_chain_integrity", "audit_trail_queries"],
+        "does_not_own": ["business_logic_triggers", "user_authentication", "compliance_filing_status"],
+        "enforcement": "recordEvent() is the only mutation method. Events are append-only."
+      },
+      {
+        "capability_id": "ARTHA-TRACE-001",
+        "owns": ["trace_lifecycle", "stage_recording", "continuity_verification", "replay"],
+        "does_not_own": ["signal_generation", "setu_dispatch", "proof_creation"],
+        "enforcement": "addStage() only appends, never modifies existing stages. verifyContinuity() is read-only."
+      },
+      {
+        "capability_id": "ARTHA-EVIDENCE-001",
+        "owns": ["proof_capture", "assertion_verification", "evidence_packages"],
+        "does_not_own": ["proof_storage_schema", "trace_lifecycle", "signal_dispatch"],
+        "enforcement": "All capture methods create new RuntimeProof documents. No updates to existing proofs."
+      },
+      {
+        "capability_id": "ARTHA-SIGNAL-001",
+        "owns": ["signal_generation", "signal_persistence", "setu_dispatch", "retry_logic"],
+        "does_not_own": ["ledger_integrity", "gst_tds_calculation", "setu_api_contract", "trace_lifecycle"],
+        "enforcement": "emitSignal() generates signals from evaluated state. dispatchToSetu() handles full pipeline."
+      },
+      {
+        "capability_id": "ARTHA-FINREPORT-001",
+        "owns": ["report_generation", "equation_verification", "kpi_calculation"],
+        "does_not_own": ["journal_entry_creation", "account_balance_computation", "bank_statement_upload"],
+        "enforcement": "All methods are read-only. No mutations to any collection."
+      },
+      {
+        "capability_id": "ARTHA-OBSERVE-001",
+        "owns": ["health_monitoring", "metrics_exposition", "dashboard_data"],
+        "does_not_own": ["business_logic", "audit_event_creation", "cache_management"],
+        "enforcement": "All methods are read-only. recordRequest() updates in-memory counters only."
+      }
+    ]
+  },
+
+  "consumer_registry": {
+    "description": "Known consumers of ARTHA capabilities within and outside the BHIV ecosystem.",
+    "consumers": [
+      {
+        "product": "SETU",
+        "capabilities_consumed": ["ARTHA-SIGNAL-001", "ARTHA-TRACE-001", "ARTHA-EVIDENCE-001"],
+        "attachment_type": "API",
+        "authentication": "JWT Bearer token",
+        "authority_access": "Signal dispatch, trace read, proof read"
+      },
+      {
+        "product": "TANTRA",
+        "capabilities_consumed": ["ARTHA-TRACE-001", "ARTHA-EVIDENCE-001", "ARTHA-OBSERVE-001"],
+        "attachment_type": "Heartbeat + Event emission",
+        "authentication": "Internal service mesh",
+        "authority_access": "Trace replay, proof verification, health metrics"
+      },
+      {
+        "product": "MITRA",
+        "capabilities_consumed": ["ARTHA-LEDGER-001", "ARTHA-FINREPORT-001"],
+        "attachment_type": "API (future)",
+        "authentication": "JWT Bearer token (planned)",
+        "authority_access": "Read-only ledger queries, report generation"
+      },
+      {
+        "product": "UniGuru",
+        "capabilities_consumed": ["ARTHA-FINREPORT-001", "ARTHA-SIGNAL-001"],
+        "attachment_type": "API (future)",
+        "authentication": "JWT Bearer token (planned)",
+        "authority_access": "Report data, compliance signals"
+      },
+      {
+        "product": "ARTHA Frontend",
+        "capabilities_consumed": [
+          "ARTHA-LEDGER-001", "ARTHA-AUDIT-001", "ARTHA-TRACE-001", "ARTHA-EVIDENCE-001",
+          "ARTHA-OBSERVE-001", "ARTHA-FINREPORT-001", "ARTHA-SIGNAL-001",
+          "ARTHA-MULTICOMPANY-001", "ARTHA-TALLY-001"
+        ],
+        "attachment_type": "Internal API calls",
+        "authentication": "JWT Bearer token",
+        "authority_access": "Full CRUD per role"
+      }
+    ]
+  },
+
+  "version_compatibility_matrix": {
+    "description": "Version compatibility between capabilities. All current capabilities are v1.0.0.",
+    "compatibility": {
+      "ARTHA-LEDGER-001": { "min_compatible": "1.0.0", "max_compatible": "1.x.x" },
+      "ARTHA-AUDIT-001": { "min_compatible": "1.0.0", "max_compatible": "1.x.x" },
+      "ARTHA-TRACE-001": { "min_compatible": "1.0.0", "max_compatible": "1.x.x" },
+      "ARTHA-EVIDENCE-001": { "min_compatible": "1.0.0", "max_compatible": "1.x.x" },
+      "ARTHA-OBSERVE-001": { "min_compatible": "1.0.0", "max_compatible": "1.x.x" },
+      "ARTHA-FINREPORT-001": { "min_compatible": "1.0.0", "max_compatible": "1.x.x" },
+      "ARTHA-SIGNAL-001": { "min_compatible": "1.0.0", "max_compatible": "1.x.x" },
+      "ARTHA-MULTICOMPANY-001": { "min_compatible": "1.0.0", "max_compatible": "1.x.x" },
+      "ARTHA-TALLY-001": { "min_compatible": "1.0.0", "max_compatible": "1.x.x" }
+    }
+  },
+
+  "hidden_dependencies_prohibited": {
+    "description": "All dependencies are declared in this registry. No hidden or implicit dependencies are permitted.",
+    "enforcement_rules": [
+      "Every capability must declare its dependencies in its contract",
+      "Cross-capability calls must go through declared API endpoints or exported service methods",
+      "Direct model-to-model access across capability boundaries is prohibited",
+      "Dynamic imports (lazy loading) must be declared in the contract",
+      "Environment variable dependencies must be documented in the contract"
+    ],
+    "audit_method": "Static analysis of import statements + runtime dependency tracking via trace_id"
+  }
+}

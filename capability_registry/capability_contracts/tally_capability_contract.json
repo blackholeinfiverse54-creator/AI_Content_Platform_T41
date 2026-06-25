@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "capability_id": "ARTHA-TALLY-001",
+  "capability_name": "Tally Compatibility Engine",
+  "version": "1.0.0",
+  "status": "STABLE",
+  "owner": "Ashmit",
+  "authority_owned": [
+    "Tally voucher export (sales, purchase, receipt, payment, journal, contra, credit/debit notes)",
+    "Tally masters export (chart of accounts)",
+    "Opening balances export",
+    "GST data export for Tally",
+    "Tally voucher import with mapping",
+    "Tally masters import",
+    "Migration readiness validation",
+    "XML generation for Tally interchange"
+  ],
+  "authority_explicitly_not_owned": [
+    "Journal entry creation (owned by Ledger Engine)",
+    "Tally-specific business rules",
+    "Tally database format",
+    "Real-time Tally sync"
+  ],
+  "description": "Tally ERP compatibility engine for bidirectional data exchange. Exports ARTHA data as Tally-importable XML and imports Tally vouchers/masters into ARTHA.",
+  "provider_service": "backend/src/services/tallyCompatibility.service.js",
+  "provider_model": ["backend/src/models/TallyExport.js", "backend/src/models/TallyImport.js"],
+  "api_endpoints": {
+    "export_vouchers": { "method": "POST", "path": "/api/v1/tally/export/vouchers", "auth_required": true },
+    "export_masters": { "method": "POST", "path": "/api/v1/tally/export/masters", "auth_required": true },
+    "export_opening_balances": { "method": "POST", "path": "/api/v1/tally/export/opening-balances", "auth_required": true },
+    "export_gst_data": { "method": "POST", "path": "/api/v1/tally/export/gst-data", "auth_required": true },
+    "import_vouchers": { "method": "POST", "path": "/api/v1/tally/import/vouchers", "auth_required": true },
+    "import_masters": { "method": "POST", "path": "/api/v1/tally/import/masters", "auth_required": true },
+    "validate_migration": { "method": "POST", "path": "/api/v1/tally/validate-migration", "auth_required": true }
+  },
+  "authentication": { "type": "JWT" },
+  "trace_requirements": { "trace_id_required": false },
+  "evidence_requirements": {},
+  "input_schemas": {
+    "export_vouchers": {
+      "type": "object",
+      "required": ["companyId", "dateRange"],
+      "properties": {
+        "companyId": { "type": "string" },
+        "dateRange": { "type": "object" },
+        "voucherTypes": { "type": "array" }
+      }
+    },
+    "import_vouchers": {
+      "type": "object",
+      "required": ["companyId", "vouchers"],
+      "properties": {
+        "companyId": { "type": "string" },
+        "vouchers": { "type": "array" }
+      }
+    }
+  },
+  "output_schemas": {
+    "export_result": {
+      "type": "object",
+      "properties": {
+        "exportRecord": { "type": "object" },
+        "xmlData": { "type": "string" }
+      }
+    },
+    "import_result": {
+      "type": "object",
+      "properties": {
+        "importRecord": { "type": "object" },
+        "results": {
+          "type": "object",
+          "properties": {
+            "created": { "type": "integer" },
+            "updated": { "type": "integer" },
+            "skipped": { "type": "integer" },
+            "failed": { "type": "integer" },
+            "errors": { "type": "array" }
+          }
+        }
+      }
+    }
+  },
+  "failure_behavior": {
+    "import_partial": "Returns {created, updated, skipped, failed, errors} with per-item details",
+    "xml_generation_failure": "Returns error with malformed data details"
+  },
+  "dependencies": {
+    "internal": [
+      { "service": "ledger.service.js", "purpose": "Journal entry queries for export" }
+    ],
+    "models": ["TallyExport", "TallyImport", "Invoice", "Expense", "JournalEntry", "ChartOfAccounts", "CompanySettings", "AccountBalance"]
+  },
+  "consumers": [
+    { "product": "ARTHA", "modules": ["Tally import/export routes"] },
+    { "product": "External Tally users", "modules": ["Tally ERP integration"] }
+  ],
+  "replay_compatibility": {
+    "deterministic": true,
+    "replay_method": "Export is deterministic given same data; import is idempotent with upsert logic"
+  },
+  "version_history": [
+    { "version": "1.0.0", "date": "2025-02-19", "changes": "Initial capability extraction" }
+  ]
+}

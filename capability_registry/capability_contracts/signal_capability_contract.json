@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "capability_id": "ARTHA-SIGNAL-001",
+  "capability_name": "Compliance Signal Engine",
+  "version": "1.0.0",
+  "status": "STABLE",
+  "owner": "Ashmit",
+  "authority_owned": [
+    "Signal generation from financial data anomalies",
+    "Signal persistence with daily deduplication",
+    "SETU pipeline dispatch (normalize → validate → map → serialize)",
+    "Retry logic with exponential backoff",
+    "Dead letter queue management",
+    "Filing validation signal emission",
+    "Overdue invoice signal evaluation",
+    "Financial snapshot generation for signal derivation",
+    "24 signal types across GST, TDS, ledger, cash flow, invoices, filings"
+  ],
+  "authority_explicitly_not_owned": [
+    "Ledger integrity (owned by Ledger Engine)",
+    "GST/TDS calculation (owned by Compliance Engine)",
+    "SETU API contract (external system)",
+    "Trace lifecycle (owned by Trace Engine)",
+    "Proof creation (owned by Evidence Engine)"
+  ],
+  "description": "Central compliance signal engine. Evaluates financial state against compliance thresholds, generates typed signals with severity, persists with deduplication, and dispatches through the SETU pipeline with retry and dead letter handling.",
+  "provider_service": "backend/src/services/signalEngine.service.js",
+  "provider_models": ["backend/src/models/ComplianceSignal.js", "backend/src/models/SetuDispatch.js"],
+  "api_endpoints": {
+    "list_signals": {
+      "method": "GET",
+      "path": "/api/v1/signals",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "signal_snapshot": {
+      "method": "GET",
+      "path": "/api/v1/signals/snapshot",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "dispatch_signal": {
+      "method": "POST",
+      "path": "/api/v1/signals/:signalId/dispatch",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    },
+    "pipeline_check": {
+      "method": "GET",
+      "path": "/api/v1/signals/:signalId/pipeline-check",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    },
+    "evaluate_overdue": {
+      "method": "POST",
+      "path": "/api/v1/signals/evaluate/overdue-invoices",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    },
+    "signal_trace": {
+      "method": "GET",
+      "path": "/api/v1/signals/trace/:traceId",
+      "auth_required": true,
+      "roles": ["*"]
+    }
+  },
+  "input_schemas": {
+    "emit_signal": {
+      "type": "object",
+      "required": ["signalId", "module", "entityType", "entityId", "severity"],
+      "properties": {
+        "signalId": { "type": "string" },
+        "traceId": { "type": "string" },
+        "module": { "type": "string", "enum": ["GST_ENGINE", "TDS_ENGINE", "LEDGER", "INVOICE", "EXPENSE", "COMPLIANCE_FILING"] },
+        "entityType": { "type": "string", "enum": ["INVOICE", "EXPENSE", "TDS_ENTRY", "JOURNAL_ENTRY", "COMPLIANCE_FILING"] },
+        "entityId": { "type": "string" },
+        "severity": { "type": "string", "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW"] },
+        "context": { "type": "object" }
+      }
+    }
+  },
+  "output_schemas": {
+    "signal_payload": {
+      "type": "object",
+      "properties": {
+        "signal_id": { "type": "string", "pattern": "^SIG-[a-f0-9\\-]+$" },
+        "trace_id": { "type": "string" },
+        "type": { "type": "string" },
+        "severity": { "type": "string" },
+        "module": { "type": "string" },
+        "entity_type": { "type": "string" },
+        "entity_id": { "type": "string" },
+        "context": { "type": "object" },
+        "recommendation": { "type": "object" },
+        "source": { "type": "string", "const": "ARTHA" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    },
+    "dispatch_result": {
+      "type": "object",
+      "properties": {
+        "dispatched": { "type": "boolean" },
+        "reason": { "type": "string" },
+        "ack": { "type": "object" },
+        "dispatchId": { "type": "string" },
+        "setuReference": { "type": "string" }
+      }
+    }
+  },
+  "authentication": {
+    "type": "JWT",
+    "header": "Authorization: Bearer <token>"
+  },
+  "trace_requirements": {
+    "trace_id_format": "TRC-YYYYMMDD-{8hex}",
+    "signal_links_to_trace": true,
+    "dispatch_creates_trace_stages": ["SIGNAL_GENERATED", "SETU_DISPATCHED"]
+  },
+  "evidence_requirements": {
+    "content_hash": "SHA-256 of serialized payload",
+    "idempotency_key": "IDEM-{date}-{signalId}-{attempt}",
+    "dispatch_record": "SetuDispatch captures full request/response/ack",
+    "runtime_proof": "Every dispatch attempt creates RuntimeProof"
+  },
+  "failure_behavior": {
+    "setu_unavailable": "Retry with exponential backoff (2^attempt * 60s), max 3 retries",
+    "setu_rejected": "Signal marked as REJECTED, no retry",
+    "retry_exhausted": "Escalated to DEAD_LETTER queue",
+    "deduplication": "Same signal type + entity_id within same day is skipped"
+  },
+  "dependencies": {
+    "internal": [
+      { "service": "setu.pipeline.js", "purpose": "4-stage SETU payload transformation" },
+      { "service": "traceability.service.js", "purpose": "Trace stage recording" },
+      { "service": "evidenceAutomation.service.js", "purpose": "Dispatch proof capture" }
+    ],
+    "models": ["ComplianceSignal", "SetuDispatch", "RuntimeProof", "ChartOfAccounts", "LedgerEntry", "Invoice"]
+  },
+  "consumers": [
+    { "product": "ARTHA", "modules": ["Frontend SignalStackPanel", "SignalDetailEngine", "ComplianceVisibilityLayer"] },
+    { "product": "SETU", "modules": ["Signal ingestion API"] },
+    { "product": "TANTRA", "modules": ["Signal dispatch tracking"] }
+  ],
+  "replay_compatibility": {
+    "deterministic": true,
+    "replay_method": "Signal evaluation is deterministic given same financial state",
+    "deduplication_note": "Replay may skip signals due to daily dedup — replay in isolated environment for exact reproduction"
+  },
+  "version_history": [
+    { "version": "1.0.0", "date": "2025-02-19", "changes": "Initial capability extraction" }
+  ]
+}
