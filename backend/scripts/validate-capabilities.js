@@ -352,7 +352,7 @@ async function main() {
   const registry = JSON.parse(readFileSync(registryPath, 'utf8'));
 
   // Load all contracts
-  const contractsDir = join(ROOT_DIR, 'capability_registry', 'capability_contracts');
+    const contractsDir = join(ROOT_DIR, 'contracts', 'capability_contracts');
   const contractFiles = registry.capabilities.map(c => c.contract_file);
   const contracts = [];
 

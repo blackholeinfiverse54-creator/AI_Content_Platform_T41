@@ -1,0 +1,142 @@
+{
+  "verifier": "ARTH Authority Ownership Verifier",
+  "version": "1.0.0",
+  "timestamp": "2026-06-29T10:52:53.203Z",
+  "duration_ms": 11,
+  "contract_count": 9,
+  "collection_map": {
+    "AuditEvent": [
+      "ARTHA-AUDIT-001"
+    ],
+    "RuntimeProof": [
+      "ARTHA-EVIDENCE-001"
+    ],
+    "JournalEntry": [
+      "ARTHA-LEDGER-001"
+    ],
+    "LedgerEntry": [
+      "ARTHA-LEDGER-001"
+    ],
+    "AccountBalance": [
+      "ARTHA-LEDGER-001"
+    ],
+    "ChartOfAccounts": [
+      "ARTHA-LEDGER-001"
+    ],
+    "Company": [
+      "ARTHA-MULTICOMPANY-001"
+    ],
+    "CostCentre": [
+      "ARTHA-MULTICOMPANY-001"
+    ],
+    "TallyExport": [
+      "ARTHA-TALLY-001"
+    ],
+    "TallyImport": [
+      "ARTHA-TALLY-001"
+    ],
+    "UnifiedTrace": [
+      "ARTHA-TRACE-001"
+    ]
+  },
+  "results": [
+    {
+      "check": "A01",
+      "name": "No Collection Overlap",
+      "status": "PASS",
+      "detail": "All 11 collections have single ownership",
+      "issues": []
+    },
+    {
+      "check": "A02",
+      "name": "Every Collection Has Owner",
+      "status": "PASS",
+      "detail": "All model collections are owned by at least one capability",
+      "issues": []
+    },
+    {
+      "check": "A03",
+      "name": "No Phantom Collections",
+      "status": "FAIL",
+      "detail": "11 collections claimed but no model file exists: AuditEvent, RuntimeProof, JournalEntry, LedgerEntry, AccountBalance, ChartOfAccounts, Company, CostCentre, TallyExport, TallyImport, UnifiedTrace",
+      "issues": [
+        {
+          "collection": "AuditEvent"
+        },
+        {
+          "collection": "RuntimeProof"
+        },
+        {
+          "collection": "JournalEntry"
+        },
+        {
+          "collection": "LedgerEntry"
+        },
+        {
+          "collection": "AccountBalance"
+        },
+        {
+          "collection": "ChartOfAccounts"
+        },
+        {
+          "collection": "Company"
+        },
+        {
+          "collection": "CostCentre"
+        },
+        {
+          "collection": "TallyExport"
+        },
+        {
+          "collection": "TallyImport"
+        },
+        {
+          "collection": "UnifiedTrace"
+        }
+      ]
+    },
+    {
+      "check": "A04",
+      "name": "Owned Entries Specificity",
+      "status": "PASS",
+      "detail": "All authority_owned entries are specific and descriptive",
+      "issues": []
+    },
+    {
+      "check": "A05",
+      "name": "Not-Owned Entries Meaningful",
+      "status": "PASS",
+      "detail": "All authority_explicitly_not_owned entries are meaningful",
+      "issues": []
+    },
+    {
+      "check": "A06",
+      "name": "Blocked Mutations Defined",
+      "status": "PASS",
+      "detail": "Mutable capabilities have failure behaviors covering mutations",
+      "issues": []
+    },
+    {
+      "check": "A07",
+      "name": "Read-Only Cannot Mutate",
+      "status": "PASS",
+      "detail": "Read-only capabilities have no mutating endpoints",
+      "issues": []
+    },
+    {
+      "check": "A08",
+      "name": "Authority Middleware Mounted",
+      "status": "SKIP",
+      "detail": "server.js not found — cannot verify middleware mounting",
+      "issues": []
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 6,
+    "failed": 1,
+    "skipped": 1,
+    "all_passed": false
+  },
+  "evidence_hash": "6aedb73aab85d6df5b913576de348f4ca32412f6892aa0a3f5443eb81dafb6ed"
+}

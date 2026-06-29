@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "capability_id": "ARTHA-TRACE-001",
+  "capability_name": "Trace Engine",
+  "version": "1.0.0",
+  "status": "STABLE",
+  "owner": "Ashmit",
+  "authority_owned": [
+    "End-to-end trace lifecycle management",
+    "Trace ID generation (TRC-YYYYMMDD-{8hex})",
+    "Stage recording and progression tracking",
+    "Continuity verification (expected stage validation)",
+    "Lineage reconstruction (parent/child causality)",
+    "Execution flow reconstruction",
+    "Trace replay with count tracking",
+    "Trace search and statistics"
+  ],
+  "authority_explicitly_not_owned": [
+    "Signal generation (consumed by signalEngine)",
+    "SETU dispatch (consumed by signalEngine)",
+    "Proof creation (consumed by evidenceAutomation)",
+    "Business logic that creates traces"
+  ],
+  "description": "Unified trace engine providing single trace_id lifecycle from transaction creation through SETU dispatch. Tracks 15 lifecycle stages, verifies continuity, reconstructs lineage, and supports deterministic replay.",
+  "provider_service": "backend/src/services/traceability.service.js",
+  "provider_model": ["backend/src/models/UnifiedTrace.js"],
+  "api_endpoints": {
+    "get_full_chain": {
+      "method": "GET",
+      "path": "/api/v1/trace/:traceId",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "get_lineage": {
+      "method": "GET",
+      "path": "/api/v1/trace/:traceId/lineage",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "replay_trace": {
+      "method": "POST",
+      "path": "/api/v1/trace/:traceId/replay",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    },
+    "verify_continuity": {
+      "method": "GET",
+      "path": "/api/v1/trace/:traceId/continuity",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "get_proofs": {
+      "method": "GET",
+      "path": "/api/v1/trace/:traceId/proofs",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "search_traces": {
+      "method": "GET",
+      "path": "/api/v1/trace/search",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "get_statistics": {
+      "method": "GET",
+      "path": "/api/v1/trace/statistics",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    }
+  },
+  "input_schemas": {
+    "initialize_trace": {
+      "type": "object",
+      "required": ["source", "source_id", "user_id"],
+      "properties": {
+        "source": { "type": "string", "enum": ["INVOICE", "EXPENSE", "TDS", "MANUAL_JOURNAL", "GST_FILING", "TDS_FILING"] },
+        "source_id": { "type": "string" },
+        "user_id": { "type": "string" },
+        "metadata": { "type": "object" }
+      }
+    },
+    "add_stage": {
+      "type": "object",
+      "required": ["stage", "status"],
+      "properties": {
+        "stage": {
+          "type": "string",
+          "enum": [
+            "TRANSACTION_CREATED", "JOURNAL_CREATED", "JOURNAL_VALIDATED", "JOURNAL_POSTED",
+            "SIGNAL_GENERATED", "FILING_CREATED", "FILING_VALIDATED",
+            "SETU_DISPATCHED", "SETU_ACKNOWLEDGED", "SETU_REJECTED",
+            "RETRY_SCHEDULED", "RETRY_IN_PROGRESS", "RETRY_EXHAUSTED",
+            "DEAD_LETTER", "CONFIRMED"
+          ]
+        },
+        "entity_type": { "type": "string" },
+        "entity_id": { "type": "string" },
+        "status": { "type": "string", "enum": ["SUCCESS", "FAILED", "IN_PROGRESS"] },
+        "metadata": { "type": "object" },
+        "error": { "type": "string" }
+      }
+    }
+  },
+  "output_schemas": {
+    "trace_object": {
+      "type": "object",
+      "properties": {
+        "_id": { "type": "string" },
+        "trace_id": { "type": "string", "pattern": "^TRC-\\d{8}-[a-f0-9]{8}$" },
+        "source": { "type": "string" },
+        "source_id": { "type": "string" },
+        "initiated_by": { "type": "string" },
+        "stages": { "type": "array" },
+        "current_stage": { "type": "string" },
+        "status": { "type": "string", "enum": ["IN_PROGRESS", "COMPLETED", "FAILED"] },
+        "setu": { "type": "object" },
+        "replay_available": { "type": "boolean" },
+        "replay_count": { "type": "integer" }
+      }
+    },
+    "continuity_result": {
+      "type": "object",
+      "properties": {
+        "is_continuous": { "type": "boolean" },
+        "missing_stages": { "type": "array", "items": { "type": "string" } },
+        "total_stages": { "type": "integer" },
+        "current_stage": { "type": "string" },
+        "status": { "type": "string" }
+      }
+    },
+    "lineage_result": {
+      "type": "object",
+      "properties": {
+        "root": { "type": "string" },
+        "lineage": {
+          "type": "object",
+          "properties": {
+            "parents": { "type": "array" },
+            "children": { "type": "array" },
+            "depth": { "type": "integer" }
+          }
+        },
+        "execution_flow": { "type": "array" }
+      }
+    }
+  },
+  "authentication": {
+    "type": "JWT",
+    "header": "Authorization: Bearer <token>"
+  },
+  "trace_requirements": {
+    "self_referential": true,
+    "trace_id_format": "TRC-YYYYMMDD-{8hex}",
+    "mandatory_stages_for_continuity": [
+      "TRANSACTION_CREATED",
+      "JOURNAL_CREATED",
+      "JOURNAL_VALIDATED",
+      "JOURNAL_POSTED"
+    ],
+    "optional_stages": [
+      "SIGNAL_GENERATED", "FILING_CREATED", "FILING_VALIDATED",
+      "SETU_DISPATCHED", "SETU_ACKNOWLEDGED", "CONFIRMED"
+    ]
+  },
+  "evidence_requirements": {
+    "stage_history": "Complete array of all stages with timestamps",
+    "linked_entities": "Denormalized arrays of journal_entries, signals, filings, dispatches",
+    "replay_integrity": "replay_count tracked, last_replayed_at recorded",
+    "setu_state": "ACK status, reference, dispatch_id, last_dispatched_at"
+  },
+  "failure_behavior": {
+    "trace_not_found": "addStage() returns null (graceful degradation, does not throw)",
+    "continuity_break": "is_continuous: false with missing_stages array populated",
+    "replay_failure": "replay_status recorded, trace not marked as completed"
+  },
+  "dependencies": {
+    "internal": [],
+    "models": ["UnifiedTrace", "RuntimeProof", "Invoice", "Expense", "TDSEntry", "JournalEntry"]
+  },
+  "consumers": [
+    { "product": "ARTHA", "modules": ["LedgerService", "InvoiceService", "ExpenseService", "TDSService", "SignalEngine", "EvidenceAutomation", "BankingService"] },
+    { "product": "SETU", "modules": ["Signal dispatch tracking"] },
+    { "product": "TANTRA", "modules": ["Trace replay and lineage"] }
+  ],
+  "replay_compatibility": {
+    "deterministic": true,
+    "replay_method": "replayTrace(trace_id, user_id) increments replay_count, returns full chain",
+    "replay_validation": "verifyContinuity(trace) checks expected stages are present",
+    "prerequisites": ["UnifiedTrace document must exist", "Linked entities must be queryable"]
+  },
+  "version_history": [
+    { "version": "1.0.0", "date": "2025-02-19", "changes": "Initial capability extraction" }
+  ]
+}

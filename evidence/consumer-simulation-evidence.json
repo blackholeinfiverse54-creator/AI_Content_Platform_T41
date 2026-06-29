@@ -1,0 +1,133 @@
+{
+  "evidence_type": "CONSUMER_SIMULATION",
+  "generated_at": "2026-06-29T10:53:32.379Z",
+  "simulations": [
+    {
+      "consumer": "ARTHA Frontend",
+      "description": "React SPA calling all API endpoints",
+      "interaction_count": 9,
+      "results": [
+        {
+          "method": "POST",
+          "path": "/api/v1/auth/login",
+          "auth": true,
+          "capability": null,
+          "expected_capability": null,
+          "capability_matches": true,
+          "simulation_status": "PASS"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/reports/dashboard",
+          "auth": true,
+          "capability": "ARTHA-FINREPORT-001",
+          "expected_capability": "ARTHA-FINREPORT-001",
+          "capability_matches": true,
+          "simulation_status": "PASS"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/invoices",
+          "auth": true,
+          "capability": "ARTHA-LEDGER-001",
+          "expected_capability": "ARTHA-LEDGER-001",
+          "capability_matches": true,
+          "simulation_status": "PASS"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/invoices",
+          "auth": true,
+          "capability": "ARTHA-LEDGER-001",
+          "expected_capability": "ARTHA-LEDGER-001",
+          "capability_matches": true,
+          "simulation_status": "PASS"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/ledger/entries",
+          "auth": true,
+          "capability": "ARTHA-LEDGER-001",
+          "expected_capability": "ARTHA-LEDGER-001",
+          "capability_matches": true,
+          "simulation_status": "PASS"
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/ledger/entries",
+          "auth": true,
+          "capability": "ARTHA-LEDGER-001",
+          "expected_capability": "ARTHA-LEDGER-001",
+          "capability_matches": true,
+          "simulation_status": "PASS"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/gst/summary",
+          "auth": true,
+          "capability": "ARTHA-SIGNAL-001",
+          "expected_capability": "ARTHA-SIGNAL-001",
+          "capability_matches": true,
+          "simulation_status": "PASS"
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/tds/dashboard",
+          "auth": true,
+          "capability": "ARTHA-SIGNAL-001",
+          "expected_capability": "ARTHA-SIGNAL-001",
+          "capability_matches": true,
+          "simulation_status": "PASS"
+        },
+        {
+          "method": "GET",
+          "path": "/health",
+          "auth": false,
+          "capability": "ARTHA-OBSERVE-001",
+          "expected_capability": "ARTHA-OBSERVE-001",
+          "capability_matches": true,
+          "simulation_status": "PASS"
+        }
+      ],
+      "all_passed": true
+    },
+    {
+      "consumer": "SETU",
+      "description": "Signal dispatch consumer",
+      "interaction_count": 1,
+      "results": [
+        {
+          "method": "POST",
+          "path": "/api/v1/setu/callback",
+          "auth": false,
+          "capability": "ARTHA-SIGNAL-001",
+          "expected_capability": "ARTHA-SIGNAL-001",
+          "capability_matches": true,
+          "simulation_status": "PASS"
+        }
+      ],
+      "all_passed": true
+    },
+    {
+      "consumer": "TANTRA",
+      "description": "Event emission consumer",
+      "interaction_count": 1,
+      "results": [
+        {
+          "method": "GET",
+          "path": "/health/detailed",
+          "auth": false,
+          "capability": "ARTHA-OBSERVE-001",
+          "expected_capability": "ARTHA-OBSERVE-001",
+          "capability_matches": true,
+          "simulation_status": "PASS"
+        }
+      ],
+      "all_passed": true
+    }
+  ],
+  "summary": {
+    "consumers_tested": 3,
+    "all_simulations_passed": true
+  }
+}

@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "capability_id": "ARTHA-LEDGER-001",
+  "capability_name": "Ledger Engine",
+  "version": "1.0.0",
+  "status": "STABLE",
+  "owner": "Ashmit",
+  "authority_owned": [
+    "Journal entry creation, validation, posting lifecycle",
+    "Double-entry integrity enforcement",
+    "HMAC-SHA256 hash chain maintenance",
+    "Account balance computation",
+    "Credit/debit note generation",
+    "Reversal and void workflows"
+  ],
+  "authority_explicitly_not_owned": [
+    "Invoice lifecycle (consumed via InvoiceService)",
+    "Expense approval workflow (consumed via ExpenseService)",
+    "GST calculation engine (delegated to gstEngine.service)",
+    "User authentication and authorization",
+    "Schema definitions for ChartOfAccounts (owned by COA module)"
+  ],
+  "description": "Core double-entry bookkeeping engine with blockchain-style hash chain integrity. Manages the full journal entry lifecycle: create → validate → post, with balance verification, reversal, and void workflows.",
+  "provider_service": "backend/src/services/ledger.service.js",
+  "provider_model": [
+    "backend/src/models/JournalEntry.js",
+    "backend/src/models/LedgerEntry.js",
+    "backend/src/models/AccountBalance.js",
+    "backend/src/models/ChartOfAccounts.js"
+  ],
+  "api_endpoints": {
+    "create_entry": {
+      "method": "POST",
+      "path": "/api/v1/ledger/entries",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    },
+    "validate_entry": {
+      "method": "POST",
+      "path": "/api/v1/ledger/entries/:id/validate",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    },
+    "post_entry": {
+      "method": "POST",
+      "path": "/api/v1/ledger/entries/:id/post",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    },
+    "void_entry": {
+      "method": "POST",
+      "path": "/api/v1/ledger/entries/:id/void",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    },
+    "get_entries": {
+      "method": "GET",
+      "path": "/api/v1/ledger/entries",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "get_balances": {
+      "method": "GET",
+      "path": "/api/v1/ledger/balances",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "get_summary": {
+      "method": "GET",
+      "path": "/api/v1/ledger/summary",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "verify_chain": {
+      "method": "GET",
+      "path": "/api/v1/ledger/verify-chain",
+      "auth_required": true,
+      "roles": ["admin"]
+    },
+    "credit_note": {
+      "method": "POST",
+      "path": "/api/v1/ledger/credit-notes",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    },
+    "debit_note": {
+      "method": "POST",
+      "path": "/api/v1/ledger/debit-notes",
+      "auth_required": true,
+      "roles": ["accountant", "admin"]
+    }
+  },
+  "input_schemas": {
+    "create_entry": {
+      "type": "object",
+      "required": ["description", "lines"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "date": { "type": "string", "format": "date" },
+        "source": { "type": "string", "enum": ["MANUAL", "OCR", "SYSTEM"] },
+        "trace_id": { "type": "string", "pattern": "^TRC-\\d{8}-[a-f0-9]{8}$" },
+        "lines": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": ["account"],
+            "properties": {
+              "account": { "type": "string", "pattern": "^[a-f\\d]{24}$" },
+              "debit": { "type": "string", "pattern": "^\\d+(\\.\\d{1,2})?$" },
+              "credit": { "type": "string", "pattern": "^\\d+(\\.\\d{1,2})?$" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "void_entry": {
+      "type": "object",
+      "required": ["reason"],
+      "properties": {
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "output_schemas": {
+    "journal_entry": {
+      "type": "object",
+      "properties": {
+        "_id": { "type": "string" },
+        "entryNumber": { "type": "string", "pattern": "^JE-\\d{8}-\\d{4}$" },
+        "date": { "type": "string", "format": "date" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["DRAFT", "VALIDATED", "POSTED", "VOIDED"] },
+        "lines": { "type": "array" },
+        "hash": { "type": "string" },
+        "prevHash": { "type": "string" },
+        "chainPosition": { "type": "integer" },
+        "trace_id": { "type": "string" },
+        "source": { "type": "string" }
+      }
+    },
+    "chain_verification": {
+      "type": "object",
+      "properties": {
+        "isValid": { "type": "boolean" },
+        "totalEntries": { "type": "integer" },
+        "errors": { "type": "array" },
+        "lastHash": { "type": "string" },
+        "chainLength": { "type": "integer" },
+        "message": { "type": "string" }
+      }
+    },
+    "ledger_summary": {
+      "type": "object",
+      "properties": {
+        "assets": { "type": "string" },
+        "liabilities": { "type": "string" },
+        "equity": { "type": "string" },
+        "income": { "type": "string" },
+        "expenses": { "type": "string" },
+        "netIncome": { "type": "string" },
+        "isBalanced": { "type": "boolean" },
+        "balanceDifference": { "type": "string" }
+      }
+    }
+  },
+  "authentication": {
+    "type": "JWT",
+    "header": "Authorization: Bearer <token>",
+    "token_key": "artha_auth_token",
+    "refresh_support": true
+  },
+  "trace_requirements": {
+    "trace_id_format": "TRC-YYYYMMDD-{8hex}",
+    "mandatory_stages": [
+      "TRANSACTION_CREATED",
+      "JOURNAL_CREATED",
+      "JOURNAL_VALIDATED",
+      "JOURNAL_POSTED"
+    ],
+    "trace_recording": "traceabilityService.addStage() called at each lifecycle transition"
+  },
+  "evidence_requirements": {
+    "hash_chain": "HMAC-SHA256 with HMAC_SECRET, each entry links to previous",
+    "audit_trail": "Before/after snapshots on every mutation",
+    "balance_verification": "Debit = Credit enforced at validate and post time",
+    "proof_types": ["JOURNAL_CREATED", "JOURNAL_VALIDATED", "JOURNAL_POSTED", "CHAIN_VERIFIED"]
+  },
+  "failure_behavior": {
+    "validation_failure": "Throws descriptive error, entry remains DRAFT",
+    "post_failure": "Entry stays VALIDATED, no ledger entries written",
+    "chain_tamper": "verifyHash() returns false, post blocked",
+    "balance_mismatch": "validateJournal() returns {balanced: false}, post blocked",
+    "transaction_abort": "MongoDB session aborted on any error within withTransaction"
+  },
+  "dependencies": {
+    "internal": [
+      { "service": "cache.service.js", "purpose": "Response caching and invalidation" },
+      { "service": "traceability.service.js", "purpose": "Trace stage recording" },
+      { "service": "gstEngine.service.js", "purpose": "GST breakdown calculation and validation" },
+      { "service": "database.js", "purpose": "Transaction support (withTransaction)" }
+    ],
+    "models": [
+      "JournalEntry", "LedgerEntry", "AccountBalance", "ChartOfAccounts"
+    ]
+  },
+  "consumers": [
+    { "product": "ARTHA", "modules": ["InvoiceService", "ExpenseService", "TDSService", "BankingService", "CAWorkflowService"] },
+    { "product": "SETU", "modules": ["Compliance pipeline (indirect via signal engine)"] },
+    { "product": "TANTRA", "modules": ["Runtime proof (indirect via traceability)"] }
+  ],
+  "replay_compatibility": {
+    "deterministic": true,
+    "replay_method": "replayTrace(trace_id) reconstructs the full journal entry lifecycle",
+    "replay_support": "traceabilityService.replayTrace() with count tracking",
+    "prerequisites": ["MongoDB must contain original entries", "HMAC_SECRET must be unchanged for hash verification"]
+  },
+  "version_history": [
+    { "version": "1.0.0", "date": "2025-02-19", "changes": "Initial capability extraction" }
+  ]
+}

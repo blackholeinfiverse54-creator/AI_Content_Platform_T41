@@ -1,0 +1,154 @@
+{
+  "enforcement_tested_at": "2026-06-29T11:21:11.623Z",
+  "server_port": 5002,
+  "server_ready": true,
+  "requests_made": 14,
+  "auth_bypass_attempts": 8,
+  "auth_bypass_blocked": 8,
+  "enforcement_rate": "100%",
+  "endpoints_tested": [
+    {
+      "endpoint": "/health",
+      "method": "GET",
+      "name": "health",
+      "description": "Health check (public)",
+      "expected_status": 200,
+      "actual_status": 200,
+      "blocked": true,
+      "timestamp": "2026-06-29T11:21:05.783Z"
+    },
+    {
+      "endpoint": "/health/detailed",
+      "method": "GET",
+      "name": "health_detailed",
+      "description": "Detailed health (public)",
+      "expected_status": 200,
+      "actual_status": 200,
+      "blocked": true,
+      "timestamp": "2026-06-29T11:21:05.787Z"
+    },
+    {
+      "endpoint": "/observability",
+      "method": "GET",
+      "name": "observability",
+      "description": "Observability metrics (public)",
+      "expected_status": 200,
+      "actual_status": 200,
+      "blocked": true,
+      "timestamp": "2026-06-29T11:21:05.791Z"
+    },
+    {
+      "endpoint": "/prometheus",
+      "method": "GET",
+      "name": "prometheus",
+      "description": "Prometheus metrics (public)",
+      "expected_status": 200,
+      "actual_status": 200,
+      "blocked": true,
+      "timestamp": "2026-06-29T11:21:06.623Z"
+    },
+    {
+      "endpoint": "/dashboard",
+      "method": "GET",
+      "name": "dashboard",
+      "description": "Dashboard redirect (public)",
+      "expected_status": [
+        200,
+        302
+      ],
+      "actual_status": 200,
+      "blocked": true,
+      "timestamp": "2026-06-29T11:21:06.626Z"
+    },
+    {
+      "endpoint": "/api/v1/ledger/entries",
+      "method": "GET",
+      "name": "ledger_entries_no_auth",
+      "description": "Ledger entries WITHOUT auth (should 401)",
+      "expected_status": 401,
+      "actual_status": 401,
+      "blocked": true,
+      "timestamp": "2026-06-29T11:21:07.510Z"
+    },
+    {
+      "endpoint": "/api/v1/audit/trail/invoice/123",
+      "method": "GET",
+      "name": "audit_trail_no_auth",
+      "description": "Audit trail WITHOUT auth (should 401)",
+      "expected_status": 401,
+      "actual_status": 401,
+      "blocked": true,
+      "timestamp": "2026-06-29T11:21:07.514Z"
+    },
+    {
+      "endpoint": "/api/v1/signals",
+      "method": "GET",
+      "name": "signals_no_auth",
+      "description": "Signals WITHOUT auth (should 401)",
+      "expected_status": 401,
+      "actual_status": 401,
+      "blocked": true,
+      "timestamp": "2026-06-29T11:21:07.517Z"
+    },
+    {
+      "endpoint": "/api/v1/trace/test-trace",
+      "method": "GET",
+      "name": "trace_no_auth",
+      "description": "Trace WITHOUT auth (should 401)",
+      "expected_status": 401,
+      "actual_status": 401,
+      "blocked": true,
+      "timestamp": "2026-06-29T11:21:07.519Z"
+    },
+    {
+      "endpoint": "/api/v1/auth/login",
+      "method": "POST",
+      "name": "login_wrong_password",
+      "description": "Login with wrong password (should 401)",
+      "expected_status": 401,
+      "actual_status": 401,
+      "blocked": true,
+      "timestamp": "2026-06-29T11:21:07.522Z"
+    },
+    {
+      "endpoint": "/api/v1/ledger/entries",
+      "method": "POST",
+      "name": "post_ledger_no_auth",
+      "description": "POST ledger entries WITHOUT auth (mutation blocked)",
+      "expected_status": 401,
+      "actual_status": 401,
+      "blocked": true,
+      "timestamp": "2026-06-29T11:21:07.587Z"
+    },
+    {
+      "endpoint": "/api/v1/invoices",
+      "method": "POST",
+      "name": "post_invoices_no_auth",
+      "description": "POST invoices WITHOUT auth (should 401)",
+      "expected_status": 401,
+      "actual_status": 401,
+      "blocked": true,
+      "timestamp": "2026-06-29T11:21:07.589Z"
+    },
+    {
+      "endpoint": "/api/v1/nonexistent-endpoint",
+      "method": "GET",
+      "name": "nonexistent_endpoint",
+      "description": "Nonexistent endpoint (should 404)",
+      "expected_status": 404,
+      "actual_status": 404,
+      "blocked": true,
+      "timestamp": "2026-06-29T11:21:07.591Z"
+    },
+    {
+      "endpoint": "/api/v1/reports/profit-loss",
+      "method": "GET",
+      "name": "reports_no_auth",
+      "description": "Reports WITHOUT auth (should 401)",
+      "expected_status": 401,
+      "actual_status": 401,
+      "blocked": true,
+      "timestamp": "2026-06-29T11:21:07.593Z"
+    }
+  ]
+}

@@ -1,0 +1,371 @@
+{
+  "captured_at": "2026-06-29T11:13:12.601Z",
+  "port": 5001,
+  "requests": [
+    {
+      "endpoint": "/health",
+      "method": "GET",
+      "timestamp": "2026-06-29T11:13:07.485Z",
+      "status": 200,
+      "headers": {
+        "access-control-allow-origin": "http://localhost:5173",
+        "access-control-allow-credentials": "true",
+        "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "access-control-allow-headers": "Content-Type, Authorization",
+        "origin-agent-cluster": "?1",
+        "referrer-policy": "no-referrer",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "SAMEORIGIN",
+        "x-permitted-cross-domain-policies": "none",
+        "x-xss-protection": "0",
+        "x-artha-trace-id": "ARTHA-1782731587485-qkx0ku9bv",
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "124",
+        "etag": "W/\"7c-Qu/Xveff1eBRVaHsb0abf3R/3bM\"",
+        "date": "Mon, 29 Jun 2026 11:13:07 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5"
+      },
+      "body": {
+        "success": true,
+        "message": "ARTHA API is running",
+        "timestamp": "2026-06-29T11:13:07.485Z",
+        "version": "0.1.0",
+        "uptime": 2.064909
+      }
+    },
+    {
+      "endpoint": "/health/detailed",
+      "method": "GET",
+      "timestamp": "2026-06-29T11:13:07.491Z",
+      "status": 200,
+      "headers": {
+        "access-control-allow-origin": "http://localhost:5173",
+        "access-control-allow-credentials": "true",
+        "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "access-control-allow-headers": "Content-Type, Authorization",
+        "origin-agent-cluster": "?1",
+        "referrer-policy": "no-referrer",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "SAMEORIGIN",
+        "x-permitted-cross-domain-policies": "none",
+        "x-xss-protection": "0",
+        "x-artha-trace-id": "ARTHA-1782731587496-ib1o43ms8",
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "831",
+        "etag": "W/\"33f-3GfXgmxDskhpbnzdvy6IznBtTlA\"",
+        "date": "Mon, 29 Jun 2026 11:13:07 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5"
+      },
+      "body": {
+        "success": true,
+        "message": "ARTHA API is healthy",
+        "data": {
+          "status": "healthy",
+          "timestamp": "2026-06-29T11:13:07.497Z",
+          "version": "0.1.0",
+          "environment": "development",
+          "uptime": 2.0761011,
+          "memory": {
+            "rss": 160194560,
+            "heapTotal": 121507840,
+            "heapUsed": 69820504,
+            "external": 22972316,
+            "arrayBuffers": 19072405
+          },
+          "performance": {
+            "uptime": 2.076009,
+            "requests": {
+              "total": 0,
+              "slow": 0,
+              "errors": 0,
+              "slowPercentage": 0,
+              "errorPercentage": 0
+            },
+            "responseTime": {
+              "min": 0,
+              "max": 0,
+              "avg": 0,
+              "total": 0
+            },
+            "memory": {
+              "current": {
+                "rss": 153,
+                "heapTotal": 116,
+                "heapUsed": 67,
+                "external": 22
+              },
+              "peak": 0
+            },
+            "redis": {
+              "status": "disabled"
+            }
+          },
+          "issues": [],
+          "components": {
+            "database": {
+              "status": "healthy",
+              "state": "connected",
+              "host": "ac-kgtoxet-shard-00-02.rzneis7.mongodb.net",
+              "name": "test"
+            },
+            "redis": {
+              "status": "disabled",
+              "message": "Redis not configured"
+            },
+            "disk": {
+              "status": "healthy",
+              "available": "N/A"
+            }
+          }
+        }
+      }
+    },
+    {
+      "endpoint": "/observability",
+      "method": "GET",
+      "timestamp": "2026-06-29T11:13:07.501Z",
+      "status": 200,
+      "headers": {
+        "access-control-allow-origin": "http://localhost:5173",
+        "access-control-allow-credentials": "true",
+        "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "access-control-allow-headers": "Content-Type, Authorization",
+        "origin-agent-cluster": "?1",
+        "referrer-policy": "no-referrer",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "SAMEORIGIN",
+        "x-permitted-cross-domain-policies": "none",
+        "x-xss-protection": "0",
+        "x-artha-trace-id": "ARTHA-1782731587499-2pfnnojoz",
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "1221",
+        "etag": "W/\"4c5-61M3P0eattuTE34Q/JAa2GMcA3I\"",
+        "date": "Mon, 29 Jun 2026 11:13:08 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5"
+      },
+      "body": {
+        "success": true,
+        "data": {
+          "status": "healthy",
+          "timestamp": "2026-06-29T11:13:08.456Z",
+          "version": "0.1.0",
+          "environment": "development",
+          "uptime": 3.0353732,
+          "memory": {
+            "rss": 162443264,
+            "heapTotal": 121507840,
+            "heapUsed": 58224672,
+            "external": 22823827,
+            "arrayBuffers": 18932424
+          },
+          "components": {
+            "database": {
+              "status": "healthy",
+              "state": "connected",
+              "host": "ac-kgtoxet-shard-00-02.rzneis7.mongodb.net",
+              "name": "test",
+              "replicaSet": "standalone"
+            },
+            "redis": {
+              "status": "disabled",
+              "message": "Redis not configured"
+            },
+            "traces": {
+              "status": "healthy",
+              "active": 10,
+              "completed": 4,
+              "failed": 0,
+              "total": 14,
+              "stuckTraces": 0
+            },
+            "proofs": {
+              "status": "healthy",
+              "total": 1,
+              "verified": 0,
+              "unverified": 1
+            },
+            "signals": {
+              "status": "healthy",
+              "active": 40,
+              "critical": 0,
+              "warning": 0,
+              "info": 0
+            },
+            "journals": {
+              "status": "healthy",
+              "total": 46,
+              "posted": 44,
+              "draft": 2,
+              "voided": 0
+            },
+            "payments": {
+              "status": "healthy",
+              "total": 0,
+              "completed": 0,
+              "failed": 0,
+              "pending": 0
+            },
+            "auditEvents": {
+              "status": "healthy",
+              "total": 0,
+              "todayCount": 0,
+              "chainIntegrity": {
+                "isValid": true,
+                "checked": 0
+              }
+            }
+          },
+          "metrics": {
+            "uptime_seconds": 1.46,
+            "http_requests_total": 0,
+            "http_errors_total": 0,
+            "http_request_duration_ms_avg": 0,
+            "memory_heap_used_bytes": 58225112,
+            "memory_heap_total_bytes": 121507840,
+            "memory_rss_bytes": 162455552,
+            "gc_runs": "not_available"
+          }
+        }
+      }
+    },
+    {
+      "endpoint": "/prometheus",
+      "method": "GET",
+      "timestamp": "2026-06-29T11:13:08.460Z",
+      "status": 200,
+      "headers": {
+        "access-control-allow-origin": "http://localhost:5173",
+        "access-control-allow-credentials": "true",
+        "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "access-control-allow-headers": "Content-Type, Authorization",
+        "origin-agent-cluster": "?1",
+        "referrer-policy": "no-referrer",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "SAMEORIGIN",
+        "x-permitted-cross-domain-policies": "none",
+        "x-xss-protection": "0",
+        "x-artha-trace-id": "ARTHA-1782731588458-aa8fr1aij",
+        "content-type": "text/plain; charset=utf-8",
+        "content-length": "563",
+        "etag": "W/\"233-Mc41AOesSD/E1u5PuEi0eKiIdRQ\"",
+        "date": "Mon, 29 Jun 2026 11:13:08 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5"
+      },
+      "body": "# TYPE artha_uptime_seconds gauge\nartha_uptime_seconds 1.463\n# TYPE artha_http_requests_total gauge\nartha_http_requests_total 0\n# TYPE artha_http_errors_total gauge\nartha_http_errors_total 0\n# TYPE artha_http_request_duration_ms_avg gauge\nartha_http_request_duration_ms_avg 0\n# TYPE artha_memory_heap_used_bytes gauge\nartha_memory_heap_used_bytes 58354000\n# TYPE artha_memory_heap_total_bytes gauge\nartha_memory_heap_total_bytes 121769984\n# TYPE artha_memory_rss_bytes gauge\nartha_memory_rss_bytes 161992704\n# TYPE artha_gc_runs gauge\nartha_gc_runs not_available\n"
+    },
+    {
+      "endpoint": "/api/v1/reports/dashboard",
+      "method": "GET",
+      "timestamp": "2026-06-29T11:13:08.463Z",
+      "status": 401,
+      "headers": {
+        "access-control-allow-origin": "http://localhost:5173",
+        "access-control-allow-credentials": "true",
+        "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "access-control-allow-headers": "Content-Type, Authorization",
+        "origin-agent-cluster": "?1",
+        "referrer-policy": "no-referrer",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "SAMEORIGIN",
+        "x-permitted-cross-domain-policies": "none",
+        "x-xss-protection": "0",
+        "x-artha-trace-id": "ARTHA-1782731588462-g2frr15wl",
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "88",
+        "etag": "W/\"58-q/j6f28mAxid7oTm0kBkXMLtefQ\"",
+        "date": "Mon, 29 Jun 2026 11:13:08 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5"
+      },
+      "body": {
+        "success": false,
+        "message": "Not authenticated",
+        "redirect": "http://localhost:5173/login"
+      }
+    },
+    {
+      "endpoint": "/api/v1/ledger/entries",
+      "method": "GET",
+      "timestamp": "2026-06-29T11:13:08.467Z",
+      "status": 401,
+      "headers": {
+        "access-control-allow-origin": "http://localhost:5173",
+        "access-control-allow-credentials": "true",
+        "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "access-control-allow-headers": "Content-Type, Authorization",
+        "origin-agent-cluster": "?1",
+        "referrer-policy": "no-referrer",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "SAMEORIGIN",
+        "x-permitted-cross-domain-policies": "none",
+        "x-xss-protection": "0",
+        "x-artha-trace-id": "ARTHA-1782731588469-ziai9s46a",
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "88",
+        "etag": "W/\"58-q/j6f28mAxid7oTm0kBkXMLtefQ\"",
+        "date": "Mon, 29 Jun 2026 11:13:08 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5"
+      },
+      "body": {
+        "success": false,
+        "message": "Not authenticated",
+        "redirect": "http://localhost:5173/login"
+      }
+    },
+    {
+      "endpoint": "/api/v1/auth/login",
+      "method": "POST",
+      "timestamp": "2026-06-29T11:13:08.473Z",
+      "status": 401,
+      "headers": {
+        "access-control-allow-origin": "http://localhost:5173",
+        "access-control-allow-credentials": "true",
+        "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "access-control-allow-headers": "Content-Type, Authorization",
+        "origin-agent-cluster": "?1",
+        "referrer-policy": "no-referrer",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "SAMEORIGIN",
+        "x-permitted-cross-domain-policies": "none",
+        "x-xss-protection": "0",
+        "x-artha-trace-id": "ARTHA-1782731588473-rkpp4wvab",
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "55",
+        "etag": "W/\"37-5uDpJTljPBecOPs/j7OXFdPRcmQ\"",
+        "date": "Mon, 29 Jun 2026 11:13:08 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5"
+      },
+      "body": {
+        "success": false,
+        "message": "Invalid email or password"
+      }
+    }
+  ]
+}

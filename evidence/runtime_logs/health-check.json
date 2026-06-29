@@ -1,0 +1,87 @@
+{
+  "checked_at": "2026-06-29T11:21:11.624Z",
+  "port": 5002,
+  "server_process_exit_code": null,
+  "server_ready": true,
+  "endpoints": {
+    "health": {
+      "status": 200,
+      "healthy": true,
+      "data": {
+        "success": true,
+        "message": "ARTHA API is running",
+        "timestamp": "2026-06-29T11:21:05.791Z",
+        "version": "0.1.0",
+        "uptime": 2.0490764
+      }
+    },
+    "health_detailed": {
+      "status": 200,
+      "healthy": true,
+      "data": {
+        "success": true,
+        "message": "ARTHA API is healthy",
+        "data": {
+          "status": "healthy",
+          "timestamp": "2026-06-29T11:21:05.795Z",
+          "version": "0.1.0",
+          "environment": "development",
+          "uptime": 2.0534265,
+          "memory": {
+            "rss": 160178176,
+            "heapTotal": 121507840,
+            "heapUsed": 65193984,
+            "external": 22919187,
+            "arrayBuffers": 19036292
+          },
+          "performance": {
+            "uptime": 2.0532264,
+            "requests": {
+              "total": 0,
+              "slow": 0,
+              "errors": 0,
+              "slowPercentage": 0,
+              "errorPercentage": 0
+            },
+            "responseTime": {
+              "min": 0,
+              "max": 0,
+              "avg": 0,
+              "total": 0
+            },
+            "memory": {
+              "current": {
+                "rss": 153,
+                "heapTotal": 116,
+                "heapUsed": 63,
+                "external": 22
+              },
+              "peak": 0
+            },
+            "redis": {
+              "status": "disabled"
+            }
+          },
+          "issues": [],
+          "components": {
+            "database": {
+              "status": "healthy",
+              "state": "connected",
+              "host": "ac-kgtoxet-shard-00-01.rzneis7.mongodb.net",
+              "name": "test"
+            },
+            "redis": {
+              "status": "disabled",
+              "message": "Redis not configured"
+            },
+            "disk": {
+              "status": "healthy",
+              "available": "N/A"
+            }
+          }
+        }
+      }
+    }
+  },
+  "overall_healthy": true
+}

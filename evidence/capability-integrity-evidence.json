@@ -1,0 +1,452 @@
+{
+  "evidence_type": "CAPABILITY_INTEGRITY",
+  "generated_at": "2026-06-29T10:53:32.375Z",
+  "contract_count": 9,
+  "results": [
+    {
+      "capability_id": "ARTHA-AUDIT-001",
+      "version": "1.0.0",
+      "checks": [
+        {
+          "check": "SCHEMA完整性",
+          "passed": true,
+          "detail": "All required fields present"
+        },
+        {
+          "check": "VERSION_FORMAT",
+          "passed": true,
+          "detail": "Version: 1.0.0"
+        },
+        {
+          "check": "STATUS_VALID",
+          "passed": true,
+          "detail": "Status: STABLE"
+        },
+        {
+          "check": "SERVICE_EXISTS",
+          "passed": true,
+          "detail": "Service: backend/src/services/audit.service.js"
+        },
+        {
+          "check": "MODELS_EXIST",
+          "passed": true,
+          "detail": "1 models verified"
+        },
+        {
+          "check": "FAILURE_DEFINED",
+          "passed": true,
+          "detail": "3 failure scenarios defined"
+        },
+        {
+          "check": "CONSUMERS_DECLARED",
+          "passed": true,
+          "detail": "3 consumers declared"
+        },
+        {
+          "check": "VERSION_HISTORY",
+          "passed": true,
+          "detail": "1 version entries"
+        }
+      ],
+      "all_passed": true,
+      "check_count": 8,
+      "passed_count": 8
+    },
+    {
+      "capability_id": "ARTHA-EVIDENCE-001",
+      "version": "1.0.0",
+      "checks": [
+        {
+          "check": "SCHEMA完整性",
+          "passed": true,
+          "detail": "All required fields present"
+        },
+        {
+          "check": "VERSION_FORMAT",
+          "passed": true,
+          "detail": "Version: 1.0.0"
+        },
+        {
+          "check": "STATUS_VALID",
+          "passed": true,
+          "detail": "Status: STABLE"
+        },
+        {
+          "check": "SERVICE_EXISTS",
+          "passed": true,
+          "detail": "Service: backend/src/services/evidenceAutomation.service.js"
+        },
+        {
+          "check": "MODELS_EXIST",
+          "passed": true,
+          "detail": "1 models verified"
+        },
+        {
+          "check": "FAILURE_DEFINED",
+          "passed": true,
+          "detail": "3 failure scenarios defined"
+        },
+        {
+          "check": "CONSUMERS_DECLARED",
+          "passed": true,
+          "detail": "3 consumers declared"
+        },
+        {
+          "check": "VERSION_HISTORY",
+          "passed": true,
+          "detail": "1 version entries"
+        }
+      ],
+      "all_passed": true,
+      "check_count": 8,
+      "passed_count": 8
+    },
+    {
+      "capability_id": "ARTHA-FINREPORT-001",
+      "version": "1.0.0",
+      "checks": [
+        {
+          "check": "SCHEMA完整性",
+          "passed": true,
+          "detail": "All required fields present"
+        },
+        {
+          "check": "VERSION_FORMAT",
+          "passed": true,
+          "detail": "Version: 1.0.0"
+        },
+        {
+          "check": "STATUS_VALID",
+          "passed": true,
+          "detail": "Status: STABLE"
+        },
+        {
+          "check": "SERVICE_EXISTS",
+          "passed": true,
+          "detail": "Service: backend/src/services/financialReports.service.js"
+        },
+        {
+          "check": "MODELS_EXIST",
+          "passed": true,
+          "detail": "0 models verified"
+        },
+        {
+          "check": "FAILURE_DEFINED",
+          "passed": true,
+          "detail": "3 failure scenarios defined"
+        },
+        {
+          "check": "CONSUMERS_DECLARED",
+          "passed": true,
+          "detail": "3 consumers declared"
+        },
+        {
+          "check": "VERSION_HISTORY",
+          "passed": true,
+          "detail": "1 version entries"
+        }
+      ],
+      "all_passed": true,
+      "check_count": 8,
+      "passed_count": 8
+    },
+    {
+      "capability_id": "ARTHA-LEDGER-001",
+      "version": "1.0.0",
+      "checks": [
+        {
+          "check": "SCHEMA完整性",
+          "passed": true,
+          "detail": "All required fields present"
+        },
+        {
+          "check": "VERSION_FORMAT",
+          "passed": true,
+          "detail": "Version: 1.0.0"
+        },
+        {
+          "check": "STATUS_VALID",
+          "passed": true,
+          "detail": "Status: STABLE"
+        },
+        {
+          "check": "SERVICE_EXISTS",
+          "passed": true,
+          "detail": "Service: backend/src/services/ledger.service.js"
+        },
+        {
+          "check": "MODELS_EXIST",
+          "passed": true,
+          "detail": "4 models verified"
+        },
+        {
+          "check": "FAILURE_DEFINED",
+          "passed": true,
+          "detail": "5 failure scenarios defined"
+        },
+        {
+          "check": "CONSUMERS_DECLARED",
+          "passed": true,
+          "detail": "3 consumers declared"
+        },
+        {
+          "check": "VERSION_HISTORY",
+          "passed": true,
+          "detail": "1 version entries"
+        }
+      ],
+      "all_passed": true,
+      "check_count": 8,
+      "passed_count": 8
+    },
+    {
+      "capability_id": "ARTHA-MULTICOMPANY-001",
+      "version": "1.0.0",
+      "checks": [
+        {
+          "check": "SCHEMA完整性",
+          "passed": true,
+          "detail": "All required fields present"
+        },
+        {
+          "check": "VERSION_FORMAT",
+          "passed": true,
+          "detail": "Version: 1.0.0"
+        },
+        {
+          "check": "STATUS_VALID",
+          "passed": true,
+          "detail": "Status: STABLE"
+        },
+        {
+          "check": "SERVICE_EXISTS",
+          "passed": true,
+          "detail": "Service: backend/src/services/multiCompany.service.js"
+        },
+        {
+          "check": "MODELS_EXIST",
+          "passed": true,
+          "detail": "2 models verified"
+        },
+        {
+          "check": "FAILURE_DEFINED",
+          "passed": true,
+          "detail": "3 failure scenarios defined"
+        },
+        {
+          "check": "CONSUMERS_DECLARED",
+          "passed": true,
+          "detail": "1 consumers declared"
+        },
+        {
+          "check": "VERSION_HISTORY",
+          "passed": true,
+          "detail": "1 version entries"
+        }
+      ],
+      "all_passed": true,
+      "check_count": 8,
+      "passed_count": 8
+    },
+    {
+      "capability_id": "ARTHA-OBSERVE-001",
+      "version": "1.0.0",
+      "checks": [
+        {
+          "check": "SCHEMA完整性",
+          "passed": true,
+          "detail": "All required fields present"
+        },
+        {
+          "check": "VERSION_FORMAT",
+          "passed": true,
+          "detail": "Version: 1.0.0"
+        },
+        {
+          "check": "STATUS_VALID",
+          "passed": true,
+          "detail": "Status: STABLE"
+        },
+        {
+          "check": "SERVICE_EXISTS",
+          "passed": true,
+          "detail": "Service: backend/src/services/observability.service.js"
+        },
+        {
+          "check": "MODELS_EXIST",
+          "passed": true,
+          "detail": "0 models verified"
+        },
+        {
+          "check": "FAILURE_DEFINED",
+          "passed": true,
+          "detail": "3 failure scenarios defined"
+        },
+        {
+          "check": "CONSUMERS_DECLARED",
+          "passed": true,
+          "detail": "6 consumers declared"
+        },
+        {
+          "check": "VERSION_HISTORY",
+          "passed": true,
+          "detail": "1 version entries"
+        }
+      ],
+      "all_passed": true,
+      "check_count": 8,
+      "passed_count": 8
+    },
+    {
+      "capability_id": "ARTHA-SIGNAL-001",
+      "version": "1.0.0",
+      "checks": [
+        {
+          "check": "SCHEMA完整性",
+          "passed": true,
+          "detail": "All required fields present"
+        },
+        {
+          "check": "VERSION_FORMAT",
+          "passed": true,
+          "detail": "Version: 1.0.0"
+        },
+        {
+          "check": "STATUS_VALID",
+          "passed": true,
+          "detail": "Status: STABLE"
+        },
+        {
+          "check": "SERVICE_EXISTS",
+          "passed": true,
+          "detail": "Service: backend/src/services/signalEngine.service.js"
+        },
+        {
+          "check": "MODELS_EXIST",
+          "passed": true,
+          "detail": "0 models verified"
+        },
+        {
+          "check": "FAILURE_DEFINED",
+          "passed": true,
+          "detail": "5 failure scenarios defined"
+        },
+        {
+          "check": "CONSUMERS_DECLARED",
+          "passed": true,
+          "detail": "3 consumers declared"
+        },
+        {
+          "check": "VERSION_HISTORY",
+          "passed": true,
+          "detail": "1 version entries"
+        }
+      ],
+      "all_passed": true,
+      "check_count": 8,
+      "passed_count": 8
+    },
+    {
+      "capability_id": "ARTHA-TALLY-001",
+      "version": "1.0.0",
+      "checks": [
+        {
+          "check": "SCHEMA完整性",
+          "passed": true,
+          "detail": "All required fields present"
+        },
+        {
+          "check": "VERSION_FORMAT",
+          "passed": true,
+          "detail": "Version: 1.0.0"
+        },
+        {
+          "check": "STATUS_VALID",
+          "passed": true,
+          "detail": "Status: STABLE"
+        },
+        {
+          "check": "SERVICE_EXISTS",
+          "passed": true,
+          "detail": "Service: backend/src/services/tallyCompatibility.service.js"
+        },
+        {
+          "check": "MODELS_EXIST",
+          "passed": true,
+          "detail": "2 models verified"
+        },
+        {
+          "check": "FAILURE_DEFINED",
+          "passed": true,
+          "detail": "2 failure scenarios defined"
+        },
+        {
+          "check": "CONSUMERS_DECLARED",
+          "passed": true,
+          "detail": "2 consumers declared"
+        },
+        {
+          "check": "VERSION_HISTORY",
+          "passed": true,
+          "detail": "1 version entries"
+        }
+      ],
+      "all_passed": true,
+      "check_count": 8,
+      "passed_count": 8
+    },
+    {
+      "capability_id": "ARTHA-TRACE-001",
+      "version": "1.0.0",
+      "checks": [
+        {
+          "check": "SCHEMA完整性",
+          "passed": true,
+          "detail": "All required fields present"
+        },
+        {
+          "check": "VERSION_FORMAT",
+          "passed": true,
+          "detail": "Version: 1.0.0"
+        },
+        {
+          "check": "STATUS_VALID",
+          "passed": true,
+          "detail": "Status: STABLE"
+        },
+        {
+          "check": "SERVICE_EXISTS",
+          "passed": true,
+          "detail": "Service: backend/src/services/traceability.service.js"
+        },
+        {
+          "check": "MODELS_EXIST",
+          "passed": true,
+          "detail": "1 models verified"
+        },
+        {
+          "check": "FAILURE_DEFINED",
+          "passed": true,
+          "detail": "3 failure scenarios defined"
+        },
+        {
+          "check": "CONSUMERS_DECLARED",
+          "passed": true,
+          "detail": "3 consumers declared"
+        },
+        {
+          "check": "VERSION_HISTORY",
+          "passed": true,
+          "detail": "1 version entries"
+        }
+      ],
+      "all_passed": true,
+      "check_count": 8,
+      "passed_count": 8
+    }
+  ],
+  "summary": {
+    "total_capabilities": 9,
+    "all_integrity": true
+  }
+}

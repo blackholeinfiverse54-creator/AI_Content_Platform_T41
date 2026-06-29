@@ -1,0 +1,744 @@
+{
+  "test_suite": "ARTH Negative & Adversarial Scenarios",
+  "version": "1.0.0",
+  "timestamp": "2026-06-29T10:53:32.280Z",
+  "duration_ms": 26,
+  "results": [
+    {
+      "name": "N02_Corr_NoId",
+      "status": "PASS",
+      "detail": "Contract without capability_id should be rejected (threw: Missing capability_id)"
+    },
+    {
+      "name": "N02_Corr_BadVersion",
+      "status": "PASS",
+      "detail": "Contract with invalid version format should be rejected (threw: Invalid version)"
+    },
+    {
+      "name": "N02_Corr_MalformedJSON",
+      "status": "PASS",
+      "detail": "Malformed JSON should throw parse error (threw: Expected property name or '}' in JSON at position 2 (line 1 column 3))"
+    },
+    {
+      "name": "N02_Corr_EmptyAuth",
+      "status": "PASS",
+      "detail": "Contract with empty authority_owned should be flagged"
+    },
+    {
+      "name": "N03_VerMismatch_ARTHA-AUDIT-001",
+      "status": "PASS",
+      "detail": "ARTHA-AUDIT-001 should not have multiple major versions: 1"
+    },
+    {
+      "name": "N03_VerMismatch_ARTHA-EVIDENCE-001",
+      "status": "PASS",
+      "detail": "ARTHA-EVIDENCE-001 should not have multiple major versions: 1"
+    },
+    {
+      "name": "N03_VerMismatch_ARTHA-FINREPORT-001",
+      "status": "PASS",
+      "detail": "ARTHA-FINREPORT-001 should not have multiple major versions: 1"
+    },
+    {
+      "name": "N03_VerMismatch_ARTHA-LEDGER-001",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 should not have multiple major versions: 1"
+    },
+    {
+      "name": "N03_VerMismatch_ARTHA-MULTICOMPANY-001",
+      "status": "PASS",
+      "detail": "ARTHA-MULTICOMPANY-001 should not have multiple major versions: 1"
+    },
+    {
+      "name": "N03_VerMismatch_ARTHA-OBSERVE-001",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 should not have multiple major versions: 1"
+    },
+    {
+      "name": "N03_VerMismatch_ARTHA-SIGNAL-001",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 should not have multiple major versions: 1"
+    },
+    {
+      "name": "N03_VerMismatch_ARTHA-TALLY-001",
+      "status": "PASS",
+      "detail": "ARTHA-TALLY-001 should not have multiple major versions: 1"
+    },
+    {
+      "name": "N03_VerMismatch_ARTHA-TRACE-001",
+      "status": "PASS",
+      "detail": "ARTHA-TRACE-001 should not have multiple major versions: 1"
+    },
+    {
+      "name": "N04_DepCycle",
+      "status": "PASS",
+      "detail": "Dependency graph should be acyclic"
+    },
+    {
+      "name": "N04_SelfDep_ARTHA-AUDIT-001",
+      "status": "PASS",
+      "detail": "ARTHA-AUDIT-001 should not depend on itself"
+    },
+    {
+      "name": "N04_SelfDep_ARTHA-EVIDENCE-001",
+      "status": "PASS",
+      "detail": "ARTHA-EVIDENCE-001 should not depend on itself"
+    },
+    {
+      "name": "N04_SelfDep_ARTHA-FINREPORT-001",
+      "status": "PASS",
+      "detail": "ARTHA-FINREPORT-001 should not depend on itself"
+    },
+    {
+      "name": "N04_SelfDep_ARTHA-LEDGER-001",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 should not depend on itself"
+    },
+    {
+      "name": "N04_SelfDep_ARTHA-MULTICOMPANY-001",
+      "status": "PASS",
+      "detail": "ARTHA-MULTICOMPANY-001 should not depend on itself"
+    },
+    {
+      "name": "N04_SelfDep_ARTHA-OBSERVE-001",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 should not depend on itself"
+    },
+    {
+      "name": "N04_SelfDep_ARTHA-SIGNAL-001",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 should not depend on itself"
+    },
+    {
+      "name": "N04_SelfDep_ARTHA-TALLY-001",
+      "status": "PASS",
+      "detail": "ARTHA-TALLY-001 should not depend on itself"
+    },
+    {
+      "name": "N04_SelfDep_ARTHA-TRACE-001",
+      "status": "PASS",
+      "detail": "ARTHA-TRACE-001 should not depend on itself"
+    },
+    {
+      "name": "N05_Rollback_ARTHA-AUDIT-001",
+      "status": "PASS",
+      "detail": "ARTHA-AUDIT-001 must have version_history for rollback tracking"
+    },
+    {
+      "name": "N05_Rollback_ARTHA-EVIDENCE-001",
+      "status": "PASS",
+      "detail": "ARTHA-EVIDENCE-001 must have version_history for rollback tracking"
+    },
+    {
+      "name": "N05_Rollback_ARTHA-FINREPORT-001",
+      "status": "PASS",
+      "detail": "ARTHA-FINREPORT-001 must have version_history for rollback tracking"
+    },
+    {
+      "name": "N05_Rollback_ARTHA-LEDGER-001",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 must have version_history for rollback tracking"
+    },
+    {
+      "name": "N05_Rollback_ARTHA-MULTICOMPANY-001",
+      "status": "PASS",
+      "detail": "ARTHA-MULTICOMPANY-001 must have version_history for rollback tracking"
+    },
+    {
+      "name": "N05_Rollback_ARTHA-OBSERVE-001",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 must have version_history for rollback tracking"
+    },
+    {
+      "name": "N05_Rollback_ARTHA-SIGNAL-001",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 must have version_history for rollback tracking"
+    },
+    {
+      "name": "N05_Rollback_ARTHA-TALLY-001",
+      "status": "PASS",
+      "detail": "ARTHA-TALLY-001 must have version_history for rollback tracking"
+    },
+    {
+      "name": "N05_Rollback_ARTHA-TRACE-001",
+      "status": "PASS",
+      "detail": "ARTHA-TRACE-001 must have version_history for rollback tracking"
+    },
+    {
+      "name": "N05_RollbackEntry_ARTHA-AUDIT-001_1.0.0",
+      "status": "PASS",
+      "detail": "Version history entry for ARTHA-AUDIT-001 v1.0.0 must have version, date, and changes"
+    },
+    {
+      "name": "N05_RollbackEntry_ARTHA-EVIDENCE-001_1.0.0",
+      "status": "PASS",
+      "detail": "Version history entry for ARTHA-EVIDENCE-001 v1.0.0 must have version, date, and changes"
+    },
+    {
+      "name": "N05_RollbackEntry_ARTHA-FINREPORT-001_1.0.0",
+      "status": "PASS",
+      "detail": "Version history entry for ARTHA-FINREPORT-001 v1.0.0 must have version, date, and changes"
+    },
+    {
+      "name": "N05_RollbackEntry_ARTHA-LEDGER-001_1.0.0",
+      "status": "PASS",
+      "detail": "Version history entry for ARTHA-LEDGER-001 v1.0.0 must have version, date, and changes"
+    },
+    {
+      "name": "N05_RollbackEntry_ARTHA-MULTICOMPANY-001_1.0.0",
+      "status": "PASS",
+      "detail": "Version history entry for ARTHA-MULTICOMPANY-001 v1.0.0 must have version, date, and changes"
+    },
+    {
+      "name": "N05_RollbackEntry_ARTHA-OBSERVE-001_1.0.0",
+      "status": "PASS",
+      "detail": "Version history entry for ARTHA-OBSERVE-001 v1.0.0 must have version, date, and changes"
+    },
+    {
+      "name": "N05_RollbackEntry_ARTHA-SIGNAL-001_1.0.0",
+      "status": "PASS",
+      "detail": "Version history entry for ARTHA-SIGNAL-001 v1.0.0 must have version, date, and changes"
+    },
+    {
+      "name": "N05_RollbackEntry_ARTHA-TALLY-001_1.0.0",
+      "status": "PASS",
+      "detail": "Version history entry for ARTHA-TALLY-001 v1.0.0 must have version, date, and changes"
+    },
+    {
+      "name": "N05_RollbackEntry_ARTHA-TRACE-001_1.0.0",
+      "status": "PASS",
+      "detail": "Version history entry for ARTHA-TRACE-001 v1.0.0 must have version, date, and changes"
+    },
+    {
+      "name": "N06_Downgrade_ARTHA-AUDIT-001",
+      "status": "PASS",
+      "detail": "ARTHA-AUDIT-001 has invalid status: STABLE"
+    },
+    {
+      "name": "N06_Downgrade_ARTHA-EVIDENCE-001",
+      "status": "PASS",
+      "detail": "ARTHA-EVIDENCE-001 has invalid status: STABLE"
+    },
+    {
+      "name": "N06_Downgrade_ARTHA-FINREPORT-001",
+      "status": "PASS",
+      "detail": "ARTHA-FINREPORT-001 has invalid status: STABLE"
+    },
+    {
+      "name": "N06_Downgrade_ARTHA-LEDGER-001",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 has invalid status: STABLE"
+    },
+    {
+      "name": "N06_Downgrade_ARTHA-MULTICOMPANY-001",
+      "status": "PASS",
+      "detail": "ARTHA-MULTICOMPANY-001 has invalid status: STABLE"
+    },
+    {
+      "name": "N06_Downgrade_ARTHA-OBSERVE-001",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 has invalid status: STABLE"
+    },
+    {
+      "name": "N06_Downgrade_ARTHA-SIGNAL-001",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 has invalid status: STABLE"
+    },
+    {
+      "name": "N06_Downgrade_ARTHA-TALLY-001",
+      "status": "PASS",
+      "detail": "ARTHA-TALLY-001 has invalid status: STABLE"
+    },
+    {
+      "name": "N06_Downgrade_ARTHA-TRACE-001",
+      "status": "PASS",
+      "detail": "ARTHA-TRACE-001 has invalid status: STABLE"
+    },
+    {
+      "name": "N07_Ownership_auditevents",
+      "status": "PASS",
+      "detail": "Collection auditevents should have single owner, found: ARTHA-AUDIT-001"
+    },
+    {
+      "name": "N07_Ownership_runtimeproofs",
+      "status": "PASS",
+      "detail": "Collection runtimeproofs should have single owner, found: ARTHA-EVIDENCE-001"
+    },
+    {
+      "name": "N07_Ownership_journalentries",
+      "status": "PASS",
+      "detail": "Collection journalentries should have single owner, found: ARTHA-LEDGER-001"
+    },
+    {
+      "name": "N07_Ownership_ledgerentries",
+      "status": "PASS",
+      "detail": "Collection ledgerentries should have single owner, found: ARTHA-LEDGER-001"
+    },
+    {
+      "name": "N07_Ownership_accountbalances",
+      "status": "PASS",
+      "detail": "Collection accountbalances should have single owner, found: ARTHA-LEDGER-001"
+    },
+    {
+      "name": "N07_Ownership_chartofaccounts",
+      "status": "PASS",
+      "detail": "Collection chartofaccounts should have single owner, found: ARTHA-LEDGER-001"
+    },
+    {
+      "name": "N07_Ownership_companies",
+      "status": "PASS",
+      "detail": "Collection companies should have single owner, found: ARTHA-MULTICOMPANY-001"
+    },
+    {
+      "name": "N07_Ownership_costcentres",
+      "status": "PASS",
+      "detail": "Collection costcentres should have single owner, found: ARTHA-MULTICOMPANY-001"
+    },
+    {
+      "name": "N07_Ownership_tallyexports",
+      "status": "PASS",
+      "detail": "Collection tallyexports should have single owner, found: ARTHA-TALLY-001"
+    },
+    {
+      "name": "N07_Ownership_tallyimports",
+      "status": "PASS",
+      "detail": "Collection tallyimports should have single owner, found: ARTHA-TALLY-001"
+    },
+    {
+      "name": "N07_Ownership_unifiedtraces",
+      "status": "PASS",
+      "detail": "Collection unifiedtraces should have single owner, found: ARTHA-TRACE-001"
+    },
+    {
+      "name": "N08_Hash_ARTHA-AUDIT-001",
+      "status": "PASS",
+      "detail": "ARTHA-AUDIT-001 produces valid SHA-256 hash"
+    },
+    {
+      "name": "N08_Hash_ARTHA-EVIDENCE-001",
+      "status": "PASS",
+      "detail": "ARTHA-EVIDENCE-001 produces valid SHA-256 hash"
+    },
+    {
+      "name": "N08_Hash_ARTHA-FINREPORT-001",
+      "status": "PASS",
+      "detail": "ARTHA-FINREPORT-001 produces valid SHA-256 hash"
+    },
+    {
+      "name": "N08_Hash_ARTHA-LEDGER-001",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 produces valid SHA-256 hash"
+    },
+    {
+      "name": "N08_Hash_ARTHA-MULTICOMPANY-001",
+      "status": "PASS",
+      "detail": "ARTHA-MULTICOMPANY-001 produces valid SHA-256 hash"
+    },
+    {
+      "name": "N08_Hash_ARTHA-OBSERVE-001",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 produces valid SHA-256 hash"
+    },
+    {
+      "name": "N08_Hash_ARTHA-SIGNAL-001",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 produces valid SHA-256 hash"
+    },
+    {
+      "name": "N08_Hash_ARTHA-TALLY-001",
+      "status": "PASS",
+      "detail": "ARTHA-TALLY-001 produces valid SHA-256 hash"
+    },
+    {
+      "name": "N08_Hash_ARTHA-TRACE-001",
+      "status": "PASS",
+      "detail": "ARTHA-TRACE-001 produces valid SHA-256 hash"
+    },
+    {
+      "name": "N08_UniqueHashes",
+      "status": "PASS",
+      "detail": "All contracts should have unique content hashes"
+    },
+    {
+      "name": "N09_FailureBehavior_ARTHA-AUDIT-001",
+      "status": "PASS",
+      "detail": "ARTHA-AUDIT-001 must declare failure_behavior for deterministic error handling"
+    },
+    {
+      "name": "N09_FailureBehavior_ARTHA-EVIDENCE-001",
+      "status": "PASS",
+      "detail": "ARTHA-EVIDENCE-001 must declare failure_behavior for deterministic error handling"
+    },
+    {
+      "name": "N09_FailureBehavior_ARTHA-FINREPORT-001",
+      "status": "PASS",
+      "detail": "ARTHA-FINREPORT-001 must declare failure_behavior for deterministic error handling"
+    },
+    {
+      "name": "N09_FailureBehavior_ARTHA-LEDGER-001",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 must declare failure_behavior for deterministic error handling"
+    },
+    {
+      "name": "N09_FailureBehavior_ARTHA-MULTICOMPANY-001",
+      "status": "PASS",
+      "detail": "ARTHA-MULTICOMPANY-001 must declare failure_behavior for deterministic error handling"
+    },
+    {
+      "name": "N09_FailureBehavior_ARTHA-OBSERVE-001",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 must declare failure_behavior for deterministic error handling"
+    },
+    {
+      "name": "N09_FailureBehavior_ARTHA-SIGNAL-001",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 must declare failure_behavior for deterministic error handling"
+    },
+    {
+      "name": "N09_FailureBehavior_ARTHA-TALLY-001",
+      "status": "PASS",
+      "detail": "ARTHA-TALLY-001 must declare failure_behavior for deterministic error handling"
+    },
+    {
+      "name": "N09_FailureBehavior_ARTHA-TRACE-001",
+      "status": "PASS",
+      "detail": "ARTHA-TRACE-001 must declare failure_behavior for deterministic error handling"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-AUDIT-001_init_failure",
+      "status": "PASS",
+      "detail": "ARTHA-AUDIT-001 failure behavior for init_failure should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-AUDIT-001_hash_mismatch",
+      "status": "PASS",
+      "detail": "ARTHA-AUDIT-001 failure behavior for hash_mismatch should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-AUDIT-001_write_failure",
+      "status": "PASS",
+      "detail": "ARTHA-AUDIT-001 failure behavior for write_failure should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-EVIDENCE-001_trace_not_found",
+      "status": "PASS",
+      "detail": "ARTHA-EVIDENCE-001 failure behavior for trace_not_found should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-EVIDENCE-001_proof_creation_failure",
+      "status": "PASS",
+      "detail": "ARTHA-EVIDENCE-001 failure behavior for proof_creation_failure should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-EVIDENCE-001_assertion_failure",
+      "status": "PASS",
+      "detail": "ARTHA-EVIDENCE-001 failure behavior for assertion_failure should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-FINREPORT-001_no_data",
+      "status": "PASS",
+      "detail": "ARTHA-FINREPORT-001 failure behavior for no_data should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-FINREPORT-001_balance_mismatch",
+      "status": "PASS",
+      "detail": "ARTHA-FINREPORT-001 failure behavior for balance_mismatch should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-FINREPORT-001_date_range_invalid",
+      "status": "PASS",
+      "detail": "ARTHA-FINREPORT-001 failure behavior for date_range_invalid should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-LEDGER-001_validation_failure",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 failure behavior for validation_failure should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-LEDGER-001_post_failure",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 failure behavior for post_failure should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-LEDGER-001_chain_tamper",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 failure behavior for chain_tamper should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-LEDGER-001_balance_mismatch",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 failure behavior for balance_mismatch should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-LEDGER-001_transaction_abort",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 failure behavior for transaction_abort should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-MULTICOMPANY-001_company_not_found",
+      "status": "PASS",
+      "detail": "ARTHA-MULTICOMPANY-001 failure behavior for company_not_found should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-MULTICOMPANY-001_consolidation_incomplete",
+      "status": "PASS",
+      "detail": "ARTHA-MULTICOMPANY-001 failure behavior for consolidation_incomplete should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-MULTICOMPANY-001_mutation_validation_failure",
+      "status": "PASS",
+      "detail": "ARTHA-MULTICOMPANY-001 failure behavior for mutation_validation_failure should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-OBSERVE-001_redis_unavailable",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 failure behavior for redis_unavailable should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-OBSERVE-001_db_unavailable",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 failure behavior for db_unavailable should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-OBSERVE-001_partial_failure",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 failure behavior for partial_failure should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-SIGNAL-001_setu_unavailable",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 failure behavior for setu_unavailable should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-SIGNAL-001_setu_rejected",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 failure behavior for setu_rejected should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-SIGNAL-001_retry_exhausted",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 failure behavior for retry_exhausted should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-SIGNAL-001_deduplication",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 failure behavior for deduplication should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-SIGNAL-001_mutation_validation_failure",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 failure behavior for mutation_validation_failure should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-TALLY-001_import_partial",
+      "status": "PASS",
+      "detail": "ARTHA-TALLY-001 failure behavior for import_partial should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-TALLY-001_xml_generation_failure",
+      "status": "PASS",
+      "detail": "ARTHA-TALLY-001 failure behavior for xml_generation_failure should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-TRACE-001_trace_not_found",
+      "status": "PASS",
+      "detail": "ARTHA-TRACE-001 failure behavior for trace_not_found should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-TRACE-001_continuity_break",
+      "status": "PASS",
+      "detail": "ARTHA-TRACE-001 failure behavior for continuity_break should not mandate crash/exit"
+    },
+    {
+      "name": "N09_NoCrash_ARTHA-TRACE-001_replay_failure",
+      "status": "PASS",
+      "detail": "ARTHA-TRACE-001 failure behavior for replay_failure should not mandate crash/exit"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-AUDIT-001",
+      "status": "PASS",
+      "detail": "ARTHA-AUDIT-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-AUDIT-001",
+      "status": "PASS",
+      "detail": "ARTHA-AUDIT-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-AUDIT-001",
+      "status": "PASS",
+      "detail": "ARTHA-AUDIT-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-EVIDENCE-001",
+      "status": "PASS",
+      "detail": "ARTHA-EVIDENCE-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-EVIDENCE-001",
+      "status": "PASS",
+      "detail": "ARTHA-EVIDENCE-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-EVIDENCE-001",
+      "status": "PASS",
+      "detail": "ARTHA-EVIDENCE-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-FINREPORT-001",
+      "status": "PASS",
+      "detail": "ARTHA-FINREPORT-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-FINREPORT-001",
+      "status": "PASS",
+      "detail": "ARTHA-FINREPORT-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-FINREPORT-001",
+      "status": "PASS",
+      "detail": "ARTHA-FINREPORT-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-LEDGER-001",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-LEDGER-001",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-LEDGER-001",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-MULTICOMPANY-001",
+      "status": "PASS",
+      "detail": "ARTHA-MULTICOMPANY-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-OBSERVE-001",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-OBSERVE-001",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-OBSERVE-001",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-OBSERVE-001",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-OBSERVE-001",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-OBSERVE-001",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-SIGNAL-001",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-SIGNAL-001",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-SIGNAL-001",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-TALLY-001",
+      "status": "PASS",
+      "detail": "ARTHA-TALLY-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-TALLY-001",
+      "status": "PASS",
+      "detail": "ARTHA-TALLY-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-TRACE-001",
+      "status": "PASS",
+      "detail": "ARTHA-TRACE-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-TRACE-001",
+      "status": "PASS",
+      "detail": "ARTHA-TRACE-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_ConsumerProduct_ARTHA-TRACE-001",
+      "status": "PASS",
+      "detail": "ARTHA-TRACE-001 consumer product must be non-empty string"
+    },
+    {
+      "name": "N10_NoConsumers_ARTHA-AUDIT-001",
+      "status": "PASS",
+      "detail": "ARTHA-AUDIT-001 should have at least one declared consumer"
+    },
+    {
+      "name": "N10_NoConsumers_ARTHA-EVIDENCE-001",
+      "status": "PASS",
+      "detail": "ARTHA-EVIDENCE-001 should have at least one declared consumer"
+    },
+    {
+      "name": "N10_NoConsumers_ARTHA-FINREPORT-001",
+      "status": "PASS",
+      "detail": "ARTHA-FINREPORT-001 should have at least one declared consumer"
+    },
+    {
+      "name": "N10_NoConsumers_ARTHA-LEDGER-001",
+      "status": "PASS",
+      "detail": "ARTHA-LEDGER-001 should have at least one declared consumer"
+    },
+    {
+      "name": "N10_NoConsumers_ARTHA-MULTICOMPANY-001",
+      "status": "PASS",
+      "detail": "ARTHA-MULTICOMPANY-001 should have at least one declared consumer"
+    },
+    {
+      "name": "N10_NoConsumers_ARTHA-OBSERVE-001",
+      "status": "PASS",
+      "detail": "ARTHA-OBSERVE-001 should have at least one declared consumer"
+    },
+    {
+      "name": "N10_NoConsumers_ARTHA-SIGNAL-001",
+      "status": "PASS",
+      "detail": "ARTHA-SIGNAL-001 should have at least one declared consumer"
+    },
+    {
+      "name": "N10_NoConsumers_ARTHA-TALLY-001",
+      "status": "PASS",
+      "detail": "ARTHA-TALLY-001 should have at least one declared consumer"
+    },
+    {
+      "name": "N10_NoConsumers_ARTHA-TRACE-001",
+      "status": "PASS",
+      "detail": "ARTHA-TRACE-001 should have at least one declared consumer"
+    }
+  ],
+  "summary": {
+    "total": 146,
+    "passed": 146,
+    "failed": 0,
+    "all_passed": true
+  }
+}

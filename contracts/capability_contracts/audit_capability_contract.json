@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "capability_id": "ARTHA-AUDIT-001",
+  "capability_name": "Audit Engine",
+  "version": "1.0.0",
+  "status": "STABLE",
+  "owner": "Ashmit",
+  "authority_owned": [
+    "Audit event creation with hash chain integrity",
+    "Before/after state snapshot capture",
+    "Audit trail generation per entity",
+    "Audit chain verification",
+    "Audit summary and analytics",
+    "Regulatory event classification"
+  ],
+  "authority_explicitly_not_owned": [
+    "Business logic that triggers audit events",
+    "User authentication (triggers login/logout audit events but does not own auth)",
+    "Compliance filing status (audit records it, does not manage it)"
+  ],
+  "description": "Immutable audit event engine with blockchain-style hash chain. Records every significant system action with before/after state, actor metadata, and chain-linked integrity verification.",
+  "provider_service": "backend/src/services/audit.service.js",
+  "provider_model": ["backend/src/models/AuditEvent.js"],
+  "api_endpoints": {
+    "get_entity_audit_trail": {
+      "method": "GET",
+      "path": "/api/v1/audit/trail/:entityType/:entityId",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "get_audit_summary": {
+      "method": "GET",
+      "path": "/api/v1/audit/summary",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "verify_audit_chain": {
+      "method": "GET",
+      "path": "/api/v1/audit/verify-chain",
+      "auth_required": true,
+      "roles": ["*"]
+    },
+    "export_audit_trail": {
+      "method": "GET",
+      "path": "/api/v1/audit/export",
+      "auth_required": true,
+      "roles": ["*"]
+    }
+  },
+  "input_schemas": {
+    "record_event": {
+      "type": "object",
+      "required": ["eventType", "entityType", "entityId", "action", "description"],
+      "properties": {
+        "eventType": {
+          "type": "string",
+          "enum": ["USER_ACTION", "APPROVAL", "REJECTION", "ROLE_CHANGE", "CONFIG_CHANGE", "CORRECTION", "REVERSAL", "FILING", "LOGIN", "LOGOUT"]
+        },
+        "category": { "type": "string", "enum": ["financial", "compliance", "security", "operational"] },
+        "severity": { "type": "string", "enum": ["info", "warning", "critical"] },
+        "entityType": { "type": "string" },
+        "entityId": { "type": "string" },
+        "action": { "type": "string" },
+        "description": { "type": "string" },
+        "actor": {
+          "type": "object",
+          "properties": {
+            "userId": { "type": "string" },
+            "email": { "type": "string" },
+            "name": { "type": "string" },
+            "role": { "type": "string" },
+            "ip": { "type": "string" },
+            "userAgent": { "type": "string" }
+          }
+        },
+        "before": { "type": "object" },
+        "after": { "type": "object" },
+        "financialImpact": { "type": "object" },
+        "traceId": { "type": "string" },
+        "correlationId": { "type": "string" },
+        "regulatoryRequired": { "type": "boolean" },
+        "retentionDays": { "type": "integer" }
+      }
+    }
+  },
+  "output_schemas": {
+    "audit_event": {
+      "type": "object",
+      "properties": {
+        "_id": { "type": "string" },
+        "eventId": { "type": "string" },
+        "eventType": { "type": "string" },
+        "category": { "type": "string" },
+        "severity": { "type": "string" },
+        "entityType": { "type": "string" },
+        "entityId": { "type": "string" },
+        "action": { "type": "string" },
+        "description": { "type": "string" },
+        "actor": { "type": "object" },
+        "before": { "type": "object" },
+        "after": { "type": "object" },
+        "hash": { "type": "string" },
+        "previousHash": { "type": "string" },
+        "chainPosition": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "chain_verification": {
+      "type": "object",
+      "properties": {
+        "isValid": { "type": "boolean" },
+        "totalEntries": { "type": "integer" },
+        "errors": { "type": "array" },
+        "chainLength": { "type": "integer" }
+      }
+    }
+  },
+  "authentication": {
+    "type": "JWT",
+    "header": "Authorization: Bearer <token>"
+  },
+  "trace_requirements": {
+    "trace_id_format": "Optional — audit events can exist without trace context",
+    "correlation_id": "Used to link related audit events across a workflow"
+  },
+  "evidence_requirements": {
+    "hash_chain": "SHA-256 chain linking each event to its predecessor",
+    "immutability": "Events are append-only, never updated or deleted",
+    "tamper_detection": "verifyChain() walks full chain validating hash links"
+  },
+  "failure_behavior": {
+    "init_failure": "Service starts with empty chain state (graceful degradation)",
+    "hash_mismatch": "verifyChain() returns isValid: false with error details",
+    "write_failure": "Returns null, does not throw (non-blocking for callers)"
+  },
+  "dependencies": {
+    "internal": [],
+    "models": ["AuditEvent"]
+  },
+  "consumers": [
+    { "product": "ARTHA", "modules": ["All services record audit events"] },
+    { "product": "SETU", "modules": ["Indirect — audit trail for compliance"] },
+    { "product": "TANTRA", "modules": ["Indirect — audit chain verification"] }
+  ],
+  "replay_compatibility": {
+    "deterministic": true,
+    "replay_method": "verifyChain() validates full chain integrity from genesis",
+    "prerequisites": ["AuditEvent collection must be intact", "No events deleted or modified"]
+  },
+  "version_history": [
+    { "version": "1.0.0", "date": "2025-02-19", "changes": "Initial capability extraction" }
+  ]
+}

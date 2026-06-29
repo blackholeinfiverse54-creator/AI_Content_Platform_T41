@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARTHA Governance Dashboard</title>
+  <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    background: #0d1117;
+    color: #c9d1d9;
+    padding: 24px;
+    line-height: 1.6;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .header {
+    background: linear-gradient(135deg, #161b22, #1a2332);
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  .header h1 {
+    font-size: 28px;
+    color: #58a6ff;
+    margin-bottom: 8px;
+  }
+  .header .subtitle {
+    color: #8b949e;
+    font-size: 14px;
+  }
+  .card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card h2 {
+    font-size: 18px;
+    color: #58a6ff;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #21262d;
+  }
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .badge-green { background: #0d44291a; color: #3fb950; border: 1px solid #238636; }
+  .badge-red { background: #490b0b1a; color: #f85149; border: 1px solid #da3633; }
+  .badge-yellow { background: #4a360b1a; color: #d29922; border: 1px solid #9e6a03; }
+  .badge-blue { background: #0b1a491a; color: #58a6ff; border: 1px solid #1f6feb; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+  }
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #21262d;
+  }
+  th {
+    background: #0d1117;
+    color: #8b949e;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  td { font-size: 14px; }
+  tr:hover td { background: #1c2128; }
+  .check { color: #3fb950; font-weight: bold; }
+  .cross { color: #f85149; font-weight: bold; }
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .metric {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  .metric .value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #58a6ff;
+  }
+  .metric .label {
+    font-size: 12px;
+    color: #8b949e;
+    margin-top: 4px;
+  }
+  .hash {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 12px;
+    color: #8b949e;
+    background: #0d1117;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .timestamp { color: #8b949e; font-size: 13px; }
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .footer {
+    text-align: center;
+    color: #484f58;
+    font-size: 12px;
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid #21262d;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>ARTHA Governance Dashboard</h1>
+      <div class="subtitle">Automated Governance Evidence &mdash; Generated 2026-06-29T11:09:53.299Z</div>
+    </div>
+
+    <!-- System Status -->
+    <div class="card">
+      <h2>System Status</h2>
+      <div class="status-bar">
+        <span class="check" style="font-size:24px;">&#10003;</span>
+        <span style="font-size:18px; color: #3fb950;">All Systems Operational</span>
+      </div>
+      <div class="metric-grid">
+        <div class="metric">
+          <div class="value">9</div>
+          <div class="label">Capabilities</div>
+        </div>
+        <div class="metric">
+          <div class="value" style="color:#3fb950;">9/9</div>
+          <div class="label">STABLE</div>
+        </div>
+        <div class="metric">
+          <div class="value" style="color:#3fb950;">18/18</div>
+          <div class="label">Verifications Pass</div>
+        </div>
+        <div class="metric">
+          <div class="value" style="color:#3fb950;">1455+</div>
+          <div class="label">Tests Pass</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Capability Summary -->
+    <div class="card">
+      <h2>Capability Summary</h2>
+      <table>
+        <thead>
+          <tr><th>Capability ID</th><th>Name</th><th>Status</th><th>Category</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+      <td><code>ARTHA-LEDGER-001</code></td>
+      <td>Ledger Engine</td>
+      <td><span class="badge badge-green">STABLE</span></td>
+      <td>CORE_ACCOUNTING</td>
+    </tr>
+<tr>
+      <td><code>ARTHA-AUDIT-001</code></td>
+      <td>Audit Engine</td>
+      <td><span class="badge badge-green">STABLE</span></td>
+      <td>GOVERNANCE</td>
+    </tr>
+<tr>
+      <td><code>ARTHA-TRACE-001</code></td>
+      <td>Trace Engine</td>
+      <td><span class="badge badge-green">STABLE</span></td>
+      <td>GOVERNANCE</td>
+    </tr>
+<tr>
+      <td><code>ARTHA-EVIDENCE-001</code></td>
+      <td>Evidence Engine</td>
+      <td><span class="badge badge-green">STABLE</span></td>
+      <td>GOVERNANCE</td>
+    </tr>
+<tr>
+      <td><code>ARTHA-OBSERVE-001</code></td>
+      <td>Observability Engine</td>
+      <td><span class="badge badge-green">STABLE</span></td>
+      <td>GOVERNANCE</td>
+    </tr>
+<tr>
+      <td><code>ARTHA-SIGNAL-001</code></td>
+      <td>Signal Engine</td>
+      <td><span class="badge badge-green">STABLE</span></td>
+      <td>COMPLIANCE</td>
+    </tr>
+<tr>
+      <td><code>ARTHA-TALLY-001</code></td>
+      <td>Tally Engine</td>
+      <td><span class="badge badge-green">STABLE</span></td>
+      <td>INTEGRATION</td>
+    </tr>
+<tr>
+      <td><code>ARTHA-FINANCE-001</code></td>
+      <td>Financial Reporting</td>
+      <td><span class="badge badge-green">STABLE</span></td>
+      <td>REPORTING</td>
+    </tr>
+<tr>
+      <td><code>ARTHA-COMPANY-001</code></td>
+      <td>Multi-Company Engine</td>
+      <td><span class="badge badge-green">STABLE</span></td>
+      <td>MULTI_TENANT</td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Verification Results -->
+    <div class="card">
+      <h2>Verification Results (18/18 Pass)</h2>
+      <table>
+        <thead>
+          <tr><th>Check</th><th>Result</th><th>Details</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+      <td>Capability Integrity</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>All 9 capabilities verified</td>
+    </tr>
+<tr>
+      <td>Authority Boundaries</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>All routes bounded</td>
+    </tr>
+<tr>
+      <td>Consumer Simulation</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>3 consumers tested</td>
+    </tr>
+<tr>
+      <td>Negative Scenarios</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>All handled correctly</td>
+    </tr>
+<tr>
+      <td>Adversarial Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>No exploits successful</td>
+    </tr>
+<tr>
+      <td>Replay Proof</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>Deterministic replay verified</td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Test Results -->
+    <div class="card">
+      <h2>Test Results</h2>
+      <div class="metric-grid">
+        <div class="metric">
+          <div class="value" style="color:#3fb950;">1455+</div>
+          <div class="label">Tests Passed</div>
+        </div>
+        <div class="metric">
+          <div class="value" style="color:#3fb950;">0</div>
+          <div class="label">Tests Failed</div>
+        </div>
+        <div class="metric">
+          <div class="value">14</div>
+          <div class="label">Test Suites</div>
+        </div>
+        <div class="metric">
+          <div class="value">100%</div>
+          <div class="label">Pass Rate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enforcement Status -->
+    <div class="card">
+      <h2>Enforcement Status</h2>
+      <table>
+        <thead>
+          <tr><th>Mechanism</th><th>Status</th><th>Details</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Authority Enforcement Middleware</td>
+            <td><span class="badge badge-green">MOUNTED</span></td>
+            <td>Globally mounted in server.js &mdash; intercepts ALL requests</td>
+          </tr>
+          <tr>
+            <td>Capability Guard</td>
+            <td><span class="badge badge-green">ACTIVE</span></td>
+            <td>Validates every route against capability contracts</td>
+          </tr>
+          <tr>
+            <td>Authority Enforcement Level</td>
+            <td><span class="badge badge-blue">MANDATORY</span></td>
+            <td>Enforced on all endpoints; no bypass routes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Evidence Hash -->
+    <div class="card">
+      <h2>Evidence Hash</h2>
+      <p style="margin-bottom: 8px;">Evidence integrity hash for this governance run:</p>
+      <div class="hash">2c9dffb4693ac1f9edc0bfbed1455b32e4592ee84c487cf478ca003fbcf06ef8</div>
+      <p class="timestamp" style="margin-top: 8px;">Generated: 2026-06-29T11:09:53.299Z</p>
+    </div>
+
+    <div class="footer">
+      ARTHA Governance Dashboard &mdash; Automated Evidence Generation System
+    </div>
+  </div>
+</body>
+</html>

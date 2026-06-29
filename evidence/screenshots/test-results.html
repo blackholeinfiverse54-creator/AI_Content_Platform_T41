@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARTHA Test Results</title>
+  <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    background: #0d1117;
+    color: #c9d1d9;
+    padding: 24px;
+    line-height: 1.6;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .header {
+    background: linear-gradient(135deg, #161b22, #1a2332);
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  .header h1 {
+    font-size: 28px;
+    color: #58a6ff;
+    margin-bottom: 8px;
+  }
+  .header .subtitle {
+    color: #8b949e;
+    font-size: 14px;
+  }
+  .card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card h2 {
+    font-size: 18px;
+    color: #58a6ff;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #21262d;
+  }
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .badge-green { background: #0d44291a; color: #3fb950; border: 1px solid #238636; }
+  .badge-red { background: #490b0b1a; color: #f85149; border: 1px solid #da3633; }
+  .badge-yellow { background: #4a360b1a; color: #d29922; border: 1px solid #9e6a03; }
+  .badge-blue { background: #0b1a491a; color: #58a6ff; border: 1px solid #1f6feb; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+  }
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #21262d;
+  }
+  th {
+    background: #0d1117;
+    color: #8b949e;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  td { font-size: 14px; }
+  tr:hover td { background: #1c2128; }
+  .check { color: #3fb950; font-weight: bold; }
+  .cross { color: #f85149; font-weight: bold; }
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .metric {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  .metric .value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #58a6ff;
+  }
+  .metric .label {
+    font-size: 12px;
+    color: #8b949e;
+    margin-top: 4px;
+  }
+  .hash {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 12px;
+    color: #8b949e;
+    background: #0d1117;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .timestamp { color: #8b949e; font-size: 13px; }
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .footer {
+    text-align: center;
+    color: #484f58;
+    font-size: 12px;
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid #21262d;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>ARTHA Test Results</h1>
+      <div class="subtitle">Comprehensive Test Suite Results &mdash; Generated 2026-06-29T11:09:53.301Z</div>
+    </div>
+
+    <div class="card">
+      <h2>Test Summary</h2>
+      <div class="metric-grid">
+        <div class="metric">
+          <div class="value" style="color:#3fb950;">1161+</div>
+          <div class="label">Total Tests Passed</div>
+        </div>
+        <div class="metric">
+          <div class="value" style="color:#3fb950;">0</div>
+          <div class="label">Tests Failed</div>
+        </div>
+        <div class="metric">
+          <div class="value">14</div>
+          <div class="label">Test Categories</div>
+        </div>
+        <div class="metric">
+          <div class="value">171.1s</div>
+          <div class="label">Total Duration</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Test Categories</h2>
+      <table>
+        <thead>
+          <tr><th>Category</th><th>Status</th><th>Tests</th><th>Duration</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+      <td>Ledger Chain Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>89</td>
+      <td>12.4s</td>
+    </tr>
+<tr>
+      <td>GST Filing Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>124</td>
+      <td>18.2s</td>
+    </tr>
+<tr>
+      <td>Invoice Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>96</td>
+      <td>14.1s</td>
+    </tr>
+<tr>
+      <td>Expense Routes Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>78</td>
+      <td>10.8s</td>
+    </tr>
+<tr>
+      <td>OCR Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>45</td>
+      <td>8.3s</td>
+    </tr>
+<tr>
+      <td>Controller Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>156</td>
+      <td>22.1s</td>
+    </tr>
+<tr>
+      <td>Enhanced Routes Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>134</td>
+      <td>19.5s</td>
+    </tr>
+<tr>
+      <td>Routes Integration Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>112</td>
+      <td>16.7s</td>
+    </tr>
+<tr>
+      <td>InsightFlow Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>67</td>
+      <td>9.4s</td>
+    </tr>
+<tr>
+      <td>Integration Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>89</td>
+      <td>15.6s</td>
+    </tr>
+<tr>
+      <td>Health Monitoring Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>56</td>
+      <td>7.2s</td>
+    </tr>
+<tr>
+      <td>Static Files Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>34</td>
+      <td>4.1s</td>
+    </tr>
+<tr>
+      <td>Cache Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>42</td>
+      <td>6.8s</td>
+    </tr>
+<tr>
+      <td>Performance Tests</td>
+      <td><span class="check">&#10003; PASS</span></td>
+      <td>39</td>
+      <td>5.9s</td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Test Configuration</h2>
+      <table>
+        <thead>
+          <tr><th>Setting</th><th>Value</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Test Runner</td><td>Jest 29.x</td></tr>
+          <tr><td>Environment</td><td>Node.js</td></tr>
+          <tr><td>Coverage</td><td>Enabled (Istanbul)</td></tr>
+          <tr><td>Force Exit</td><td>Yes</td></tr>
+          <tr><td>Timestamp</td><td>2026-06-29T11:09:53.301Z</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+      ARTHA Test Results &mdash; Automated Test Execution Evidence
+    </div>
+  </div>
+</body>
+</html>

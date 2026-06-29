@@ -1,0 +1,134 @@
+{
+  "verifier": "ARTH Independent Capability Verifier",
+  "version": "2.0.0",
+  "timestamp": "2026-06-29T10:53:41.324Z",
+  "duration_ms": 24,
+  "evidence_hash": "331242ca6bedaf5aa604ced27cff325b159289d325fb920d225ed13a125a45a8",
+  "contract_count": 9,
+  "results": [
+    {
+      "timestamp": "2026-06-29T10:53:41.307Z",
+      "name": "V01_CONTRACT_SCHEMA",
+      "status": "PASS",
+      "capability": "ARTHA-AUDIT-001",
+      "detail": "All 10 required fields present"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.308Z",
+      "name": "V01_CONTRACT_SCHEMA",
+      "status": "PASS",
+      "capability": "ARTHA-EVIDENCE-001",
+      "detail": "All 10 required fields present"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.308Z",
+      "name": "V01_CONTRACT_SCHEMA",
+      "status": "PASS",
+      "capability": "ARTHA-FINREPORT-001",
+      "detail": "All 10 required fields present"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.308Z",
+      "name": "V01_CONTRACT_SCHEMA",
+      "status": "PASS",
+      "capability": "ARTHA-LEDGER-001",
+      "detail": "All 10 required fields present"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.308Z",
+      "name": "V01_CONTRACT_SCHEMA",
+      "status": "PASS",
+      "capability": "ARTHA-MULTICOMPANY-001",
+      "detail": "All 10 required fields present"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.308Z",
+      "name": "V01_CONTRACT_SCHEMA",
+      "status": "PASS",
+      "capability": "ARTHA-OBSERVE-001",
+      "detail": "All 10 required fields present"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.308Z",
+      "name": "V01_CONTRACT_SCHEMA",
+      "status": "PASS",
+      "capability": "ARTHA-SIGNAL-001",
+      "detail": "All 10 required fields present"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.308Z",
+      "name": "V01_CONTRACT_SCHEMA",
+      "status": "PASS",
+      "capability": "ARTHA-TALLY-001",
+      "detail": "All 10 required fields present"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.308Z",
+      "name": "V01_CONTRACT_SCHEMA",
+      "status": "PASS",
+      "capability": "ARTHA-TRACE-001",
+      "detail": "All 10 required fields present"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.308Z",
+      "name": "V02_AUTHORITY_NON_OVERLAP",
+      "status": "PASS",
+      "detail": "All 11 collections have single ownership"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.309Z",
+      "name": "V03_ROUTE_MAP_COVERAGE",
+      "status": "PASS",
+      "detail": "All contract endpoints covered by route map"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.310Z",
+      "name": "V04_SERVICE_EXISTENCE",
+      "status": "PASS",
+      "detail": "All provider service files exist"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.311Z",
+      "name": "V05_MODEL_EXISTENCE",
+      "status": "PASS",
+      "detail": "All provider model files exist"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.312Z",
+      "name": "V06_DEPENDENCY_CYCLE",
+      "status": "PASS",
+      "detail": "No dependency cycles detected"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.312Z",
+      "name": "V07_VERSION_CONSISTENCY",
+      "status": "PASS",
+      "detail": "All 9 contracts have valid semver versions"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.312Z",
+      "name": "V08_AUTH_CONFIG",
+      "status": "PASS",
+      "detail": "All contracts have valid authentication configuration"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.312Z",
+      "name": "V09_READONLY_ENFORCEMENT",
+      "status": "PASS",
+      "detail": "Read-only capabilities are correctly configured"
+    },
+    {
+      "timestamp": "2026-06-29T10:53:41.323Z",
+      "name": "V10_EVIDENCE_HASH",
+      "status": "PASS",
+      "detail": "Evidence package hash: 331242ca6bedaf5a...",
+      "hash": "331242ca6bedaf5aa604ced27cff325b159289d325fb920d225ed13a125a45a8"
+    }
+  ],
+  "summary": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0,
+    "all_passed": true
+  }
+}

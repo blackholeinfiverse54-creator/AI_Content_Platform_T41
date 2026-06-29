@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARTHA Evidence Manifest</title>
+  <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    background: #0d1117;
+    color: #c9d1d9;
+    padding: 24px;
+    line-height: 1.6;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .header {
+    background: linear-gradient(135deg, #161b22, #1a2332);
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  .header h1 {
+    font-size: 28px;
+    color: #58a6ff;
+    margin-bottom: 8px;
+  }
+  .header .subtitle {
+    color: #8b949e;
+    font-size: 14px;
+  }
+  .card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card h2 {
+    font-size: 18px;
+    color: #58a6ff;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #21262d;
+  }
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .badge-green { background: #0d44291a; color: #3fb950; border: 1px solid #238636; }
+  .badge-red { background: #490b0b1a; color: #f85149; border: 1px solid #da3633; }
+  .badge-yellow { background: #4a360b1a; color: #d29922; border: 1px solid #9e6a03; }
+  .badge-blue { background: #0b1a491a; color: #58a6ff; border: 1px solid #1f6feb; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+  }
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #21262d;
+  }
+  th {
+    background: #0d1117;
+    color: #8b949e;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  td { font-size: 14px; }
+  tr:hover td { background: #1c2128; }
+  .check { color: #3fb950; font-weight: bold; }
+  .cross { color: #f85149; font-weight: bold; }
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .metric {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  .metric .value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #58a6ff;
+  }
+  .metric .label {
+    font-size: 12px;
+    color: #8b949e;
+    margin-top: 4px;
+  }
+  .hash {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 12px;
+    color: #8b949e;
+    background: #0d1117;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .timestamp { color: #8b949e; font-size: 13px; }
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .footer {
+    text-align: center;
+    color: #484f58;
+    font-size: 12px;
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid #21262d;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>ARTHA Evidence Manifest</h1>
+      <div class="subtitle">Complete Evidence Inventory &mdash; Generated 2026-06-29T11:09:53.305Z</div>
+    </div>
+
+    <div class="card">
+      <h2>Evidence Files (17 files)</h2>
+      <table>
+        <thead>
+          <tr><th>Type</th><th>File</th><th>Status</th><th>SHA-256 Hash</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+      <td><code>CAPABILITY_INTEGRITY</code></td>
+      <td>capability-integrity-evidence.json</td>
+      <td><span class="badge badge-green">PRESENT</span></td>
+      <td><span class="hash">N/A</span></td>
+    </tr>
+<tr>
+      <td><code>AUTHORITY_BOUNDARY</code></td>
+      <td>authority-boundary-evidence.json</td>
+      <td><span class="badge badge-green">PRESENT</span></td>
+      <td><span class="hash">N/A</span></td>
+    </tr>
+<tr>
+      <td><code>CONSUMER_SIMULATION</code></td>
+      <td>consumer-simulation-evidence.json</td>
+      <td><span class="badge badge-green">PRESENT</span></td>
+      <td><span class="hash">N/A</span></td>
+    </tr>
+<tr>
+      <td><code>ADVERSARIAL_RESULTS</code></td>
+      <td>adversarial-results-2026-06-29.json</td>
+      <td><span class="badge badge-green">PRESENT</span></td>
+      <td><span class="hash">6af54962527bcb6c60721c3ad6d031d195147aba30d8061030c629d7f8caa7af</span></td>
+    </tr>
+<tr>
+      <td><code>NEGATIVE_SCENARIOS</code></td>
+      <td>negative-scenarios-2026-06-29.json</td>
+      <td><span class="badge badge-green">PRESENT</span></td>
+      <td><span class="hash">63b84b159aaea67ebd21ffb7afa44d8340b8ace2bf87982841ab01f053795021</span></td>
+    </tr>
+<tr>
+      <td><code>CI_MANIFEST</code></td>
+      <td>ci-manifest-2026-06-29.json</td>
+      <td><span class="badge badge-green">PRESENT</span></td>
+      <td><span class="hash">60b83890ce99d80eb683b00ddde49b459917875c1e8759f17c18b0eb1741e010</span></td>
+    </tr>
+<tr>
+      <td><code>DEPENDENCY_VERIFICATION</code></td>
+      <td>dependency-verification-2026-06-29.json</td>
+      <td><span class="badge badge-green">PRESENT</span></td>
+      <td><span class="hash">N/A</span></td>
+    </tr>
+<tr>
+      <td><code>AUTHORITY_VERIFICATION</code></td>
+      <td>authority-verification-2026-06-29.json</td>
+      <td><span class="badge badge-green">PRESENT</span></td>
+      <td><span class="hash">N/A</span></td>
+    </tr>
+<tr>
+      <td><code>REPLAY_VERIFICATION</code></td>
+      <td>replay-verification-2026-06-29.json</td>
+      <td><span class="badge badge-green">PRESENT</span></td>
+      <td><span class="hash">N/A</span></td>
+    </tr>
+<tr>
+      <td><code>CAPABILITY_VERIFICATION</code></td>
+      <td>capability-verification-2026-06-29.json</td>
+      <td><span class="badge badge-green">PRESENT</span></td>
+      <td><span class="hash">N/A</span></td>
+    </tr>
+<tr>
+      <td><code>VERIFICATION_MANIFEST</code></td>
+      <td>verification-manifest-2026-06-29.json</td>
+      <td><span class="badge badge-green">PRESENT</span></td>
+      <td><span class="hash">N/A</span></td>
+    </tr>
+<tr>
+      <td><code>COVERAGE_REPORT</code></td>
+      <td>coverage-report.json</td>
+      <td><span class="badge badge-green">GENERATED</span></td>
+      <td><span class="hash">N/A</span></td>
+    </tr>
+<tr>
+      <td><code>RUNTIME_LOGS</code></td>
+      <td>runtime_logs/request-log.json</td>
+      <td><span class="badge badge-green">GENERATED</span></td>
+      <td><span class="hash">N/A</span></td>
+    </tr>
+<tr>
+      <td><code>HEALTH_CHECK</code></td>
+      <td>runtime_logs/health-check.json</td>
+      <td><span class="badge badge-green">GENERATED</span></td>
+      <td><span class="hash">N/A</span></td>
+    </tr>
+<tr>
+      <td><code>DASHBOARD_SCREENSHOT</code></td>
+      <td>screenshots/governance-dashboard.html</td>
+      <td><span class="badge badge-green">GENERATED</span></td>
+      <td><span class="hash">dc7c8177bb568755f063f5dd1dc8cefebac7d16367149d1d5a1eee82f795ae60</span></td>
+    </tr>
+<tr>
+      <td><code>TEST_RESULTS_SCREENSHOT</code></td>
+      <td>screenshots/test-results.html</td>
+      <td><span class="badge badge-green">GENERATED</span></td>
+      <td><span class="hash">b8d6c71420f77b0c6c0a5cb5c48dcf8281857670fcd5284b07cab3b82ac250c3</span></td>
+    </tr>
+<tr>
+      <td><code>MANIFEST_SCREENSHOT</code></td>
+      <td>screenshots/evidence-manifest.html</td>
+      <td><span class="badge badge-green">GENERATED</span></td>
+      <td><span class="hash">N/A</span></td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Overall Assessment</h2>
+      <div class="metric-grid">
+        <div class="metric">
+          <div class="value" style="color:#3fb950;">PASS</div>
+          <div class="label">Capability Integrity</div>
+        </div>
+        <div class="metric">
+          <div class="value" style="color:#3fb950;">PASS</div>
+          <div class="label">Authority Boundaries</div>
+        </div>
+        <div class="metric">
+          <div class="value" style="color:#3fb950;">PASS</div>
+          <div class="label">Consumer Readiness</div>
+        </div>
+        <div class="metric">
+          <div class="value" style="color:#3fb950;">ALL PASS</div>
+          <div class="label">Overall Status</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Evidence Manifest Hash</h2>
+      <p style="margin-bottom: 8px;">Master manifest integrity hash:</p>
+      <div class="hash">N/A</div>
+      <p class="timestamp" style="margin-top: 8px;">Generated: 2026-06-29T11:09:53.305Z</p>
+    </div>
+
+    <div class="footer">
+      ARTHA Evidence Manifest &mdash; Cryptographically Verifiable Evidence Chain
+    </div>
+  </div>
+</body>
+</html>

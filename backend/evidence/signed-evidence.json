@@ -1,0 +1,30 @@
+{
+  "signed_at": "2026-06-29T11:08:17.028Z",
+  "public_key_fingerprint": "d3fff3ae0ed3f230c718e3c4e311ff8950901d4c136080fc5cfb068c22451134",
+  "files": [
+    {
+      "filename": "adversarial-results-2026-06-29.json",
+      "hash": "6af54962527bcb6c60721c3ad6d031d195147aba30d8061030c629d7f8caa7af",
+      "signature": "Dy5wP3o0gb/D08vIcOQGRrG8jwKKDqFGN4OWWFDdS5NvzUtFywMOEL+GCNSecVdhZ9wf2eboaurUzk1ReP0Cr9ikXqtyMiv1yUbTQz/7RezgHMORJ1tn9Hv73D+Y2YQxdPZZQkE/sADw9Fk77UR+R6pxigfkqyUSENF1rqOHY94nOQENfFoc5JU3CAvMKvLFvlUVzMWZKuT6jRcXg5Qksm8RWMnpRPWTYGRtthfYvyJH8N52yRg9or1jXmKFW2GNm0/XkgxdorgdnLXSx65fPk6eKcNA2/lvNiysb4Te0OFjFsbTyjKCQVTIr90FKfrHlXuq6VFKr4y7NXVlqsiuUA=="
+    },
+    {
+      "filename": "ci-manifest-2026-06-29.json",
+      "hash": "60b83890ce99d80eb683b00ddde49b459917875c1e8759f17c18b0eb1741e010",
+      "signature": "jZ+G2Kgs4aYUQ/Dh8jxIV2iPL2DQKNUGyMI8Axua2qOCATwUDtA6Ezf86J6de1TH69Clcz53vuICN5L/DOgLG9xFOkaQzobwnJgxy+RL561zxcWsKTM/OMdo0Ygz5xJqI+9roWv8lRVkoePgRzOMMqRwxbG+A6B45PkU8nDz96Wki+4BQXO7fGUDx5e+flyrso0/bBkCPVOQyW0zMiNq5n2FeOU2F/cqZO3/8J5ecjgHrxXmwlHh16z8kPw/Zdh7CZ5lVFys1Hu/KdkqPGHl7f6FfFIpjxLgqI/iA+UVMm2t3x64iNRhEDkZ0y/1aiFnqJ2bDk9GwKobn+bd1the0w=="
+    },
+    {
+      "filename": "negative-scenarios-2026-06-29.json",
+      "hash": "63b84b159aaea67ebd21ffb7afa44d8340b8ace2bf87982841ab01f053795021",
+      "signature": "3MFUSrPNbyUxJoukZgTwLnehIJmcGegcPg+a0IAeTPsnMPcMf1oJFFYVhqtpkVKvdJ5cpx3X79qq5kAr2MaUvsDLkSL40s7PiWBofb/tyOAMLnZSUuPQ++zGZA76qvZbX07cx0z+Nv116VSIXAXnVlDpIuGDiVvp661zW3afiO9ejs5w1VEl+0QXeQsJ3beHobolSo9KrKw0nOAzoNkmUP1zOESwt9odYrtdtri4qMZiAxTZa5GyX31HwKczYRUEBjhyi1h5v4ZJ1QfNo/m76scWS2ZFq+joi4oHOSju+eurZaC2GZwfJvVjo+etm2AoA7H+NR1mE+kXyA1561D/PA=="
+    }
+  ],
+  "verification_instructions": {
+    "command": "node scripts/verify-signature.js",
+    "description": "Verify all evidence file signatures using the public key.",
+    "required_files": [
+      "backend/keys/public.pem",
+      "evidence/signed-evidence.json",
+      "evidence/*.sig"
+    ]
+  }
+}

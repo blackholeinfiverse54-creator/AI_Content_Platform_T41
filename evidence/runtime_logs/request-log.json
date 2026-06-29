@@ -1,0 +1,363 @@
+{
+  "captured_at": "2026-06-29T11:21:11.622Z",
+  "port": 5002,
+  "server_ready": true,
+  "requests": [
+    {
+      "endpoint": "/health",
+      "method": "GET",
+      "name": "health",
+      "description": "Health check (public)",
+      "timestamp": "2026-06-29T11:21:05.783Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "message": "ARTHA API is running",
+        "timestamp": "2026-06-29T11:21:05.791Z",
+        "version": "0.1.0",
+        "uptime": 2.0490764
+      }
+    },
+    {
+      "endpoint": "/health/detailed",
+      "method": "GET",
+      "name": "health_detailed",
+      "description": "Detailed health (public)",
+      "timestamp": "2026-06-29T11:21:05.787Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "message": "ARTHA API is healthy",
+        "data": {
+          "status": "healthy",
+          "timestamp": "2026-06-29T11:21:05.795Z",
+          "version": "0.1.0",
+          "environment": "development",
+          "uptime": 2.0534265,
+          "memory": {
+            "rss": 160178176,
+            "heapTotal": 121507840,
+            "heapUsed": 65193984,
+            "external": 22919187,
+            "arrayBuffers": 19036292
+          },
+          "performance": {
+            "uptime": 2.0532264,
+            "requests": {
+              "total": 0,
+              "slow": 0,
+              "errors": 0,
+              "slowPercentage": 0,
+              "errorPercentage": 0
+            },
+            "responseTime": {
+              "min": 0,
+              "max": 0,
+              "avg": 0,
+              "total": 0
+            },
+            "memory": {
+              "current": {
+                "rss": 153,
+                "heapTotal": 116,
+                "heapUsed": 63,
+                "external": 22
+              },
+              "peak": 0
+            },
+            "redis": {
+              "status": "disabled"
+            }
+          },
+          "issues": [],
+          "components": {
+            "database": {
+              "status": "healthy",
+              "state": "connected",
+              "host": "ac-kgtoxet-shard-00-01.rzneis7.mongodb.net",
+              "name": "test"
+            },
+            "redis": {
+              "status": "disabled",
+              "message": "Redis not configured"
+            },
+            "disk": {
+              "status": "healthy",
+              "available": "N/A"
+            }
+          }
+        }
+      }
+    },
+    {
+      "endpoint": "/observability",
+      "method": "GET",
+      "name": "observability",
+      "description": "Observability metrics (public)",
+      "timestamp": "2026-06-29T11:21:05.791Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "status": "healthy",
+          "timestamp": "2026-06-29T11:21:06.628Z",
+          "version": "0.1.0",
+          "environment": "development",
+          "uptime": 2.8861059,
+          "memory": {
+            "rss": 162267136,
+            "heapTotal": 122032128,
+            "heapUsed": 54601136,
+            "external": 22747036,
+            "arrayBuffers": 18872649
+          },
+          "components": {
+            "database": {
+              "status": "healthy",
+              "state": "connected",
+              "host": "ac-kgtoxet-shard-00-01.rzneis7.mongodb.net",
+              "name": "test",
+              "replicaSet": "standalone"
+            },
+            "redis": {
+              "status": "disabled",
+              "message": "Redis not configured"
+            },
+            "traces": {
+              "status": "healthy",
+              "active": 10,
+              "completed": 4,
+              "failed": 0,
+              "total": 14,
+              "stuckTraces": 0
+            },
+            "proofs": {
+              "status": "healthy",
+              "total": 1,
+              "verified": 0,
+              "unverified": 1
+            },
+            "signals": {
+              "status": "healthy",
+              "active": 40,
+              "critical": 0,
+              "warning": 0,
+              "info": 0
+            },
+            "journals": {
+              "status": "healthy",
+              "total": 46,
+              "posted": 44,
+              "draft": 2,
+              "voided": 0
+            },
+            "payments": {
+              "status": "healthy",
+              "total": 0,
+              "completed": 0,
+              "failed": 0,
+              "pending": 0
+            },
+            "auditEvents": {
+              "status": "healthy",
+              "total": 0,
+              "todayCount": 0,
+              "chainIntegrity": {
+                "isValid": true,
+                "checked": 0
+              }
+            }
+          },
+          "metrics": {
+            "uptime_seconds": 1.401,
+            "http_requests_total": 0,
+            "http_errors_total": 0,
+            "http_request_duration_ms_avg": 0,
+            "memory_heap_used_bytes": 54605512,
+            "memory_heap_total_bytes": 122032128,
+            "memory_rss_bytes": 162267136,
+            "gc_runs": "not_available"
+          }
+        }
+      }
+    },
+    {
+      "endpoint": "/prometheus",
+      "method": "GET",
+      "name": "prometheus",
+      "description": "Prometheus metrics (public)",
+      "timestamp": "2026-06-29T11:21:06.623Z",
+      "status": 200,
+      "body": "# TYPE artha_uptime_seconds gauge\nartha_uptime_seconds 1.404\n# TYPE artha_http_requests_total gauge\nartha_http_requests_total 0\n# TYPE artha_http_errors_total gauge\nartha_http_errors_total 0\n# TYPE artha_http_request_duration_ms_avg gauge\nartha_http_request_duration_ms_avg 0\n# TYPE artha_memory_heap_used_bytes gauge\nartha_memory_heap_used_bytes 54665936\n# TYPE artha_memory_heap_total_bytes gauge\nartha_memory_heap_total_bytes 122032128\n# TYPE artha_memory_rss_bytes gauge\nartha_memory_rss_bytes 162267136\n# TYPE artha_gc_runs gauge\nartha_gc_runs not_available\n"
+    },
+    {
+      "endpoint": "/dashboard",
+      "method": "GET",
+      "name": "dashboard",
+      "description": "Dashboard redirect (public)",
+      "timestamp": "2026-06-29T11:21:06.626Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "traces": {
+            "status": "healthy",
+            "active": 10,
+            "completed": 4,
+            "failed": 0,
+            "total": 14,
+            "stuckTraces": 0
+          },
+          "signals": {
+            "status": "healthy",
+            "active": 40,
+            "critical": 0,
+            "warning": 0,
+            "info": 0
+          },
+          "payments": {
+            "status": "healthy",
+            "total": 0,
+            "completed": 0,
+            "failed": 0,
+            "pending": 0
+          },
+          "audit": {
+            "status": "healthy",
+            "total": 0,
+            "todayCount": 0,
+            "chainIntegrity": {
+              "isValid": true,
+              "checked": 0
+            }
+          },
+          "metrics": {
+            "uptime_seconds": 2.288,
+            "http_requests_total": 0,
+            "http_errors_total": 0,
+            "http_request_duration_ms_avg": 0,
+            "memory_heap_used_bytes": 59323216,
+            "memory_heap_total_bytes": 122294272,
+            "memory_rss_bytes": 163323904,
+            "gc_runs": "not_available"
+          }
+        }
+      }
+    },
+    {
+      "endpoint": "/api/v1/ledger/entries",
+      "method": "GET",
+      "name": "ledger_entries_no_auth",
+      "description": "Ledger entries WITHOUT auth (should 401)",
+      "timestamp": "2026-06-29T11:21:07.510Z",
+      "status": 401,
+      "body": {
+        "success": false,
+        "message": "Not authenticated",
+        "redirect": "http://localhost:5173/login"
+      }
+    },
+    {
+      "endpoint": "/api/v1/audit/trail/invoice/123",
+      "method": "GET",
+      "name": "audit_trail_no_auth",
+      "description": "Audit trail WITHOUT auth (should 401)",
+      "timestamp": "2026-06-29T11:21:07.514Z",
+      "status": 401,
+      "body": {
+        "success": false,
+        "message": "Not authenticated",
+        "redirect": "http://localhost:5173/login"
+      }
+    },
+    {
+      "endpoint": "/api/v1/signals",
+      "method": "GET",
+      "name": "signals_no_auth",
+      "description": "Signals WITHOUT auth (should 401)",
+      "timestamp": "2026-06-29T11:21:07.517Z",
+      "status": 401,
+      "body": {
+        "success": false,
+        "message": "Not authenticated",
+        "redirect": "http://localhost:5173/login"
+      }
+    },
+    {
+      "endpoint": "/api/v1/trace/test-trace",
+      "method": "GET",
+      "name": "trace_no_auth",
+      "description": "Trace WITHOUT auth (should 401)",
+      "timestamp": "2026-06-29T11:21:07.519Z",
+      "status": 401,
+      "body": {
+        "success": false,
+        "message": "Not authenticated",
+        "redirect": "http://localhost:5173/login"
+      }
+    },
+    {
+      "endpoint": "/api/v1/auth/login",
+      "method": "POST",
+      "name": "login_wrong_password",
+      "description": "Login with wrong password (should 401)",
+      "timestamp": "2026-06-29T11:21:07.522Z",
+      "status": 401,
+      "body": {
+        "success": false,
+        "message": "Invalid email or password"
+      }
+    },
+    {
+      "endpoint": "/api/v1/ledger/entries",
+      "method": "POST",
+      "name": "post_ledger_no_auth",
+      "description": "POST ledger entries WITHOUT auth (mutation blocked)",
+      "timestamp": "2026-06-29T11:21:07.587Z",
+      "status": 401,
+      "body": {
+        "success": false,
+        "message": "Not authenticated",
+        "redirect": "http://localhost:5173/login"
+      }
+    },
+    {
+      "endpoint": "/api/v1/invoices",
+      "method": "POST",
+      "name": "post_invoices_no_auth",
+      "description": "POST invoices WITHOUT auth (should 401)",
+      "timestamp": "2026-06-29T11:21:07.589Z",
+      "status": 401,
+      "body": {
+        "success": false,
+        "message": "Not authenticated",
+        "redirect": "http://localhost:5173/login"
+      }
+    },
+    {
+      "endpoint": "/api/v1/nonexistent-endpoint",
+      "method": "GET",
+      "name": "nonexistent_endpoint",
+      "description": "Nonexistent endpoint (should 404)",
+      "timestamp": "2026-06-29T11:21:07.591Z",
+      "status": 404,
+      "body": {
+        "success": false,
+        "message": "Route not found"
+      }
+    },
+    {
+      "endpoint": "/api/v1/reports/profit-loss",
+      "method": "GET",
+      "name": "reports_no_auth",
+      "description": "Reports WITHOUT auth (should 401)",
+      "timestamp": "2026-06-29T11:21:07.593Z",
+      "status": 401,
+      "body": {
+        "success": false,
+        "message": "Not authenticated",
+        "redirect": "http://localhost:5173/login"
+      }
+    }
+  ]
+}

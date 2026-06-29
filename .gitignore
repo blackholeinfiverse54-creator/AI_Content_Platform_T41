@@ -139,3 +139,10 @@ nginx/ssl/
 # Database dumps
 *.sql
 *.dump
+
+# Evidence screenshots (large binaries)
+evidence/screenshots/*.jpg
+evidence/screenshots/*.png
+
+# Runtime logs (contain server output)
+evidence/runtime_logs/server-output.log

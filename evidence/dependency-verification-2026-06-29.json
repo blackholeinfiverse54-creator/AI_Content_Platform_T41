@@ -1,0 +1,105 @@
+{
+  "verifier": "ARTH Dependency Graph Integrity Verifier",
+  "version": "1.0.0",
+  "timestamp": "2026-06-29T10:52:53.670Z",
+  "duration_ms": 16,
+  "contract_count": 9,
+  "graph": {
+    "nodes": 9,
+    "edges": 5,
+    "adjacency": {
+      "ARTHA-AUDIT-001": [],
+      "ARTHA-EVIDENCE-001": [],
+      "ARTHA-FINREPORT-001": [],
+      "ARTHA-LEDGER-001": [
+        "ARTHA-TRACE-001"
+      ],
+      "ARTHA-MULTICOMPANY-001": [
+        "ARTHA-LEDGER-001"
+      ],
+      "ARTHA-OBSERVE-001": [],
+      "ARTHA-SIGNAL-001": [
+        "ARTHA-TRACE-001",
+        "ARTHA-EVIDENCE-001"
+      ],
+      "ARTHA-TALLY-001": [
+        "ARTHA-LEDGER-001"
+      ],
+      "ARTHA-TRACE-001": []
+    }
+  },
+  "results": [
+    {
+      "check": "D01",
+      "name": "No Dependency Cycles",
+      "status": "PASS",
+      "detail": "No dependency cycles detected",
+      "issues": []
+    },
+    {
+      "check": "D02",
+      "name": "No Self-Dependencies",
+      "status": "PASS",
+      "detail": "No capabilities depend on themselves",
+      "issues": []
+    },
+    {
+      "check": "D03",
+      "name": "No Missing Dependencies",
+      "status": "PASS",
+      "detail": "All capability-to-capability dependencies reference existing capabilities",
+      "issues": []
+    },
+    {
+      "check": "D04",
+      "name": "No Phantom Dependencies",
+      "status": "PASS",
+      "detail": "All service imports are declared in dependencies",
+      "issues": []
+    },
+    {
+      "check": "D05",
+      "name": "Version Constraints",
+      "status": "PASS",
+      "detail": "All version constraints are valid (or none specified)",
+      "issues": []
+    },
+    {
+      "check": "D06",
+      "name": "No Circular Data Flow",
+      "status": "PASS",
+      "detail": "No circular data flow detected",
+      "issues": []
+    },
+    {
+      "check": "D07",
+      "name": "Dependency Depth",
+      "status": "PASS",
+      "detail": "Max dependency depth: 1 (within limits)",
+      "issues": [],
+      "metadata": {
+        "depths": {
+          "ARTHA-AUDIT-001": 0,
+          "ARTHA-EVIDENCE-001": 0,
+          "ARTHA-FINREPORT-001": 0,
+          "ARTHA-TRACE-001": 1,
+          "ARTHA-LEDGER-001": 1,
+          "ARTHA-MULTICOMPANY-001": 1,
+          "ARTHA-OBSERVE-001": 0,
+          "ARTHA-SIGNAL-001": 1,
+          "ARTHA-TALLY-001": 1
+        },
+        "max_depth": 1,
+        "deep_capabilities": []
+      }
+    }
+  ],
+  "summary": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0,
+    "warned": 0,
+    "all_passed": true
+  },
+  "evidence_hash": "82c4d1f0062fe5556a71b28b948cf6b366ac315bf547bf0a463dd58bd4192b89"
+}

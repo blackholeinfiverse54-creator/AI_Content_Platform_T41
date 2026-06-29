@@ -32,6 +32,7 @@ import {
 } from './middleware/monitoring.js';
 
 import { memoryMonitor } from './middleware/performance.js';
+import { authorityEnforcement, capabilityGuard } from './middleware/authorityBoundary.js';
 
 import ledgerRoutes from './routes/ledger.routes.js';
 import accountsRoutes from './routes/accounts.routes.js';
@@ -146,6 +147,13 @@ app.use(cookieParser());
 app.use(sanitizeInput);
 
 app.use('/uploads', express.static('uploads'));
+
+// ─── MANDATORY AUTHORITY ENFORCEMENT ────────────────────────────
+// This middleware intercepts ALL requests and validates capability scope.
+// It loads authority definitions from contracts/capability_contracts/*.json.
+// It is NOT optional — it runs on every request before any route handler.
+app.use(authorityEnforcement);
+// ────────────────────────────────────────────────────────────────
 
 app.use('/', healthRoutes);
 

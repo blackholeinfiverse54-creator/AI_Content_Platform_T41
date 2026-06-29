@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-06-29T11:10:00.901Z",
+  "total_lines": 0,
+  "total_statements": 0,
+  "total_functions": 0,
+  "total_branches": 0,
+  "lines_covered": 0,
+  "lines_pct": 0,
+  "statements_covered": 0,
+  "statements_pct": 0,
+  "functions_covered": 0,
+  "functions_pct": 0,
+  "branches_covered": 0,
+  "branches_pct": 0,
+  "per_file": [],
+  "governance_files": {
+    "total_governance_files": 0,
+    "note": "Coverage unavailable — Jest could not run (missing database or dependencies)",
+    "files": []
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "evidence_type": "AUTHORITY_BOUNDARY",
+  "generated_at": "2026-06-29T10:53:32.377Z",
+  "source_of_truth": "contracts/capability_contracts/*.json",
+  "hardcoded_maps": "NONE — all loaded from contracts",
+  "route_map_source": "contracts/capability_contracts/capability_route_map.json",
+  "ownership": {
+    "AuditEvent": [
+      "ARTHA-AUDIT-001"
+    ],
+    "RuntimeProof": [
+      "ARTHA-EVIDENCE-001"
+    ],
+    "JournalEntry": [
+      "ARTHA-LEDGER-001"
+    ],
+    "LedgerEntry": [
+      "ARTHA-LEDGER-001"
+    ],
+    "AccountBalance": [
+      "ARTHA-LEDGER-001"
+    ],
+    "ChartOfAccounts": [
+      "ARTHA-LEDGER-001"
+    ],
+    "Company": [
+      "ARTHA-MULTICOMPANY-001"
+    ],
+    "CostCentre": [
+      "ARTHA-MULTICOMPANY-001"
+    ],
+    "TallyExport": [
+      "ARTHA-TALLY-001"
+    ],
+    "TallyImport": [
+      "ARTHA-TALLY-001"
+    ],
+    "UnifiedTrace": [
+      "ARTHA-TRACE-001"
+    ]
+  },
+  "ownership_conflicts": [],
+  "route_coverage": {
+    "total_endpoints": 64,
+    "covered": 64,
+    "uncovered": 0,
+    "uncovered_details": []
+  },
+  "summary": {
+    "no_ownership_conflicts": true,
+    "all_routes_covered": true,
+    "enforcement": "MANDATORY — authorityEnforcement middleware mounted globally in server.js"
+  }
+}

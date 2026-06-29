@@ -1,0 +1,80 @@
+{
+  "verifier": "ARTH Verification Manifest",
+  "version": "1.0.0",
+  "timestamp": "2026-06-29T10:24:01.829Z",
+  "duration_ms": 516,
+  "overall_status": "FAIL",
+  "summary": {
+    "total_checks": 41,
+    "passed": 30,
+    "failed": 11,
+    "all_passed": false
+  },
+  "verifier_results": [
+    {
+      "verifier": "Independent Verifier",
+      "script": "independent_verifier.js",
+      "ran": true,
+      "success": true,
+      "output_lines": 37
+    },
+    {
+      "verifier": "Replay Verifier",
+      "script": "replay_verifier.js",
+      "ran": true,
+      "success": true,
+      "output_lines": 28
+    },
+    {
+      "verifier": "Authority Verifier",
+      "script": "authority_verifier.js",
+      "ran": true,
+      "success": true,
+      "output_lines": 27
+    },
+    {
+      "verifier": "Dependency Verifier",
+      "script": "dependency_verifier.js",
+      "ran": true,
+      "success": true,
+      "output_lines": 26
+    }
+  ],
+  "verifier_summaries": {
+    "capability-verification": {
+      "total": 18,
+      "passed": 17,
+      "failed": 1,
+      "all_passed": false,
+      "evidence_hash": "6629431bc564f066788c80561a8fcd6569891d3d1d5ad772dbebb891b3922e9d"
+    },
+    "replay-verification": {
+      "total": 8,
+      "passed": 0,
+      "failed": 8,
+      "all_passed": false,
+      "evidence_hash": "acd40bb00479f94987d9020d6790f40dd58972d309b06548827a4a31377bb3ba"
+    },
+    "authority-verification": {
+      "total": 8,
+      "passed": 6,
+      "failed": 2,
+      "all_passed": false,
+      "evidence_hash": "99e04c5a2df38f29b9bf7d649702c814df9ad55f167c400a1d848cdb9e1e6284"
+    },
+    "dependency-verification": {
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "all_passed": true,
+      "evidence_hash": "ebe6bd933629f2ca97f6e0e91ce02b7cf7996adb014673657f5406a860bb002c"
+    }
+  },
+  "evidence_files": [
+    "capability-verification",
+    "replay-verification",
+    "authority-verification",
+    "dependency-verification"
+  ],
+  "evidence_hash": "715e573edfba28bd2605e70b68ba8a4414d20f464c00ecf2885e817b659b5ddc"
+}

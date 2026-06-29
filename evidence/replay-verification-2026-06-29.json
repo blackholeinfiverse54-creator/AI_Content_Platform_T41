@@ -1,0 +1,272 @@
+{
+  "verifier": "ARTH Replay Determinism Verifier",
+  "version": "1.0.0",
+  "timestamp": "2026-06-29T10:31:27.509Z",
+  "duration_ms": 11,
+  "contract_count": 9,
+  "deterministic_contracts": [
+    "ARTHA-AUDIT-001",
+    "ARTHA-EVIDENCE-001",
+    "ARTHA-FINREPORT-001",
+    "ARTHA-LEDGER-001",
+    "ARTHA-MULTICOMPANY-001",
+    "ARTHA-OBSERVE-001",
+    "ARTHA-SIGNAL-001",
+    "ARTHA-TALLY-001",
+    "ARTHA-TRACE-001"
+  ],
+  "non_deterministic_contracts": [],
+  "results": [
+    {
+      "check": "R01",
+      "name": "Replay Determinism",
+      "status": "FAIL",
+      "detail": "3 replay issues",
+      "issues": [
+        {
+          "capability": "ARTHA-MULTICOMPANY-001",
+          "issue": "No prerequisites or limitations documented",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-SIGNAL-001",
+          "issue": "No prerequisites or limitations documented",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-TALLY-001",
+          "issue": "No prerequisites or limitations documented",
+          "severity": "LOW"
+        }
+      ]
+    },
+    {
+      "check": "R02",
+      "name": "Trace ID Format",
+      "status": "FAIL",
+      "detail": "4 missing trace_id format declarations",
+      "issues": [
+        {
+          "capability": "ARTHA-FINREPORT-001",
+          "issue": "Deterministic replay capability has no trace_id_format specified",
+          "severity": "MEDIUM"
+        },
+        {
+          "capability": "ARTHA-MULTICOMPANY-001",
+          "issue": "Deterministic replay capability has no trace_id_format specified",
+          "severity": "MEDIUM"
+        },
+        {
+          "capability": "ARTHA-OBSERVE-001",
+          "issue": "Deterministic replay capability has no trace_id_format specified",
+          "severity": "MEDIUM"
+        },
+        {
+          "capability": "ARTHA-TALLY-001",
+          "issue": "Deterministic replay capability has no trace_id_format specified",
+          "severity": "MEDIUM"
+        }
+      ]
+    },
+    {
+      "check": "R03",
+      "name": "Replay Count Tracking",
+      "status": "FAIL",
+      "detail": "7 capabilities lack replay count tracking",
+      "issues": [
+        {
+          "capability": "ARTHA-AUDIT-001",
+          "issue": "No replay count tracking mechanism documented",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-EVIDENCE-001",
+          "issue": "No replay count tracking mechanism documented",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-FINREPORT-001",
+          "issue": "No replay count tracking mechanism documented",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-MULTICOMPANY-001",
+          "issue": "No replay count tracking mechanism documented",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-OBSERVE-001",
+          "issue": "No replay count tracking mechanism documented",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-SIGNAL-001",
+          "issue": "No replay count tracking mechanism documented",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-TALLY-001",
+          "issue": "No replay count tracking mechanism documented",
+          "severity": "LOW"
+        }
+      ]
+    },
+    {
+      "check": "R04",
+      "name": "Replay Inputs/Outputs",
+      "status": "FAIL",
+      "detail": "1 schema issues",
+      "issues": [
+        {
+          "capability": "ARTHA-FINREPORT-001",
+          "issue": "No output_schemas defined for replay",
+          "severity": "MEDIUM"
+        }
+      ]
+    },
+    {
+      "check": "R05",
+      "name": "Replay Data Integrity",
+      "status": "FAIL",
+      "detail": "4 capabilities lack data integrity for replay",
+      "issues": [
+        {
+          "capability": "ARTHA-FINREPORT-001",
+          "issue": "No data integrity mechanisms defined for replay",
+          "severity": "MEDIUM"
+        },
+        {
+          "capability": "ARTHA-MULTICOMPANY-001",
+          "issue": "No data integrity mechanisms defined for replay",
+          "severity": "MEDIUM"
+        },
+        {
+          "capability": "ARTHA-OBSERVE-001",
+          "issue": "No data integrity mechanisms defined for replay",
+          "severity": "MEDIUM"
+        },
+        {
+          "capability": "ARTHA-TALLY-001",
+          "issue": "No data integrity mechanisms defined for replay",
+          "severity": "MEDIUM"
+        }
+      ]
+    },
+    {
+      "check": "R06",
+      "name": "Replay State Isolation",
+      "status": "FAIL",
+      "detail": "7 capabilities lack state isolation documentation",
+      "issues": [
+        {
+          "capability": "ARTHA-AUDIT-001",
+          "issue": "No explicit replay state isolation documented",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-EVIDENCE-001",
+          "issue": "No explicit replay state isolation documented",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-MULTICOMPANY-001",
+          "issue": "No explicit replay state isolation documented",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-OBSERVE-001",
+          "issue": "No explicit replay state isolation documented",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-SIGNAL-001",
+          "issue": "No explicit replay state isolation documented",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-TALLY-001",
+          "issue": "No explicit replay state isolation documented",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-TRACE-001",
+          "issue": "No explicit replay state isolation documented",
+          "severity": "LOW"
+        }
+      ]
+    },
+    {
+      "check": "R07",
+      "name": "Replay Audit Trail",
+      "status": "FAIL",
+      "detail": "5 capabilities lack audit trail for replay",
+      "issues": [
+        {
+          "capability": "ARTHA-EVIDENCE-001",
+          "issue": "No audit trail mechanism documented for replay",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-FINREPORT-001",
+          "issue": "No audit trail mechanism documented for replay",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-MULTICOMPANY-001",
+          "issue": "No audit trail mechanism documented for replay",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-OBSERVE-001",
+          "issue": "No audit trail mechanism documented for replay",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-TALLY-001",
+          "issue": "No audit trail mechanism documented for replay",
+          "severity": "LOW"
+        }
+      ]
+    },
+    {
+      "check": "R08",
+      "name": "Replay Hash Chain",
+      "status": "FAIL",
+      "detail": "5 capabilities lack hash chain for replay",
+      "issues": [
+        {
+          "capability": "ARTHA-FINREPORT-001",
+          "issue": "No hash chain or verification mechanism for replay consistency",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-MULTICOMPANY-001",
+          "issue": "No hash chain or verification mechanism for replay consistency",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-OBSERVE-001",
+          "issue": "No hash chain or verification mechanism for replay consistency",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-TALLY-001",
+          "issue": "No hash chain or verification mechanism for replay consistency",
+          "severity": "LOW"
+        },
+        {
+          "capability": "ARTHA-TRACE-001",
+          "issue": "No hash chain or verification mechanism for replay consistency",
+          "severity": "LOW"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 0,
+    "failed": 8,
+    "all_passed": false
+  },
+  "evidence_hash": "7344689f8b6746cc1340f943c2ca4b8d34860be5fd2eb235df40c7f817f96776"
+}
