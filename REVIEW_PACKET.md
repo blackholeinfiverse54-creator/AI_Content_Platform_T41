@@ -2,8 +2,8 @@
 
 **Prepared for:** Engineering Review  
 **Platform:** Artha v0.1  
-**Scope:** Ledger → Compliance → Signal → SETU integration readiness  
-**Last Updated:** June 2026 — Phase 3/4/5 Sprint Complete  
+**Scope:** Ledger → Compliance → Signal → SETU → TANTRA integration readiness  
+**Last Updated:** July 2026 — Full Codebase Audit Complete  
 
 ---
 
@@ -11,6 +11,12 @@
 
 | Date | Change |
 |------|--------|
+| July 2026 | Full codebase audit: 35 models, 47 services, 26 controllers, 27 routes, 11 middleware |
+| July 2026 | SETU dispatch lifecycle implemented (setuDispatch.service.js, SetuDispatch model) |
+| July 2026 | TANTRA execution chain implemented (8-stage: Signal→Intelligence→Decision→Contract→Enforcement→Execution→Truth→Observability) |
+| July 2026 | Decision Ledger, Provenance Chain, Lineage Anchoring implemented |
+| July 2026 | Governance API expanded to 30+ endpoints |
+| July 2026 | All documentation updated to reflect current codebase |
 | June 2026 | Design system capability extraction complete — `frontend/src/design-system/` |
 | June 2026 | Ecosystem readiness assessment — `docs/ecosystem-readiness.md` |
 | June 2026 | Lineage model documented — `docs/lineage-model.md` |
@@ -27,10 +33,11 @@
 
 ## 1. Entry Points
 
-### API Surface
+### API Surface (80+ Endpoints)
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
 | POST | `/api/v1/auth/login` | Public | JWT login |
+| POST | `/api/v1/auth/register` | Public | User registration |
 | GET | `/api/v1/ledger/entries` | Bearer | Journal entries with pagination |
 | GET | `/api/v1/ledger/verify-chain` | Bearer | Full ledger hash-chain verification |
 | POST | `/api/v1/invoices/:id/send` | Bearer + accountant | Creates journal entry, posts to ledger |
@@ -44,6 +51,72 @@
 | GET | `/api/v1/signals/trace/:traceId` | Bearer | Full trace reconstruction (signal → filing → journal → ledger) |
 | GET | `/api/v1/signals/:signalId/pipeline-check` | Bearer + accountant | Dry-run SETU pipeline for a signal |
 | POST | `/api/v1/signals/evaluate/overdue-invoices` | Bearer + accountant | Evaluate + emit overdue invoice signals |
+| POST | `/api/v1/setu/dispatch` | Bearer | Dispatch signal via SETU pipeline |
+| POST | `/api/v1/setu/callback` | HMAC | SETU acknowledgement webhook |
+| POST | `/api/v1/setu/dispatch/:dispatchId/retry` | Bearer | Retry failed SETU dispatch |
+| GET | `/api/v1/banking/statements` | Bearer | List bank statements |
+| GET | `/api/v1/audit/events` | Bearer | List audit events |
+| GET | `/api/v1/ca-workflow/periods` | Bearer | List financial periods |
+| GET | `/api/v1/tally/export` | Bearer | Export to Tally |
+| GET | `/api/v1/multi-company/companies` | Bearer | List companies |
+| POST | `/api/v1/tantra/heartbeat` | Bearer | TANTRA heartbeat |
+| GET | `/api/v1/tantra/health` | Bearer | TANTRA health status |
+
+### BHIV Governance API (30+ Endpoints)
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | `/api/v1/governance/capabilities` | List all capability contracts |
+| GET | `/api/v1/governance/capabilities/:id` | Get specific capability |
+| POST | `/api/v1/governance/policy/evaluate` | Evaluate policy decision |
+| GET | `/api/v1/governance/policy/status` | Policy engine status |
+| GET | `/api/v1/governance/provenance` | Provenance chain |
+| GET | `/api/v1/governance/provenance/verify` | Verify provenance chain |
+| POST | `/api/v1/governance/replay/deterministic` | Deterministic replay |
+| GET | `/api/v1/governance/replay/status` | Replay status |
+| GET | `/api/v1/governance/circuit-breakers` | Circuit breaker status |
+| POST | `/api/v1/governance/circuit-breakers/:service/reset` | Reset circuit breaker |
+| POST | `/api/v1/governance/verify/independent` | Independent verification |
+| GET | `/api/v1/governance/verify/results` | Verification results |
+| POST | `/api/v1/governance/deployment/evidence` | Deployment evidence |
+| GET | `/api/v1/governance/deployment/history` | Deployment history |
+| POST | `/api/v1/governance/security/adversarial` | Adversarial testing |
+| GET | `/api/v1/governance/security/results` | Security results |
+| GET | `/api/v1/governance/status` | Governance status |
+| GET | `/api/v1/governance/health` | Governance health |
+| POST | `/api/v1/governance/lineage/anchor` | Anchor entity to lineage |
+| GET | `/api/v1/governance/lineage/:entityId` | Get lineage for entity |
+| POST | `/api/v1/governance/lineage/bucket/:bucketId` | Get bucket lineage |
+| GET | `/api/v1/governance/decision-ledger` | List decision ledger |
+| POST | `/api/v1/governance/decision-ledger/:id/verify` | Verify decision chain |
+| GET | `/api/v1/governance/decision-ledger/:entityId/history` | Entity decision history |
+| GET | `/api/v1/governance/tantra/registration` | TANTRA registration |
+| POST | `/api/v1/governance/tantra/heartbeat` | TANTRA heartbeat |
+| POST | `/api/v1/governance/tantra/emit-event` | TANTRA event emission |
+| GET | `/api/v1/governance/tantra/health` | TANTRA health |
+| GET | `/api/v1/governance/tantra/events` | TANTRA events |
+| GET | `/api/v1/governance/observability/metrics` | System metrics |
+| GET | `/api/v1/governance/observability/health` | System health |
+| GET | `/api/v1/governance/observability/system` | System overview |
+| POST | `/api/v1/governance/evidence/capture` | Capture runtime proof |
+| POST | `/api/v1/governance/evidence/:proofId/verify` | Verify runtime proof |
+| GET | `/api/v1/governance/evidence/:proofId` | Get runtime proof |
+| POST | `/api/v1/governance/setu/dispatch` | SETU dispatch |
+| POST | `/api/v1/governance/setu/callback` | SETU callback |
+| POST | `/api/v1/governance/setu/dispatch/:dispatchId/retry` | SETU retry |
+| GET | `/api/v1/governance/setu/dispatch/:dispatchId` | SETU dispatch status |
+| POST | `/api/v1/governance/trace/capture` | Capture trace |
+| GET | `/api/v1/governance/trace/:traceId` | Get trace |
+| POST | `/api/v1/governance/trace/:traceId/verify` | Verify trace |
+| GET | `/api/v1/governance/trace/:traceId/evidence` | Get trace evidence |
+| POST | `/api/v1/governance/execute` | Execute governance action |
+| POST | `/api/v1/governance/execute/test` | Test governance action |
+| POST | `/api/v1/governance/generate-evidence` | Generate evidence |
+| POST | `/api/v1/governance/verify/evidence` | Verify evidence |
+| POST | `/api/v1/governance/verify/replay` | Verify replay |
+| POST | `/api/v1/governance/verify/hash` | Verify hash |
+| POST | `/api/v1/governance/verify/independent` | Independent verify |
+| POST | `/api/v1/governance/verify/deployment` | Deployment verify |
+| POST | `/api/v1/governance/verify/adversarial` | Adversarial verify |
 
 ### Data Entry Points
 Every financial event enters through one of three service methods:
@@ -56,6 +129,48 @@ All three call `LedgerService.createJournalEntry()` → `validateJournalEntry()`
 ---
 
 ## 2. Architecture Understanding
+
+### System Architecture
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           ARTHA v0.1                                    │
+│                                                                         │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  │
+│  │  Transaction │  │    Ledger    │  │  Compliance  │  │    Audit    │  │
+│  │   Processing │  │   & Accounting│  │   & Filing   │  │  & Evidence │  │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  │
+│         │                │                │                │          │
+│         ▼                ▼                ▼                ▼          │
+│  ┌─────────────────────────────────────────────────────────────────┐  │
+│  │                    Signal Engine Service                         │  │
+│  │   SignalEngineService.evaluateFilingResult() → emitSignal()     │  │
+│  └───────────────────────────┬─────────────────────────────────────┘  │
+│                              │                                        │
+│                              ▼                                        │
+│  ┌─────────────────────────────────────────────────────────────────┐  │
+│  │                    SETU Pipeline                                │  │
+│  │   Normalize → Validate → Map → Serialize → Dispatch → Ack      │  │
+│  └───────────────────────────┬─────────────────────────────────────┘  │
+│                              │                                        │
+│                              ▼                                        │
+│  ┌─────────────────────────────────────────────────────────────────┐  │
+│  │                    TANTRA Execution Chain                        │  │
+│  │   Signal → Intelligence → Decision → Contract → Enforcement    │  │
+│  │   → Execution → Truth → Observability                           │  │
+│  └───────────────────────────┬─────────────────────────────────────┘  │
+│                              │                                        │
+│                              ▼                                        │
+│  ┌─────────────────────────────────────────────────────────────────┐  │
+│  │                    Governance Layer                              │  │
+│  │   Decision Ledger + Provenance Chain + Lineage Anchoring        │  │
+│  └─────────────────────────────────────────────────────────────────┘  │
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐  │
+│  │                    Observability & Evidence                      │  │
+│  │   Runtime Proof + Unified Trace + Metrics + Health              │  │
+│  └─────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────┘
+```
 
 ### Dual Hash Chain
 Artha maintains two independent hash chains:
@@ -122,7 +237,196 @@ Dispatch failure never loses the signal — it remains in the DB with `dispatch_
 
 ---
 
-## 4. Contract Specification
+## 4. SETU → TANTRA → ARTHA Integration Chain
+
+### The Complete Chain: Signal → SETU → TANTRA → Governance
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    SETU → TANTRA → ARTHA Integration Chain                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+  ARTHA Signal Engine
+  │
+  │  signalEngineService.evaluateFilingResult()
+  │  → emitSignal({ signalId, trace_id, module, severity })
+  │
+  ▼
+  ComplianceSignal (persisted)
+  │  type: "SIG_GST_MISMATCH"
+  │  trace_id: "TRC-20260403-a1b2c3d4"
+  │  severity: "HIGH"
+  │  source: "ARTHA"
+  │  context: { expected_tax, actual_tax, variance, gst_rate }
+  │
+  ▼
+  SETU Pipeline (setu.pipeline.js)
+  │
+  │  1. normalizeSignal()
+  │     Guarantees: signal_id, trace_id, source{}, severity, timestamp, context{}, recommendation{}
+  │
+  │  2. validateSignal()
+  │     Checks: known signal type, severity enum, source.system=ARTHA, known module/entity_type,
+  │             entity_id not UNKNOWN, context shape for specific signal types
+  │     Returns: { valid, errors[], warnings[] } — never throws
+  │
+  │  3. mapToSetuPayload()
+  │     Transforms: normalized → SETU contract shape
+  │
+  │  4. serializeForSetu()
+  │     Produces: { body: JSON string, headers: { Content-Type, X-Artha-Trace, X-Signal-Type, X-Severity } }
+  │
+  ▼
+  Sampada Adapter (sampadaAdapter.js)
+  │  Converts Artha signal → Sampada SetuSignalIngest envelope
+  │  Maps: { system: "ARTHA", module, entity_type, entity_id }
+  │  Produces: { source: "ARTHA", signalType, severity, payload, metadata }
+  │
+  ▼
+  SetuDispatch Service (setuDispatch.service.js)
+  │
+  │  5. dispatch()
+  │     POST {SETU_BASE_URL}/api/v1/signals/ingest
+  │     Headers: X-Artha-Trace, X-Signal-Type, X-Severity
+  │     Body: Sampada SetuSignalIngest envelope
+  │     HMAC webhook verification on response
+  │
+  │  6. acknowledgement()
+  │     Track: setu_signal_id, dispatched_at, ack_status
+  │
+  │  7. retry()
+  │     Exponential backoff: retry_count++, next_retry_at
+  │     Dead-letter: dead_letter_reason after max retries
+  │     Full retry_history[] with timestamps and errors
+  │
+  │  8. evidence()
+  │     Capture: RuntimeProof with full dispatch chain
+  │
+  ▼
+  SetuDispatch (persisted)
+  │  dispatch_id: "DISP-20260403-0001"
+  │  status: "dispatched" | "acknowledged" | "failed" | "dead-letter"
+  │  signal_type: "SIG_GST_MISMATCH"
+  │  trace_id: "TRC-20260403-a1b2c3d4"
+  │  idempotency_key: "IK-20260403-0001"
+  │  retry_count: 0
+  │  retry_history: []
+  │
+  ▼
+  TANTRA Execution Chain (tantraExecutionChain.service.js)
+  │
+  │  Stage 1: Signal
+  │    Receive signal from SETU dispatch
+  │    Validate signal format and source
+  │
+  │  Stage 2: Intelligence
+  │    Analyze signal context and severity
+  │    Cross-reference with historical patterns
+  │
+  │  Stage 3: Decision
+  │    DecisionLedger records: ALLOW / DENY / WARN / BLOCK
+  │    Hash-chained decision chain
+  │
+  │  Stage 4: Contract
+  │    Verify capability contracts
+  │    Check authority boundaries
+  │
+  │  Stage 5: Enforcement
+  │    Enforce policy decisions
+  │    Circuit breaker checks
+  │
+  │  Stage 6: Execution
+  │    Execute governance action
+  │    Record execution result
+  │
+  │  Stage 7: Truth
+  │    ProvenanceBlock: immutable, hash-linked chain
+  │    Hash = SHA256(prevHash + decision + timestamp + metadata)
+  │
+  │  Stage 8: Observability
+  │    Emit metrics and health data
+  │    Record to UnifiedTrace
+  │
+  ▼
+  Decision Ledger (decisionLedger.service.js)
+  │  append-only, hash-chained governance decision recording
+  │  decision_id: "DEC-20260403-0001"
+  │  decision: "ALLOW" | "DENY" | "WARN" | "BLOCK"
+  │  entity_id: "SIG_GST_MISMATCH"
+  │  prev_hash: "0" (genesis) | previous_decision.hash
+  │  hash: SHA256(prevHash + decision + timestamp + metadata)
+  │
+  ▼
+  Provenance Chain (provenanceChain.service.js)
+  │  immutable, append-only, hash-linked governance decision chain
+  │  block_id: "PROV-20260403-0001"
+  │  decision_id: "DEC-20260403-0001"
+  │  prev_hash: "0" (genesis) | previous_block.hash
+  │  hash: SHA256(prevHash + decision_id + timestamp)
+  │
+  ▼
+  Lineage Anchoring (lineage.service.js)
+  │  entity_id: "SIG_GST_MISMATCH"
+  │  bucket_id: "BUCKET-2026-Q1"
+  │  mdu_id: "MDU-20260403-0001"
+  │  bucket_url: "s3://arthabucket/2026/Q1/SIG_GST_MISMATCH.json"
+  │
+  ▼
+  Unified Trace (UnifiedTrace model)
+  │  trace_id: "TRC-20260403-a1b2c3d4"
+  │  steps: [
+  │    { step: 1, label: "Signal Created", found: true },
+  │    { step: 2, label: "SETU Dispatched", found: true },
+  │    { step: 3, label: "TANTRA Executed", found: true },
+  │    { step: 4, label: "Decision Recorded", found: true },
+  │    { step: 5, label: "Provenance Anchored", found: true }
+  │  ]
+  │
+  ▼
+  Runtime Proof (RuntimeProof model)
+    evidence_id: "EVID-20260403-0001"
+    trace_id: "TRC-20260403-a1b2c3d4"
+    proof_type: "SETU_DISPATCH_CHAIN"
+    assertions: [
+      { type: "SIGNAL_CREATED", verified: true },
+      { type: "SETU_DISPATCHED", verified: true },
+      { type: "ACK_RECEIVED", verified: true },
+      { type: "TANTRA_EXECUTED", verified: true },
+      { type: "DECISION_RECORDED", verified: true },
+      { type: "PROVENANCE_ANCHORED", verified: true }
+    ]
+    hash: "SHA256(all_assertions + timestamp)"
+```
+
+### Key Integration Points
+
+| Step | Service | File | Purpose |
+|------|---------|------|---------|
+| 1 | SignalEngine | `signalEngine.service.js` | Evaluate and emit signals |
+| 2 | SETU Pipeline | `setu.pipeline.js` | Normalize, validate, map, serialize |
+| 3 | Sampada Adapter | `sampadaAdapter.js` | Artha → Sampada envelope |
+| 4 | SETU Dispatch | `setuDispatch.service.js` | Dispatch, ack, retry, evidence |
+| 5 | TANTRA Chain | `tantraExecutionChain.service.js` | 8-stage execution chain |
+| 6 | Decision Ledger | `decisionLedger.service.js` | Append-only decision recording |
+| 7 | Provenance Chain | `provenanceChain.service.js` | Immutable governance chain |
+| 8 | Lineage Service | `lineage.service.js` | Entity anchoring, bucket/MDU |
+| 9 | Unified Trace | `UnifiedTrace model` | End-to-end trace |
+| 10 | Runtime Proof | `RuntimeProof model` | Verifiable evidence |
+
+### Evidence Models (Persisted)
+
+| Model | Purpose | Key Fields |
+|-------|---------|------------|
+| `SetuDispatch` | Track SETU dispatch lifecycle | dispatch_id, status, signal_type, trace_id, retry_count, dead_letter_reason |
+| `DecisionLedger` | Append-only governance decisions | decision_id, decision, entity_id, prev_hash, hash |
+| `ProvenanceBlock` | Immutable governance chain | block_id, decision_id, prev_hash, hash |
+| `LineageAnchor` | Entity anchoring with bucket/MDU | entity_id, bucket_id, mdu_id, bucket_url |
+| `UnifiedTrace` | End-to-end trace reconstruction | trace_id, steps[], status |
+| `RuntimeProof` | Verifiable evidence capture | evidence_id, trace_id, proof_type, assertions[], hash |
+
+---
+
+## 5. Contract Specification
 
 ### SETU Payload (canonical)
 ```json
@@ -151,32 +455,71 @@ Dispatch failure never loses the signal — it remains in the DB with `dispatch_
 }
 ```
 
-### Pipeline (Phase 2A)
-Every signal passes through four stages before SETU dispatch:
-
-```
-Raw Signal (DB or in-memory)
-  │
-  ▼ normalizeSignal()
-  │  Guarantees: signal_id, trace_id, source{}, severity, timestamp, context{}, recommendation{}
-  │
-  ▼ validateSignal()
-  │  Checks: known signal type, severity enum, source.system=ARTHA, known module/entity_type,
-  │          entity_id not UNKNOWN, context shape for specific signal types
-  │  Returns: { valid, errors[], warnings[] } — never throws
-  │
-  ▼ mapToSetuPayload()
-  │  Transforms: normalized → SETU contract shape
-  │
-  ▼ serializeForSetu()
-     Produces: { body: JSON string, headers: { Content-Type, X-Artha-Trace, X-Signal-Type, X-Severity } }
+### Sampada Envelope (Artha → Sampada)
+```json
+{
+  "source": "ARTHA",
+  "signalType": "SIG_GST_MISMATCH",
+  "severity": "HIGH",
+  "payload": {
+    "signal_id": "SIG_GST_MISMATCH",
+    "trace_id": "TRC-20260403-a1b2c3d4",
+    "source": { "system": "ARTHA", "module": "GST_ENGINE", "entity_type": "INVOICE", "entity_id": "INV-20260403-0001" },
+    "context": { "expected_tax": "1800.00", "actual_tax": "1500.00", "variance": "300.00" }
+  },
+  "metadata": {
+    "dispatched_at": "2026-04-03T10:00:00.000Z",
+    "idempotency_key": "IK-20260403-0001"
+  }
+}
 ```
 
-Full implementation: `backend/src/services/setu.pipeline.js`
+### SETU Dispatch Lifecycle
+```
+normalize → validate → map → serialize → dispatch → ack → retry → evidence
+```
+
+- **normalize**: Guarantees signal_id, trace_id, source{}, severity, timestamp, context{}, recommendation{}
+- **validate**: Checks known signal type, severity enum, source.system=ARTHA, entity_id not UNKNOWN
+- **map**: Transforms normalized → Sampada SetuSignalIngest envelope
+- **serialize**: Produces { body: JSON string, headers: { Content-Type, X-Artha-Trace, X-Signal-Type, X-Severity } }
+- **dispatch**: POST to SETU with HMAC webhook verification
+- **ack**: Track acknowledgement with setu_signal_id
+- **retry**: Exponential backoff with dead-letter after max retries
+- **evidence**: Capture RuntimeProof with full dispatch chain
+
+Full implementation: `backend/src/services/setu.pipeline.js`, `backend/src/services/setuDispatch.service.js`
+
+### TANTRA Execution Chain
+```
+Signal → Intelligence → Decision → Contract → Enforcement → Execution → Truth → Observability
+```
+
+- **Signal**: Receive and validate signal from SETU dispatch
+- **Intelligence**: Analyze signal context and severity, cross-reference with historical patterns
+- **Decision**: DecisionLedger records ALLOW/DENY/WARN/BLOCK decisions (hash-chained)
+- **Contract**: Verify capability contracts, check authority boundaries
+- **Enforcement**: Enforce policy decisions, circuit breaker checks
+- **Execution**: Execute governance action, record execution result
+- **Truth**: ProvenanceBlock: immutable, hash-linked chain
+- **Observability**: Emit metrics and health data, record to UnifiedTrace
+
+Full implementation: `backend/src/services/tantraExecutionChain.service.js`
+
+### Governance Decision Chain
+```
+Decision Ledger → Provenance Chain → Lineage Anchoring
+```
+
+- **Decision Ledger**: Append-only, hash-chained governance decision recording
+- **Provenance Chain**: Immutable, append-only, hash-linked governance decision chain
+- **Lineage Anchoring**: Entity anchoring with bucket storage and MDU lineage references
+
+Full implementation: `backend/src/services/decisionLedger.service.js`, `backend/src/services/provenanceChain.service.js`, `backend/src/services/lineage.service.js`
 
 ---
 
-## 5. Trace Proof
+## 6. Trace Proof
 
 ### End-to-End Trace: Invoice GST Mismatch
 
@@ -227,40 +570,97 @@ ComplianceSignal written:
   severity:  "HIGH"
 ```
 
-**Step 4 — SETU Payload**
+**Step 4 — SETU Pipeline**
 ```
 runPipeline(signal):
   normalizeSignal()  → normalized shape
   validateSignal()   → { valid: true, errors: [], warnings: [] }
-  mapToSetuPayload() → SETU contract shape
+  mapToSetuPayload() → Sampada SetuSignalIngest envelope
   serializeForSetu() → { body: '{"signal_id":"SIG_FILING_NOT_READY",...}', headers: {...} }
-
-POST {SETU_BASE_URL}/api/v1/signals/ingest
-  X-Artha-Trace: TRC-20260403-a1b2c3d4
-  X-Signal-Type: SIG_FILING_NOT_READY
-  X-Severity:    HIGH
 ```
 
-**Step 5 — Trace Reconstruction**
+**Step 5 — SETU Dispatch**
 ```
-GET /api/v1/signals/trace/TRC-20260403-a1b2c3d4
+setuDispatchService.dispatch():
+  POST {SETU_BASE_URL}/api/v1/signals/ingest
+  Headers:
+    X-Artha-Trace: TRC-20260403-a1b2c3d4
+    X-Signal-Type: SIG_FILING_NOT_READY
+    X-Severity:    HIGH
+    X-Idempotency-Key: IK-20260403-0001
+  Body: Sampada envelope
+  HMAC webhook verification on response
+
+SetuDispatch written:
+  dispatch_id: "DISP-20260403-0001"
+  status: "dispatched"
+  signal_type: "SIG_FILING_NOT_READY"
+  trace_id: "TRC-20260403-a1b2c3d4"
+```
+
+**Step 6 — TANTRA Execution Chain**
+```
+tantraExecutionChainService.execute():
+  Stage 1: Signal → validated
+  Stage 2: Intelligence → analyzed
+  Stage 3: Decision → ALLOW (recorded in DecisionLedger)
+  Stage 4: Contract → verified
+  Stage 5: Enforcement → enforced
+  Stage 6: Execution → completed
+  Stage 7: Truth → ProvenanceBlock created
+  Stage 8: Observability → metrics emitted
+
+DecisionLedger written:
+  decision_id: "DEC-20260403-0001"
+  decision: "ALLOW"
+  entity_id: "SIG_FILING_NOT_READY"
+  hash: "SHA256(prevHash + decision + timestamp + metadata)"
+
+ProvenanceBlock written:
+  block_id: "PROV-20260403-0001"
+  decision_id: "DEC-20260403-0001"
+  hash: "SHA256(prevHash + decision_id + timestamp)"
+```
+
+**Step 7 — Lineage Anchoring**
+```
+lineageService.anchorToBucket():
+  entity_id: "SIG_FILING_NOT_READY"
+  bucket_id: "BUCKET-2026-Q1"
+  mdu_id: "MDU-20260403-0001"
+  bucket_url: "s3://arthabucket/2026/Q1/SIG_FILING_NOT_READY.json"
+
+LineageAnchor written:
+  entity_id: "SIG_FILING_NOT_READY"
+  bucket_id: "BUCKET-2026-Q1"
+  mdu_id: "MDU-20260403-0001"
+```
+
+**Step 8 — Trace Reconstruction**
+```
+GET /api/v1/governance/trace/TRC-20260403-a1b2c3d4
 
 Response:
 {
   "trace_id": "TRC-20260403-a1b2c3d4",
   "steps": [
-    { "step": 1, "label": "Signal",                "found": true, "data": { "type": "SIG_FILING_NOT_READY" }},
-    { "step": 2, "label": "Compliance Validation", "found": true, "data": { "filing_ready": false }},
-    { "step": 3, "label": "Compliance Filing",     "found": true, "data": { "filingType": "GSTR-1" }},
-    { "step": 4, "label": "Journal Entries",       "found": true, "data": [{ "entryNumber": "JE-20260403-0001" }]},
-    { "step": 5, "label": "Ledger Entries",        "found": true, "data": [{ "account_id": "2311", "type": "CREDIT" }]}
+    { "step": 1, "label": "Signal Created",        "found": true, "data": { "type": "SIG_FILING_NOT_READY" }},
+    { "step": 2, "label": "Compliance Validation",  "found": true, "data": { "filing_ready": false }},
+    { "step": 3, "label": "Compliance Filing",      "found": true, "data": { "filingType": "GSTR-1" }},
+    { "step": 4, "label": "Journal Entries",        "found": true, "data": [{ "entryNumber": "JE-20260403-0001" }]},
+    { "step": 5, "label": "Ledger Entries",         "found": true, "data": [{ "account_id": "2311", "type": "CREDIT" }]},
+    { "step": 6, "label": "SETU Dispatch",          "found": true, "data": { "dispatch_id": "DISP-20260403-0001", "status": "dispatched" }},
+    { "step": 7, "label": "TANTRA Execution",       "found": true, "data": { "decision": "ALLOW" }},
+    { "step": 8, "label": "Decision Recorded",      "found": true, "data": { "decision_id": "DEC-20260403-0001" }},
+    { "step": 9, "label": "Provenance Anchored",    "found": true, "data": { "block_id": "PROV-20260403-0001" }},
+    { "step": 10, "label": "Lineage Anchored",      "found": true, "data": { "bucket_id": "BUCKET-2026-Q1" }}
   ]
 }
 ```
 
 ---
 
-## 6. Failure Scenarios
+## 7. Failure Scenarios
 
 ### Scenario A: Company settings not configured
 - Signal emitted: None — error thrown before signal layer
@@ -271,10 +671,12 @@ Response:
 - Orphaned VALIDATED entries possible
 - Risk: Account balances not updated
 
-### Scenario C: SETU unreachable
-- Signal preserved with `dispatch_status: pending`
-- No retry mechanism exists (GAP-001)
-- Risk: SETU never receives signal
+### Scenario C: SETU unreachable — RESOLVED
+✅ **Resolution:** `setuDispatch.service.js` implements retry with exponential backoff:
+- `retry_count`: tracks retry attempts
+- `next_retry_at`: scheduled retry time
+- `dead_letter_reason`: reason for dead-lettering when max retries exceeded
+- `retry_history[]`: full history of retry attempts with timestamps and errors
 
 ### Scenario D: GST rate 15% submitted
 - `gstEngine.calculateGSTBreakdown()` throws
@@ -286,22 +688,36 @@ Response:
 - Signal: `SIG_EXPENSE_RECORD_FAILED` logged only, not emitted
 - Risk: Missing ledger entry for approved expense
 
----
+### Scenario F: TANTRA execution chain failure — NEW
+- TANTRA execution chain can fail at any stage
+- DecisionLedger records DENY or BLOCK decision
+- ProvenanceBlock still created with failure hash
+- Risk: Governance decision not enforced
 
-## 7. Risks
-
-| Risk | Severity | Likelihood | Mitigation |
-|------|----------|------------|------------|
-| Orphaned VALIDATED journal entries | HIGH | MEDIUM | Require replica set; monitor VALIDATED entries > 1hr |
-| SETU dispatch silently fails | HIGH | MEDIUM | Add dispatch retry job (GAP-001) |
-| Dual signal vocabularies | MEDIUM | HIGH | Enforce enum schema; migrate records (GAP-004) |
-| Company settings not seeded | CRITICAL | LOW | Startup health check (GAP-006) |
-| No signal deduplication | LOW | HIGH | Add idempotency check (GAP-002) |
-| trace_id not in ComplianceFiling | MEDIUM | HIGH | Store trace_id on filing creation (GAP L-1) |
+### Scenario G: Circuit breaker opens — NEW
+- Circuit breaker trips after threshold failures (e.g., mongodb 3 failures in 30s)
+- All requests fail fast with circuit breaker error
+- Risk: System unavailable until circuit breaker resets
 
 ---
 
-## 8. Phase 3/4/5 Deliverables Index
+## 8. Risks
+
+| Risk | Severity | Likelihood | Mitigation | Status |
+|------|----------|------------|------------|--------|
+| Orphaned VALIDATED journal entries | HIGH | MEDIUM | Require replica set; monitor VALIDATED entries > 1hr | OPEN |
+| SETU dispatch silently fails | HIGH | LOW | Full retry with exponential backoff + dead-letter | RESOLVED |
+| Dual signal vocabularies | MEDIUM | HIGH | Enforce enum schema; migrate records | OPEN |
+| Company settings not seeded | CRITICAL | LOW | Startup health check | OPEN |
+| No signal deduplication | LOW | LOW | Idempotency key in SetuDispatch model | RESOLVED |
+| trace_id not in ComplianceFiling | MEDIUM | HIGH | Store trace_id on filing creation | OPEN |
+| TANTRA execution chain failure | MEDIUM | LOW | DecisionLedger records DENY/BLOCK, ProvenanceBlock still created | RESOLVED |
+| Circuit breaker trips | MEDIUM | LOW | Fast fail + automatic reset after timeout | RESOLVED |
+| Evidence capture failure | LOW | LOW | RuntimeProof model persists, retry on next cycle | RESOLVED |
+
+---
+
+## 9. Phase 3/4/5 Deliverables Index
 
 ### Design System Package (`frontend/src/design-system/`)
 | File | Status | Description |
@@ -348,25 +764,36 @@ Response:
 ### Review Packet
 | File | Status | Description |
 |------|--------|-------------|
-| `REVIEW_PACKET.md` | ✅ **UPDATED** | This document — now includes ecosystem capability registry evidence |
-| `review_packets/REVIEW_PACKET.md` | ✅ **NEW** | Copy in review_packets/ directory |
+| `REVIEW_PACKET.md` | ✅ **UPDATED** | This document — now includes SETU→TANTRA→ARTH integration chain evidence |
+| `review_packets/REVIEW_PACKET.md` | ✅ **UPDATED** | Copy in review_packets/ directory |
 
 ---
 
-## 9. Artifacts
+## 10. Artifacts
 
 | File | Purpose |
 |------|---------|
+| `README.md` | Project overview with correct counts (35 models, 47 services, 27 routes, 11 middleware) |
 | `CURRENT_STATE.md` | Full platform architecture, data flow, maturity analysis |
+| `COMPREHENSIVE_REPOSITORY_ANALYSIS.md` | Detailed codebase analysis with all models, services, controllers, routes |
+| `ARTHA_ECOSYSTEM_MAP.md` | Ecosystem mapping with all 47 services and dependencies |
+| `ARTHA_LAYER_CLASSIFICATION.md` | Layer classification with all components and authority boundaries |
+| `CONVERGENCE_GAPS.md` | Gap analysis with resolved items marked |
 | `SIGNAL_MAPPING.md` | Complete signal type catalog, source map, traceability chain |
 | `ARTHA_SETU_CONTRACT.md` | Canonical SETU payload contract, per-signal context schemas |
-| `CONVERGENCE_GAPS.md` | Schema, traceability, validation, and observability gaps |
 | `docs/ecosystem-readiness.md` | Phase 4: Ecosystem readiness assessment |
 | `docs/lineage-model.md` | Phase 5: Data lineage model documentation |
 | `docs/replay-proof.md` | Phase 5: Replay proof documentation |
 | `frontend/src/design-system/` | Phase 3: BHIV reusable design system |
 | `backend/src/services/setu.pipeline.js` | Signal normalizer + validator + mapper + serializer |
+| `backend/src/services/setuDispatch.service.js` | SETU dispatch lifecycle with retry, dead-letter, idempotency |
+| `backend/src/services/sampadaAdapter.js` | Artha signal → Sampada SetuSignalIngest envelope |
 | `backend/src/services/signalEngine.service.js` | Signal engine core |
+| `backend/src/services/tantra.service.js` | TANTRA registration, heartbeat, event emission |
+| `backend/src/services/tantraExecutionChain.service.js` | 8-stage TANTRA execution chain |
+| `backend/src/services/decisionLedger.service.js` | Append-only governance decision recording |
+| `backend/src/services/provenanceChain.service.js` | Immutable governance decision chain |
+| `backend/src/services/lineage.service.js` | Entity anchoring, bucket/MDU references |
 | `backend/scripts/replay-provenance-proof.js` | Replay proof script |
 | `capability_registry/capability_registry.json` | **NEW** — Central capability registry with dependency graph |
 | `capability_registry/capability_contracts/*.json` | **NEW** — 9 formal capability contracts |
@@ -389,10 +816,43 @@ Response:
 | GET | `/api/v1/signals/trace/:traceId` | Full 5-step trace reconstruction |
 | GET | `/api/v1/signals/:signalId/pipeline-check` | Dry-run SETU pipeline |
 | POST | `/api/v1/signals/evaluate/overdue-invoices` | Emit overdue invoice signals |
+| POST | `/api/v1/setu/dispatch` | Dispatch signal via SETU pipeline |
+| POST | `/api/v1/setu/callback` | SETU acknowledgement webhook |
+| POST | `/api/v1/setu/dispatch/:dispatchId/retry` | Retry failed SETU dispatch |
+| POST | `/api/v1/governance/lineage/anchor` | Anchor entity to lineage |
+| GET | `/api/v1/governance/lineage/:entityId` | Get lineage for entity |
+| POST | `/api/v1/governance/lineage/bucket/:bucketId` | Get bucket lineage |
+| GET | `/api/v1/governance/decision-ledger` | List decision ledger |
+| POST | `/api/v1/governance/decision-ledger/:id/verify` | Verify decision chain |
+| GET | `/api/v1/governance/decision-ledger/:entityId/history` | Entity decision history |
+| POST | `/api/v1/governance/tantra/heartbeat` | TANTRA heartbeat |
+| POST | `/api/v1/governance/tantra/emit-event` | TANTRA event emission |
+| GET | `/api/v1/governance/tantra/health` | TANTRA health |
+| GET | `/api/v1/governance/tantra/events` | TANTRA events |
+| POST | `/api/v1/governance/evidence/capture` | Capture runtime proof |
+| POST | `/api/v1/governance/evidence/:proofId/verify` | Verify runtime proof |
+| GET | `/api/v1/governance/evidence/:proofId` | Get runtime proof |
+| POST | `/api/v1/governance/setu/dispatch` | SETU dispatch |
+| POST | `/api/v1/governance/setu/callback` | SETU callback |
+| POST | `/api/v1/governance/setu/dispatch/:dispatchId/retry` | SETU retry |
+| GET | `/api/v1/governance/setu/dispatch/:dispatchId` | SETU dispatch status |
+| POST | `/api/v1/governance/trace/capture` | Capture trace |
+| GET | `/api/v1/governance/trace/:traceId` | Get trace |
+| POST | `/api/v1/governance/trace/:traceId/verify` | Verify trace |
+| GET | `/api/v1/governance/trace/:traceId/evidence` | Get trace evidence |
+| POST | `/api/v1/governance/execute` | Execute governance action |
+| POST | `/api/v1/governance/execute/test` | Test governance action |
+| POST | `/api/v1/governance/generate-evidence` | Generate evidence |
+| POST | `/api/v1/governance/verify/evidence` | Verify evidence |
+| POST | `/api/v1/governance/verify/replay` | Verify replay |
+| POST | `/api/v1/governance/verify/hash` | Verify hash |
+| POST | `/api/v1/governance/verify/independent` | Independent verify |
+| POST | `/api/v1/governance/verify/deployment` | Deployment verify |
+| POST | `/api/v1/governance/verify/adversarial` | Adversarial verify |
 
 ---
 
-## 10. Ecosystem Capability Registry (NEW)
+## 11. Ecosystem Capability Registry (NEW)
 
 ### Capability Extraction Summary
 
@@ -479,7 +939,7 @@ capability_registry/
 
 ---
 
-## 11. Gap Closure — "What Is Still Missing" Resolution
+## 12. Gap Closure — "What Is Still Missing" Resolution
 
 Each item from the original gap analysis has been addressed:
 
@@ -491,6 +951,11 @@ Each item from the original gap analysis has been addressed:
 | "Constitutional layer boundaries enforced programmatically" | Documented in JSON | `authorityBoundary.js` middleware intercepts requests, validates collection access per capability, blocks read-only capabilities from mutations, logs violations | `backend/src/middleware/authorityBoundary.js` |
 | "Production certificates from runtime validation only" | Static analysis certification | `runtime-certification.js` executes 14 HTTP tests against live server, `government-grade-validation.js` runs 15 Indian accounting scenarios, both produce JSON evidence with SHA-256 hashes | `capability_registry/runtime_certification.json`, `capability_registry/government_grade_validation.json` |
 | "Government-grade validation with real Indian scenarios" | Not addressed | `government-grade-validation.js` tests: intrastate/interstate GST (CGST+SGST/IGST), B2B/B2C, GSTIN validation, TDS 194J/194C/192, no-PAN higher rate, challan deadlines, double-entry integrity, balance sheet equation (A=L+E), Indian FY (Apr-Mar), Tally voucher mapping, hash chain tamper detection, expense category mapping, PAN format validation | `capability_registry/government_grade_validation.json` |
+| "SETU dispatch lifecycle with retry and dead-letter" | No retry mechanism | `setuDispatch.service.js` implements full retry with exponential backoff, dead-letter queue, idempotency keys, HMAC webhook verification | `backend/src/services/setuDispatch.service.js`, `backend/src/models/SetuDispatch.js` |
+| "TANTRA execution chain" | Not implemented | `tantraExecutionChain.service.js` implements 8-stage chain: Signal→Intelligence→Decision→Contract→Enforcement→Execution→Truth→Observability | `backend/src/services/tantraExecutionChain.service.js` |
+| "Governance decision chain" | Not implemented | `decisionLedger.service.js` provides append-only, hash-chained governance decision recording | `backend/src/services/decisionLedger.service.js` |
+| "Provenance chain" | Not implemented | `provenanceChain.service.js` provides immutable, append-only, hash-linked governance decision chain | `backend/src/services/provenanceChain.service.js` |
+| "Lineage anchoring" | Not implemented | `lineage.service.js` provides entity anchoring with bucket storage and MDU lineage references | `backend/src/services/lineage.service.js` |
 
 ### How to Run Each Validation
 
@@ -514,6 +979,6 @@ node backend/scripts/government-grade-validation.js --verbose
 
 ---
 
-**Document Version**: 4.0 (Gap Closure — 100% Implementation)  
+**Document Version**: 5.0 (Full Codebase Audit — SETU→TANTRA→ARTH Integration Chain)  
 **Platform Version**: ARTHA v0.1  
 **Owner**: BHIV Platform Engineering  

@@ -74,7 +74,7 @@
 - **Performance Optimization**: Database indexing and query optimization
 
 ### ✅ BHIV Ecosystem Integration
-- **Capability Registry**: Canonical single source of truth for capability contracts
+- **Capability Registry**: Canonical single source of truth for capability contracts (10 capability contracts)
 - **Policy Engine**: Runtime enforcement with deterministic ALLOW/DENY decisions
 - **Provenance Chain**: Immutable, append-only, hash-linked governance decision chain
 - **Deterministic Replay**: Replay system with SHA-256 hash verification for 100% reproducibility
@@ -82,7 +82,16 @@
 - **Independent Verification**: 10 independent verification tests for BHIV compliance
 - **Deployment Evidence**: Complete evidence generation for 9 deployment scenarios
 - **Adversarial Testing**: 12 genuine adversarial attack vectors for security validation
-- **Governance API**: 19 endpoints under `/api/v1/governance/`
+- **Decision Ledger**: Append-only, hash-chained governance decision recording
+- **Lineage Anchoring**: Bucket storage and MDU lineage references
+- **Governance API**: 30+ endpoints under `/api/v1/governance/`
+
+### ✅ SETU & TANTRA Integration
+- **SETU Pipeline**: Signal normalization, validation, mapping, serialization, dispatch, acknowledgement, retry
+- **Sampada Adapter**: Artha signal → Sampada SetuSignalIngest envelope mapping
+- **TANTRA Execution Chain**: Signal → Intelligence → Decision → Contract → Enforcement → Execution → Truth → Observability
+- **TANTRA Runtime**: Registration, heartbeat, event emission, health monitoring
+- **SETU Dispatch**: Full lifecycle with retry, dead-letter, idempotency, HMAC webhook verification
 
 ### ✅ Security
 - JWT authentication with refresh tokens
@@ -310,87 +319,119 @@ GET /ready
 GET /live
 ```
 
-### BHIV Governance API (19 Endpoints)
+### BHIV Governance API (30+ Endpoints)
 ```bash
-# Capability Management
-GET    /api/v1/governance/capabilities          # List all capabilities
-GET    /api/v1/governance/capabilities/:id      # Get specific capability
-
-# Policy Engine
-POST   /api/v1/governance/policy/evaluate       # Evaluate policy
-GET    /api/v1/governance/policy/status         # Get policy engine status
+# Capability Registry
+GET    /api/v1/governance/capabilities                  # List all capabilities
+GET    /api/v1/governance/capabilities/:capabilityId    # Get specific capability
+GET    /api/v1/governance/capabilities/verify           # Verify all contracts
+GET    /api/v1/governance/capabilities/resolve          # Resolve route to capability
 
 # Provenance Chain
-GET    /api/v1/governance/provenance            # Get full provenance chain
-GET    /api/v1/governance/provenance/verify     # Verify chain integrity
+GET    /api/v1/governance/provenance/status             # Get chain state + integrity
+GET    /api/v1/governance/provenance/verify             # Verify chain integrity
 
 # Deterministic Replay
-POST   /api/v1/governance/replay/deterministic  # Run deterministic replay
-GET    /api/v1/governance/replay/status         # Get replay status
+GET    /api/v1/governance/replay/statistics             # Get replay statistics
+GET    /api/v1/governance/replay/:replayId              # Get replay data
+GET    /api/v1/governance/replay/:replayId/proof        # Generate replay proof
+POST   /api/v1/governance/replay/:replayId/verify       # Verify replay
+GET    /api/v1/governance/replay/distributed/:replayId  # Get distributed replay
+POST   /api/v1/governance/replay/distributed/:replayId/verify  # Verify distributed
 
 # Circuit Breakers
-GET    /api/v1/governance/circuit-breakers      # Get all breaker states
-POST   /api/v1/governance/circuit-breakers/:service/reset  # Reset breaker
+GET    /api/v1/governance/circuit-breakers              # Get all breaker states
+POST   /api/v1/governance/circuit-breakers/:name/reset  # Reset breaker
 
 # Independent Verification
-POST   /api/v1/governance/verify/independent    # Run independent verification
-GET    /api/v1/governance/verify/results        # Get verification results
-
-# Deployment Evidence
-POST   /api/v1/governance/deployment/evidence   # Generate deployment evidence
-GET    /api/v1/governance/deployment/history    # Get deployment history
+GET    /api/v1/governance/verification/run              # Run verification suite
+GET    /api/v1/governance/verification/history          # Get verification history
 
 # Adversarial Testing
-POST   /api/v1/governance/security/adversarial  # Run adversarial tests
-GET    /api/v1/governance/security/results      # Get security results
+GET    /api/v1/governance/adversarial/run               # Run adversarial suite
+GET    /api/v1/governance/adversarial/history           # Get test history
+
+# Deployment Evidence
+GET    /api/v1/governance/evidence/manifest             # Generate manifest
+GET    /api/v1/governance/evidence/:category            # Get evidence by category
+
+# Decision Ledger
+GET    /api/v1/governance/decision-ledger/history       # Decision history
+GET    /api/v1/governance/decision-ledger/stats         # Decision statistics
+GET    /api/v1/governance/decision-ledger/verify        # Verify chain integrity
+
+# Lineage
+GET    /api/v1/governance/lineage/stats                 # Lineage statistics
+GET    /api/v1/governance/lineage/entity/:type/:id      # Entity lineage
+GET    /api/v1/governance/lineage/trace/:traceId        # Trace lineage
+GET    /api/v1/governance/lineage/verify/:traceId       # Verify trace lineage
+
+# SETU Dispatch
+GET    /api/v1/governance/setu/stats                    # Dispatch statistics
+GET    /api/v1/governance/setu/dispatch/:dispatchId     # Get dispatch
+GET    /api/v1/governance/setu/trace/:traceId           # Get dispatches by trace
+POST   /api/v1/governance/setu/retry/:dispatchId        # Retry dispatch
 
 # System Status
-GET    /api/v1/governance/status                # Get comprehensive status
-GET    /api/v1/governance/health                # Governance health check
+GET    /api/v1/governance/status                        # Comprehensive governance status
 ```
 
 ## 🔄 Data Flow & Integrity
 
-### Invoice Workflow
-1. **Create Invoice (Draft)**: No accounting impact
-2. **Send Invoice**: Creates journal entry
-   - DR Accounts Receivable (1100): ₹Total Amount
-   - CR Revenue (4000): ₹Subtotal
-   - CR GST Payable (2200): ₹Tax Amount
-3. **Record Payment**: Creates journal entry
-   - DR Cash/Bank (1010): ₹Payment Amount
-   - CR Accounts Receivable (1100): ₹Payment Amount
-4. **Status Updates**: Draft → Sent → Partial → Paid
-
-### Expense Workflow
-1. **Create Expense**: Status = Pending
-2. **Approve Expense**: Status = Approved
-3. **Record Expense**: Creates journal entry
-   - DR Expense Account (6xxx): ₹Total Amount
-   - CR Cash/Bank (1010): ₹Total Amount
-4. **Status**: Pending → Approved → Recorded
-
-### TDS Workflow
-1. **Create TDS Entry**: Status = Pending
-2. **Record Deduction**: Creates journal entry
-   - DR Expense Account: ₹Payment Amount
-   - CR TDS Payable (2300): ₹TDS Amount
-   - CR Cash/Bank: ₹Net Payable
-3. **Record Challan**: Status = Deposited
-4. **File Return**: Status = Filed
-
-### GST Calculation
-- **Output GST**: Sum of taxAmount from sent/paid invoices
-- **Input GST**: Sum of taxAmount from recorded expenses
-- **Net Payable**: Output GST - Input GST
-- **B2B/B2C**: Categorized by customer GSTIN presence
-
-### Report Generation
-- **Balance Sheet**: Real-time from account balances (Assets = Liabilities + Equity)
-- **P&L Statement**: Real-time from Income/Expense accounts
-- **Trial Balance**: All accounts with debit/credit totals (must balance)
-- **Aged Receivables**: From unpaid/partial invoices with aging buckets
-- **Cash Flow**: Categorized by Operating/Investing/Financing activities
+### Transaction → Signal → SETU Chain
+```
+Invoice Created (draft)
+  │  no ledger impact
+  ▼
+Invoice Sent
+  │  InvoiceService.sendInvoice()
+  │  → gstEngine.calculateGSTBreakdown() per line
+  │  → LedgerService.createJournalEntry()   [status: DRAFT]
+  │  → LedgerService.validateJournalEntry() [status: VALIDATED]
+  │     validates: line integrity, double-entry balance,
+  │                account existence, GST compliance, TDS compliance,
+  │                audit trace presence
+  │  → LedgerService.postJournalEntry()     [status: POSTED]
+  │     verifies HMAC hash, writes LedgerEntries (SHA-256 chain),
+  │     updates AccountBalance, invalidates Redis cache
+  ▼
+JournalEntry (POSTED)
+  │  fields: entryNumber, date, description, lines[], gstDetails[],
+  │           prevHash, hash, chainPosition, trace_id, auditTrail[]
+  ▼
+LedgerEntry (per debit/credit line)
+  │  fields: journal_id, account_id, type, amount, prev_hash, hash, timestamp
+  ▼
+AccountBalance (updated in-place)
+  │  fields: account, balance, debitTotal, creditTotal, lastUpdated
+  ▼
+ComplianceSignal (emitted)
+  │  SignalEngineService evaluates ledger snapshot
+  │  → SIG_CASHFLOW_NEGATIVE, SIG_INVOICE_OVERDUE, etc.
+  ▼
+SETU Pipeline (setu.pipeline.js)
+  │  Normalizer → Validator → Mapper → Serializer
+  │  → setuDispatch.service.js dispatches signal
+  │  → SetuDispatch record created (INITIATED → SENT → ACCEPTED/REJECTED)
+  │  → Retry with exponential backoff (max 3 attempts)
+  │  → Dead letter on exhausted retries
+  ▼
+TANTRA Execution Chain (tantraExecutionChain.service.js)
+  │  Signal → Intelligence → Decision → Contract → Enforcement → Execution → Truth → Observability
+  │  → provenanceChain.recordDeployment()
+  │  → decisionLedger.recordDecision()
+  │  → lineage.anchorToBucket()
+  ▼
+UnifiedTrace (end-to-end)
+  │  stages: TRANSACTION_CREATED → JOURNAL_CREATED → JOURNAL_VALIDATED → JOURNAL_POSTED
+  │          → SIGNAL_GENERATED → FILING_CREATED → SETU_DISPATCHED → SETU_ACKNOWLEDGED → CONFIRMED
+  ▼
+RuntimeProof (evidence capture)
+  │  API responses, DB states, chain verification, SETU dispatch attempts
+  ▼
+ProvenanceBlock (governance chain)
+  │  hash-linked, append-only governance decision record
+```
 
 ## ✅ Integrity Verification
 
@@ -412,11 +453,15 @@ This verifies:
 
 ### Backend Stack
 - **Node.js 18+** with Express.js
-- **MongoDB 7+** with Mongoose ODM
+- **MongoDB 7+** with Mongoose ODM (35 models)
 - **Redis 7+** for caching
 - **Decimal.js** for precise financial calculations
 - **HMAC-SHA256** for ledger hash-chain
 - **JWT** for authentication
+- **47 Services** — Core accounting, compliance, BHIV governance, integration, runtime, infrastructure
+- **26 Controllers** — Request handlers for all API endpoints
+- **27 Route Files** — RESTful API routing
+- **11 Middleware** — Auth, authority enforcement, policy engine, security, monitoring, caching
 
 ### Frontend Stack
 - **React 18+** with Vite
@@ -425,37 +470,121 @@ This verifies:
 - **React Router** for navigation
 - **Axios** for API calls
 
-### Database Models (11)
-1. User
-2. ChartOfAccounts
-3. JournalEntry
-4. AccountBalance
-5. Invoice
-6. Expense
-7. TDSEntry
-8. AuditLog
-9. Settings
-10. FinancialYear
-11. InsightFlowExperience
+### Database Models (35)
 
-### Key Services (36)
-- Authentication Service
-- Ledger Service
-- Invoice Service
-- Expense Service
-- TDS Service
-- GST Filing Service
-- Financial Reports Service
-- Export Service
-- Health Service
-- Performance Service
-- **Capability Registry Service** (BHIV)
-- **Provenance Chain Service** (BHIV)
-- **Deterministic Replay Service** (BHIV)
-- **Circuit Breaker Service** (BHIV)
-- **Deployment Evidence Service** (BHIV)
-- **Independent Verifier Service** (BHIV)
-- **Adversarial Suite Service** (BHIV)
+**Core Accounting (8):**
+1. User — Authentication, roles (admin/accountant/viewer), bcrypt passwords
+2. ChartOfAccounts — Account hierarchy (Asset/Liability/Equity/Income/Expense), 33+ pre-seeded
+3. JournalEntry — Double-entry with HMAC-SHA256 hash-chain, audit trail, GST details
+4. LedgerEntry — Flat debit/credit lines with SHA-256 chain linking
+5. AccountBalance — Running balance per account (debitTotal, creditTotal, balance)
+6. Invoice — Full lifecycle: draft→sent→partial→paid→cancelled, GST breakdown
+7. Expense — Approval workflow: pending→approved→recorded, OCR receipt support
+8. Payment — NEFT/RTGS/UPI/IMPS with retry, reconciliation, bank details
+
+**Compliance (7):**
+9. TDSEntry — TDS deduction tracking (194A/C/H/I/J/Q, 192), challan, Form 26AS
+10. TDSChallan — TDS deposit challan records
+11. TDSQuarterlyGroup — Quarterly TDS grouping for Form 26Q/24Q
+12. TDSValidationLog — TDS filing validation audit
+13. GSTReturn — GSTR-1/GSTR-3B filing records
+14. ComplianceFiling — Structured filing packets with sourceTransactions[]
+15. ComplianceValidationLog — Per-filing validation errors with severity
+
+**Audit & Traceability (4):**
+16. AuditLog — Action audit trail
+17. AuditEvent — Hash-chained audit events with before/after state
+18. UnifiedTrace — End-to-end trace: TRANSACTION_CREATED → SETU_DISPATCHED → CONFIRMED
+19. RuntimeProof — Verifiable evidence: API responses, DB states, chain verification
+
+**BHIV Governance (4):**
+20. ProvenanceBlock — Immutable governance decision chain (hash-linked)
+21. DecisionLedger — Append-only governance decisions (ALLOW/DENY/WARN/BLOCK)
+22. LineageAnchor — Bucket storage and MDU lineage references
+23. ComplianceSignal — Persisted compliance signal records
+
+**Integration (6):**
+24. SetuDispatch — SETU dispatch lifecycle: pipeline→dispatch→ack→retry→evidence
+25. BankStatement — Uploaded bank statements with parsed transactions
+26. ReconcileRecord — Bank reconciliation records
+27. Company — Multi-company: GSTIN, PAN, TAN, branch, consolidation
+28. CompanySettings — Singleton company configuration
+29. CostCentre — Cost centre/profit centre tracking
+
+**Financial Period & Tally (3):**
+30. FinancialPeriod — Month/quarter/year periods with close checklist
+31. TallyExport — Tally ERP export records
+32. TallyImport — Tally ERP import records
+
+**Analytics (3):**
+33. RLExperience — InsightFlow reinforcement learning buffer
+34. InsightFlowExperience — User behavior analytics
+35. JournalLine — (embedded in JournalEntry) individual debit/credit lines
+
+### Key Services (47)
+
+**Core Accounting (10):**
+- Authentication Service — JWT login/signup, password hashing
+- Ledger Service — Journal lifecycle, hash-chain, account balance updates, void/reversal
+- Invoice Service — Invoice lifecycle → ledger posting with GST
+- Expense Service — Expense lifecycle → ledger posting with approval
+- TDS Service — TDS lifecycle → ledger posting, Form 26Q generation
+- GST Engine Service — Pure GST calculation (IGST/CGST+SGST split)
+- GST Service — GSTR-1/GSTR-3B generation (legacy)
+- GST Filing Service — Statutory filing from journal gstDetails
+- Financial Reports Service — P&L, Balance Sheet, Cash Flow, Trial Balance, Aged Receivables
+- Chart of Accounts Service — Account management
+
+**Compliance (5):**
+- GST Statutory Service — GSTR-1/GSTR-3B from JournalEntry.gstDetails
+- TDS Statutory Service — Form 26Q/Form 24Q from TDSEntry
+- TDS Lifecycle Service — TDS deduction → deposit → filing workflow
+- Compliance Validation Service — Filing validation → ComplianceValidationLog
+- Compliance Signal Service — Signal emission from compliance checks
+
+**BHIV Governance (9):**
+- Capability Registry Service — Canonical capability contracts, route resolution
+- Provenance Chain Service — Immutable governance decision chain
+- Deterministic Replay Service — SHA-256 hash-verified replay system
+- Circuit Breaker Service — 6 configurable breakers (CLOSED/OPEN/HALF_OPEN)
+- Independent Verifier Service — 10 BHIV compliance verification tests
+- Deployment Evidence Service — Evidence generation for 9 deployment scenarios
+- Adversarial Suite Service — 12 adversarial attack vectors
+- Decision Ledger Service — Append-only governance decision recording
+- Lineage Service — Entity anchoring, bucket/MDU references, trace lineage
+
+**Integration (11):**
+- Banking Service — Bank data import and processing
+- Bank Statement Service — Statement upload, parsing, transaction extraction
+- Audit Service — Immutable audit event recording with hash-chain
+- CA Workflow Service — Month/Quarter/Annual close procedures
+- Tally Compatibility Service — Tally ERP import/export
+- Multi-Company Service — Consolidated reporting, branch accounting
+- Observability Service — System health, metrics, Prometheus
+- Traceability Service — Cross-service trace reconstruction
+- Evidence Automation Service — Auto-generated runtime evidence
+- SETU Dispatch Service — Signal → normalize → validate → dispatch → ack → retry
+- SETU Pipeline — Pure functions: Normalizer → Validator → Mapper → Serializer
+
+**Runtime (6):**
+- TANTRA Service — Registration, heartbeat, event emission
+- TANTRA Execution Chain Service — Signal → Intelligence → Decision → Contract → Enforcement → Execution → Truth → Observability
+- Sampada Adapter — Artha signal → Sampada SetuSignalIngest envelope
+- Signal Engine Service — Ledger-based signal snapshot
+- Smart Upload Service — Document upload with OCR
+- Runtime Proof Service — Verifiable evidence capture
+
+**Infrastructure (6):**
+- Health Service — System health checks
+- Performance Service — Request timing, memory monitoring
+- Cache Service — Redis caching with invalidation
+- Cache Invalidation Service — Targeted cache invalidation
+- Database Service — Connection management, query optimization
+- Export Service — PDF/Excel/CSV export
+
+**Media (2):**
+- OCR Service — Receipt image text extraction (Tesseract.js)
+- PDF Service — PDF generation for reports and invoices
 
 ## 📊 Sample Data
 
@@ -497,9 +626,15 @@ For issues and support:
 
 ---
 
-**Last Updated**: July 04, 2026  
+**Last Updated**: July 10, 2026  
 **Version**: 0.1  
 **Status**: BHIV Ecosystem Production Participant ✓  
 **Integrity**: Verified ✓  
 **Governance**: Enforced ✓  
-**BHIV Integration**: Complete ✓
+**BHIV Integration**: Complete ✓  
+**SETU Pipeline**: Operational ✓  
+**TANTRA Chain**: Operational ✓  
+**Models**: 35 ✓  
+**Services**: 47 ✓  
+**Routes**: 27 ✓  
+**Governance Endpoints**: 30+ ✓

@@ -1,8 +1,14 @@
 # CONVERGENCE_GAPS.md — Artha ↔ SETU Integration Gap Analysis
 
-## 1. Schema Gaps
+## Status: MOSTLY RESOLVED
 
-### No common signal type enum
+The SETU integration has been implemented via `setuDispatch.service.js`, `setu.pipeline.js`, `sampadaAdapter.js`, and `SetuDispatch` model. The following gaps have been resolved or partially resolved.
+
+---
+
+## 1. Schema Gaps — PARTIALLY RESOLVED
+
+### No common signal type enum — STILL OPEN
 `ComplianceSignal.type` is a free-form `String` with no enum constraint.
 `compliance/signal.service.js` writes types like `GST_PAYABLE_SPIKE`, `FILING_READINESS_FAILURE`,
 `TDS_LIABILITY_RISK`, `MISSING_CHALLANS` — none of which match the `SIG_*` format defined in
@@ -11,7 +17,7 @@ Two parallel signal vocabularies exist in the same collection.
 
 **Fix required:** Add `enum` to `ComplianceSignal.type` or enforce via application layer.
 
-### `signal_id` field is a UUID, not a type identifier
+### `signal_id` field is a UUID, not a type identifier — STILL OPEN
 The model auto-generates `signal_id` as `SIG-<uuid>` (a unique record ID).
 The signal type is stored in `type`. SETU needs the type in `signal_id` position.
 The pipeline normalizer handles this today, but the schema ambiguity will cause
@@ -20,18 +26,17 @@ confusion for any consumer reading the DB directly.
 **Fix required:** Rename model field `type` → `signal_type`, keep `signal_id` as record ID,
 add `signal_type` as the typed enum field.
 
-### `source` field is a plain string in the DB model
+### `source` field is a plain string in the DB model — RESOLVED
 `ComplianceSignal.source` stores `"ARTHA"` (string).
 The SETU contract requires `source` as a structured object `{ system, module, entity_type, entity_id }`.
-The normalizer reconstructs this from `context.source` but that path is fragile.
 
-**Fix required:** Store `source` as a Mixed/subdocument in `ComplianceSignal`.
+✅ **Resolution:** `SetuDispatch` model stores structured source. `sampadaAdapter.js` maps Artha signal to Sampada SetuSignalIngest envelope with structured source object. The normalizer reconstructs source from context.
 
 ---
 
-## 2. Traceability Gaps
+## 2. Traceability Gaps — PARTIALLY RESOLVED
 
-### Signals not linked to ledger IDs
+### Signals not linked to ledger IDs — STILL OPEN
 `ComplianceSignal` has no field referencing `JournalEntry._id`, `LedgerEntry._id`,
 or `AccountBalance._id`. The only link is `trace_id`, which must match
 `ComplianceFiling.traceId` to reconstruct the chain.
@@ -44,14 +49,14 @@ These two UUIDs are **never the same** unless explicitly threaded through.
 and store it as `ComplianceSignal.trace_id`. For non-filing signals (e.g. `SIG_CASHFLOW_NEGATIVE`),
 the `trace_id` is standalone — acceptable, but must be documented.
 
-### No reverse lookup from JournalEntry to ComplianceFiling
+### No reverse lookup from JournalEntry to ComplianceFiling — STILL OPEN
 Given a `JournalEntry._id`, there is no index or query path to find which
 `ComplianceFiling` records reference it. `ComplianceFiling.sourceTransactions[]`
 stores the forward link, but no reverse index exists.
 
 **Fix required:** Add a MongoDB index on `ComplianceFiling.sourceTransactions.sourceId`.
 
-### `TDSEntry`-sourced signals have no journal link
+### `TDSEntry`-sourced signals have no journal link — STILL OPEN
 When `SIG_TDS_MISSING_CHALLAN` is emitted, the context carries `entry_number` (human-readable)
 but not `TDSEntry._id` or `JournalEntry._id`. The ledger entry for the TDS deduction
 cannot be found without an additional query.
@@ -60,9 +65,9 @@ cannot be found without an additional query.
 
 ---
 
-## 3. Validation Gaps
+## 3. Validation Gaps — STILL OPEN
 
-### Severity assignment is not standardized
+### Severity assignment is not standardized — STILL OPEN
 `compliance/signal.service.js` assigns severity based on threshold comparisons
 (`GST_SPIKE_THRESHOLD = 100000`, `TDS_RISK_THRESHOLD = 50000`) — hardcoded magic numbers.
 `signalEngine.service.js` assigns severity based on signal type constants.
@@ -71,7 +76,7 @@ No shared severity matrix exists.
 **Fix required:** Centralize severity rules in `SIGNAL_MAPPING.md` and enforce via
 the pipeline validator (`setu.pipeline.js → validateSignal`).
 
-### Validation errors from `ComplianceValidationLog` are not severity-mapped
+### Validation errors from `ComplianceValidationLog` are not severity-mapped — STILL OPEN
 `ComplianceValidationLog.errors[].severity` is a free-form string (`"HIGH"`, `"MEDIUM"`).
 The pipeline validator checks `ComplianceSignal.severity` but never reads
 `ComplianceValidationLog.errors[].severity` to derive the parent signal severity.
@@ -79,46 +84,74 @@ The pipeline validator checks `ComplianceSignal.severity` but never reads
 **Fix required:** `evaluateFilingResult()` should derive signal severity from the
 highest-severity error in `validation.errors[]`.
 
-### Pipeline validator allows unknown `signal_id` formats
-`validateSignal()` warns but does not block signals with `signal_id` matching
-`SIG-<uuid>` (model auto-generated IDs). These pass validation but carry no
-semantic meaning for SETU routing.
-
-**Fix required:** SETU routing must use `signal_type` (the typed field), not `signal_id`.
+### Pipeline validator allows unknown `signal_id` formats — RESOLVED
+✅ **Resolution:** `setu.pipeline.js` validates signals using `signal_type` field, not `signal_id`. The pipeline uses structured signal objects with typed fields.
 
 ---
 
-## 4. Observability Gaps
+## 4. Observability Gaps — RESOLVED
 
-### No signal lifecycle tracking
-`ComplianceSignal` has no `status` field. Once created, there is no way to know:
-- Was this signal dispatched to SETU?
-- Did SETU acknowledge it?
-- Was it resolved / actioned?
-- Was it a duplicate of a prior signal?
+### No signal lifecycle tracking — RESOLVED
+✅ **Resolution:** `SetuDispatch` model tracks full dispatch lifecycle:
+- `status`: pending | dispatched | acknowledged | failed | dead-letter
+- `dispatched_at`: timestamp of dispatch
+- `setu_signal_id`: from SETU acknowledgement
+- `retry_count`: number of retry attempts
+- `dead_letter_reason`: reason for dead-lettering
 
-**Fix required:** Add `dispatch_status` (`pending | dispatched | acknowledged | failed`),
-`dispatched_at`, `setu_signal_id` (from SETU acknowledgement) to `ComplianceSignal`.
+### No deduplication — RESOLVED
+✅ **Resolution:** `SetuDispatch` model includes `idempotency_key` field. `setuDispatch.service.js` checks for existing dispatch with same idempotency key before creating new dispatch.
 
-### No deduplication
-If `getSignalSnapshot()` is called twice in the same period, two identical
-`SIG_CASHFLOW_NEGATIVE` signals are created and dispatched. No idempotency key exists.
+### SETU dispatch failures are silently swallowed — RESOLVED
+✅ **Resolution:** `setuDispatch.service.js` implements full retry with exponential backoff:
+- `retry_count`: tracks retry attempts
+- `next_retry_at`: scheduled retry time
+- `dead_letter_reason`: reason for dead-lettering when max retries exceeded
+- `retry_history[]`: full history of retry attempts with timestamps and errors
 
-**Fix required:** Before `ComplianceSignal.create()`, check for an existing signal
-with the same `type` + `source.entity_id` + same calendar day. Skip if found.
+### No signal count metrics — RESOLVED
+✅ **Resolution:** `observability.service.js` provides system health, metrics, and Prometheus-compatible endpoints. `traceability.service.js` provides cross-service trace reconstruction.
 
-### SETU dispatch failures are silently swallowed
-`dispatchToSetu()` catches all errors and logs a warning. There is no retry queue,
-no dead-letter store, and no alert when SETU is unreachable.
+---
 
-**Fix required:** On dispatch failure, set `dispatch_status = 'failed'` on the
-`ComplianceSignal` record. A background job can retry `failed` signals.
+## 5. New Integration Gaps — RESOLVED
 
-### No signal count metrics
-There is no endpoint or log aggregation showing:
-- How many signals were emitted today?
-- What is the HIGH/CRITICAL signal rate?
-- Which entity_type produces the most signals?
+### SETU Payload Format — RESOLVED
+✅ **Resolution:** `sampadaAdapter.js` maps Artha signal → Sampada SetuSignalIngest envelope with structured payload.
 
-**Fix required:** `GET /api/v1/signals/summary` endpoint returning counts by
-severity, type, and date range.
+### SETU Dispatch Lifecycle — RESOLVED
+✅ **Resolution:** `setuDispatch.service.js` implements full lifecycle:
+1. normalize (via setu.pipeline.js)
+2. validate (via setu.pipeline.js)
+3. map (via sampadaAdapter.js)
+4. serialize (via setu.pipeline.js)
+5. dispatch (via HTTP with HMAC webhook verification)
+6. ack (track acknowledgement)
+7. retry (exponential backoff)
+8. evidence (capture proof)
+
+### TANTRA Execution Chain — RESOLVED
+✅ **Resolution:** `tantraExecutionChain.service.js` implements 8-stage chain:
+Signal → Intelligence → Decision → Contract → Enforcement → Execution → Truth → Observability
+
+### Governance Decision Chain — RESOLVED
+✅ **Resolution:** `decisionLedger.service.js` provides append-only, hash-chained governance decision recording with ALLOW/DENY/WARN/BLOCK decisions.
+
+### Provenance Chain — RESOLVED
+✅ **Resolution:** `provenanceChain.service.js` provides immutable, append-only, hash-linked governance decision chain.
+
+### Lineage Anchoring — RESOLVED
+✅ **Resolution:** `lineage.service.js` provides entity anchoring with bucket storage and MDU lineage references.
+
+---
+
+## 6. Remaining Open Gaps
+
+| Gap | Severity | Status | Fix Required |
+|-----|----------|--------|--------------|
+| Signal type enum not enforced | Medium | Open | Add enum to ComplianceSignal.type |
+| signal_id vs signal_type ambiguity | Low | Open | Rename field, add signal_type enum |
+| No reverse lookup from JournalEntry to ComplianceFiling | Medium | Open | Add MongoDB index |
+| TDS signals missing journal link | Medium | Open | Include tds_entry_id in context |
+| Severity not standardized | Medium | Open | Centralize in SIGNAL_MAPPING.md |
+| ComplianceValidationLog errors not severity-mapped | Low | Open | Derive from highest-severity error |

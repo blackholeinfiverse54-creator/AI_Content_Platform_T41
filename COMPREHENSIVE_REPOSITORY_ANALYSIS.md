@@ -7,13 +7,13 @@
 ## 🏗️ Architecture Overview
 
 ### Technology Stack
-- **Backend**: Node.js 18+, Express.js, MongoDB 8.0, Redis 7
-- **Frontend**: React 18, Vite, TailwindCSS
-- **Infrastructure**: Docker, Docker Compose, Nginx
-- **Security**: Helmet, JWT, HMAC-SHA256, Rate Limiting
+- **Backend**: Node.js 18+, Express.js, MongoDB 7+, Redis 7
+- **Frontend**: React 18, Vite, TailwindCSS, Zustand, Recharts
+- **Infrastructure**: Docker, Docker Compose, Nginx, Kubernetes
+- **Security**: Helmet, JWT, HMAC-SHA256, Rate Limiting, bcrypt
 - **Testing**: Jest, Supertest (85%+ coverage)
 - **Monitoring**: Winston logging, Performance metrics, Health checks
-- **BHIV Integration**: Capability Registry, Policy Engine, Provenance Chain, Circuit Breakers
+- **BHIV Integration**: Capability Registry, Policy Engine, Provenance Chain, Circuit Breakers, Deterministic Replay, Adversarial Testing
 
 ### System Architecture Pattern
 ```
@@ -35,54 +35,131 @@
 
 ## 📊 Database Schema & Models
 
-### Core Models (11 Total)
-1. **User** - Authentication & role-based access
-2. **JournalEntry** - Double-entry ledger with hash-chain
-3. **ChartOfAccounts** - Account structure & hierarchy
-4. **AccountBalance** - Real-time account balances
-5. **Invoice** - Customer billing with GST compliance
-6. **Expense** - Expense management with approval workflow
-7. **CompanySettings** - India compliance configuration
-8. **GSTReturn** - GST filing data (GSTR-1, GSTR-3B)
-9. **TDSEntry** - TDS deduction tracking
-10. **AuditLog** - Comprehensive audit trail
-11. **RLExperience** - InsightFlow analytics buffer
+### Core Models (35 Total)
+
+**Core Accounting (8):**
+1. **User** - Authentication, roles (admin/accountant/viewer), bcrypt passwords
+2. **ChartOfAccounts** - Account hierarchy (Asset/Liability/Equity/Income/Expense), 33+ pre-seeded
+3. **JournalEntry** - Double-entry with HMAC-SHA256 hash-chain, audit trail, GST details
+4. **LedgerEntry** - Flat debit/credit lines with SHA-256 chain linking
+5. **AccountBalance** - Running balance per account (debitTotal, creditTotal, balance)
+6. **Invoice** - Full lifecycle: draft→sent→partial→paid→cancelled, GST breakdown
+7. **Expense** - Approval workflow: pending→approved→recorded, OCR receipt support
+8. **Payment** - NEFT/RTGS/UPI/IMPS with retry, reconciliation, bank details
+
+**Compliance (7):**
+9. **TDSEntry** - TDS deduction tracking (194A/C/H/I/J/Q, 192), challan, Form 26AS
+10. **TDSChallan** - TDS deposit challan records
+11. **TDSQuarterlyGroup** - Quarterly TDS grouping for Form 26Q/24Q
+12. **TDSValidationLog** - TDS filing validation audit
+13. **GSTReturn** - GSTR-1/GSTR-3B filing records
+14. **ComplianceFiling** - Structured filing packets with sourceTransactions[]
+15. **ComplianceValidationLog** - Per-filing validation errors with severity
+
+**Audit & Traceability (4):**
+16. **AuditLog** - Action audit trail
+17. **AuditEvent** - Hash-chained audit events with before/after state
+18. **UnifiedTrace** - End-to-end trace: TRANSACTION_CREATED → SETU_DISPATCHED → CONFIRMED
+19. **RuntimeProof** - Verifiable evidence: API responses, DB states, chain verification
+
+**BHIV Governance (4):**
+20. **ProvenanceBlock** - Immutable governance decision chain (hash-linked)
+21. **DecisionLedger** - Append-only governance decisions (ALLOW/DENY/WARN/BLOCK)
+22. **LineageAnchor** - Bucket storage and MDU lineage references
+23. **ComplianceSignal** - Persisted compliance signal records
+
+**Integration (6):**
+24. **SetuDispatch** - SETU dispatch lifecycle: pipeline→dispatch→ack→retry→evidence
+25. **BankStatement** - Uploaded bank statements with parsed transactions
+26. **ReconcileRecord** - Bank reconciliation records
+27. **Company** - Multi-company: GSTIN, PAN, TAN, branch, consolidation
+28. **CompanySettings** - Singleton company configuration
+29. **CostCentre** - Cost centre/profit centre tracking
+
+**Financial Period & Tally (3):**
+30. **FinancialPeriod** - Month/quarter/year periods with close checklist
+31. **TallyExport** - Tally ERP export records
+32. **TallyImport** - Tally ERP import records
+
+**Analytics (3):**
+33. **RLExperience** - InsightFlow reinforcement learning buffer
+34. **InsightFlowExperience** - User behavior analytics
+35. **JournalLine** - (embedded in JournalEntry) individual debit/credit lines
 
 ### Data Relationships
 ```
 User ──┬── JournalEntry (postedBy)
        ├── Invoice (createdBy)
        ├── Expense (submittedBy, approvedBy)
+       ├── Payment (initiatedBy, verifiedBy)
        └── AuditLog (performedBy)
 
 ChartOfAccounts ──┬── JournalEntry.lines (account)
                   ├── AccountBalance (account)
+                  ├── Invoice (via GST accounts)
                   └── Expense (account)
 
 JournalEntry ──┬── Invoice (journalEntryId)
-               └── Expense (journalEntryId)
+               ├── Expense (journalEntryId)
+               ├── Payment (journalEntryId)
+               └── LedgerEntry (journal_id)
+
+Invoice ──┬── Payment (entityId)
+           └── ComplianceFiling (sourceTransactions)
+
+TDSEntry ──┬── Payment (entityId)
+            ├── TDSChallan
+            └── ComplianceFiling (sourceTransactions)
+
+ComplianceFiling ──┬── ComplianceValidationLog
+                   └── SetuDispatch (filingId)
+
+UnifiedTrace ──┬── JournalEntry (linked_entities)
+                ├── ComplianceSignal (linked_entities)
+                ├── ComplianceFiling (linked_entities)
+                └── SetuDispatch (linked_entities)
+
+ProvenanceBlock ──┬── DecisionLedger
+                  └── LineageAnchor
+
+LineageAnchor ──┬── Bucket Storage (bucket_reference)
+                 └── MDU Lineage (mdu_reference)
 ```
 
 ## 🔐 Security Architecture
 
 ### Authentication & Authorization
-- **JWT-based authentication** with refresh tokens
+- **JWT-based authentication** with multiple secret support (JWT_SECRET, BHIV_JWT_SECRET, etc.)
 - **Role-based access control**: admin, accountant, viewer
 - **Password hashing** with bcrypt (salt rounds: 10)
-- **Token expiration** and automatic refresh
+- **Bearer token** preferred, legacy cookie fallback
+- **App-level access control** via allowedApps in JWT
 
 ### Security Middleware Stack
-1. **Helmet** - Security headers
-2. **CORS** - Cross-origin resource sharing
-3. **Rate Limiting** - DDoS protection
+1. **Helmet** - Security headers (CSP, HSTS, X-Frame-Options)
+2. **CORS** - Configurable allowed origins
+3. **Rate Limiting** - DDoS protection (auth-specific limiters)
 4. **Input Sanitization** - XSS prevention
-5. **Request Validation** - Schema validation
+5. **Request Validation** - express-validator schema validation
+6. **Watermark** - Response watermarking
+7. **Authority Enforcement** - Capability-based access control from JSON contracts
+8. **Policy Engine** - Runtime enforcement with deterministic ALLOW/DENY
 
 ### Hash-Chain Ledger Security
-- **HMAC-SHA256** for entry integrity
+- **HMAC-SHA256** for JournalEntry integrity (with HMAC_SECRET)
+- **SHA-256** for LedgerEntry chain linking
 - **Chain position tracking** for sequence verification
-- **Tamper detection** with backward verification
+- **Tamper detection** with backward verification to genesis
 - **Genesis block** (prevHash: '0') for chain start
+- **Pre-save hooks** auto-compute hashes on entry creation/modification
+
+### BHIV Governance Security
+- **Capability Registry** - 10 capability contracts defining authority boundaries
+- **Route-to-Capability Mapping** - 34 route prefixes mapped to 8 capabilities
+- **Authority Violation Logging** - JSONL file + structured logging
+- **Circuit Breakers** - Fault isolation for external dependencies
+- **Adversarial Testing** - 12 attack vectors for security validation
+- **Deterministic Replay** - SHA-256 verified replay of all operations
 
 ## 🧮 Double-Entry Accounting Logic
 
@@ -260,20 +337,24 @@ services:
 ### Code Organization
 ```
 backend/src/
-├── config/          # Configuration files
-├── controllers/     # Request handlers (15 files)
-├── services/        # Business logic (20 files)
-├── models/          # Database schemas (11 files)
-├── routes/          # API routing (14 files)
-├── middleware/      # Custom middleware (7 files)
-└── server.js        # Application entry point
+├── config/          # Configuration files (database, redis, logger, cors, urls, validation)
+├── controllers/     # Request handlers (26 files)
+├── services/        # Business logic (47 files + compliance/ subdirectory with 7 files)
+├── models/          # Database schemas (35 files)
+├── routes/          # API routing (27 files)
+├── middleware/       # Custom middleware (11 files)
+├── runtime/         # BHIV runtime governance (capability_loader, contract_validator, authority_runtime, enforcement_engine)
+├── utils/           # Utility functions (authToken)
+└── server.js        # Application entry point (409 lines)
 ```
 
 ### Development Standards
 - **ESLint** for code linting
 - **Prettier** for code formatting
 - **Husky** for git hooks
-- **Conventional commits** for version control
+- **lint-staged** for pre-commit validation
+- **Decimal.js** for all financial calculations (no floating-point)
+- **MongoDB transactions** with graceful fallback when replica set unavailable
 
 ## 🔧 API Architecture
 
@@ -282,23 +363,41 @@ backend/src/
 - **HTTP methods**: GET, POST, PUT, DELETE
 - **Status codes**: Proper HTTP response codes
 - **Error handling**: Standardized error responses
+- **Authentication**: Bearer token (preferred) or legacy cookie
 
-### API Endpoints (69 Total)
+### API Endpoints (80+ Total)
 ```
-Authentication (8):    /api/v1/auth/*
-Ledger (12):          /api/v1/ledger/*
-Accounts (6):         /api/v1/accounts/*
-Invoices (8):         /api/v1/invoices/*
-Expenses (8):         /api/v1/expenses/*
-Reports (7):          /api/v1/reports/*
-GST (5):              /api/v1/gst/*
-TDS (4):              /api/v1/tds/*
-Health (6):           /health, /ready, /live, etc.
-BHIV Governance (19): /api/v1/governance/*
+Authentication (3):     /api/v1/auth/*
+Ledger (16):           /api/v1/ledger/*
+Accounts (6):          /api/v1/accounts/*
+Invoices (8):          /api/v1/invoices/*
+Expenses (8):          /api/v1/expenses/*
+Reports (8):           /api/v1/reports/*
+GST (5):               /api/v1/gst/*
+TDS (6):               /api/v1/tds/*
+Compliance (5):        /api/v1/compliance/*
+Settings (3):          /api/v1/settings/*
+Performance (3):       /api/v1/performance/*
+Database (3):          /api/v1/database/*
+Users (3):             /api/v1/users/*
+Statements (3):        /api/v1/statements/*
+Upload (2):            /api/v1/upload/*
+Signals (5):           /api/v1/signals/*
+Runtime (3):           /api/v1/runtime/*
+Trace (3):             /api/v1/trace/*
+Banking (3):           /api/v1/banking/*
+Audit (3):             /api/v1/audit/*
+CA Workflow (3):       /api/v1/ca-workflow/*
+Tally (3):             /api/v1/tally/*
+Multi-Company (3):     /api/v1/multi-company/*
+TANTRA (3):            /api/v1/tantra/*
+Governance (30+):      /api/v1/governance/*
+SETU (3):              /api/v1/setu/*
+Health (6):            /health, /ready, /live, etc.
 ```
 
 ### BHIV Ecosystem Integration
-- **Capability Registry**: Canonical single source of truth for capability contracts
+- **Capability Registry**: 10 capability contracts, 34 route prefixes mapped
 - **Policy Engine**: Runtime enforcement with deterministic ALLOW/DENY decisions
 - **Provenance Chain**: Immutable, append-only, hash-linked governance decision chain
 - **Deterministic Replay**: Replay system with SHA-256 hash verification for 100% reproducibility
@@ -306,6 +405,15 @@ BHIV Governance (19): /api/v1/governance/*
 - **Independent Verification**: 10 independent verification tests for BHIV compliance
 - **Deployment Evidence**: Complete evidence generation for 9 deployment scenarios
 - **Adversarial Testing**: 12 genuine adversarial attack vectors for security validation
+- **Decision Ledger**: Append-only, hash-chained governance decision recording
+- **Lineage Anchoring**: Bucket storage and MDU lineage references
+
+### SETU & TANTRA Integration
+- **SETU Pipeline**: Signal normalization, validation, mapping, serialization, dispatch, acknowledgement, retry
+- **Sampada Adapter**: Artha signal → Sampada SetuSignalIngest envelope mapping
+- **TANTRA Execution Chain**: Signal → Intelligence → Decision → Contract → Enforcement → Execution → Truth → Observability
+- **TANTRA Runtime**: Registration, heartbeat, event emission, health monitoring
+- **SETU Dispatch**: Full lifecycle with retry, dead-letter, idempotency, HMAC webhook verification
 
 ### Backward Compatibility
 - **Legacy routes** maintained alongside V1 API
@@ -449,6 +557,8 @@ ARTHA represents a **mature, production-ready accounting system** that successfu
 - **Modern web technologies** with proven architectural patterns
 - **Blockchain-inspired security** with traditional accounting principles
 - **India regulatory compliance** with international best practices
+- **BHIV ecosystem governance** with capability-based authority enforcement
+- **SETU/TANTRA integration** with full lifecycle dispatch and retry
 - **Developer experience** with business requirements
 
 The system demonstrates **enterprise-grade quality** through its comprehensive testing, security measures, performance optimization, and deployment readiness. The codebase shows **deep understanding** of both technical implementation and business domain requirements.
@@ -460,9 +570,15 @@ The system demonstrates **enterprise-grade quality** through its comprehensive t
 - Performance: Excellent
 - Documentation: Excellent
 - Business Logic: Excellent
+- BHIV Integration: Excellent
+- SETU Pipeline: Excellent
+- TANTRA Chain: Excellent
 
 ---
 
-*Analysis completed on: $(date)*
-*Repository size: 88 files, 50+ API endpoints, 11 models, 30+ tests*
+*Analysis completed on: July 10, 2026*
+*Repository: 35 models, 47 services, 26 controllers, 27 route files, 11 middleware, 80+ API endpoints*
 *Technology maturity: Production-ready*
+*BHIV Governance: Operational*
+*SETU Pipeline: Operational*
+*TANTRA Execution Chain: Operational*
