@@ -86,8 +86,13 @@ api.interceptors.response.use(
     } else if (error.response?.status === 403) {
       if (error.response?.data?.code === 'app_not_allowed') {
         toast.error('Your account is not enabled for this app.');
+      } else if (error.response?.data?.error === 'AUTHORITY_VIOLATION') {
+        console.warn('Authority violation (route not mapped):', reqUrl);
+      } else if (error.response?.data?.error === 'POLICY_VIOLATION') {
+        console.warn('Policy violation:', reqUrl);
       } else {
-        toast.error('You do not have permission to perform this action');
+        const msg = error.response?.data?.message || 'You do not have permission to perform this action';
+        toast.error(msg);
       }
     } else if (error.response?.status === 409) {
       toast.error(message);

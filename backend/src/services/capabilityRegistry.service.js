@@ -21,6 +21,13 @@ const __dirname = dirname(__filename);
 const CONTRACT_DIR = join(__dirname, '..', '..', '..', 'contracts', 'capability_contracts');
 const ROUTE_MAP_FILE = join(CONTRACT_DIR, 'capability_route_map.json');
 
+// Fallback paths for when primary path doesn't work (e.g., Render deployment)
+const FALLBACK_CONTRACT_DIRS = [
+  join(process.cwd(), 'contracts', 'capability_contracts'),
+  join(process.cwd(), '..', 'contracts', 'capability_contracts'),
+  join(__dirname, '..', '..', 'contracts', 'capability_contracts'),
+];
+
 class CapabilityRegistryService {
   constructor() {
     this.capabilities = new Map();
@@ -38,20 +45,35 @@ class CapabilityRegistryService {
   loadContracts() {
     if (this.loadedAt) return this;
 
+    // Find the contracts directory (try primary path, then fallbacks)
+    let contractsDir = CONTRACT_DIR;
+    let routeMapPath = ROUTE_MAP_FILE;
+
+    if (!existsSync(contractsDir)) {
+      for (const fallback of FALLBACK_CONTRACT_DIRS) {
+        if (existsSync(fallback)) {
+          contractsDir = fallback;
+          routeMapPath = join(fallback, 'capability_route_map.json');
+          logger.info(`[CAPABILITY_REGISTRY] Using fallback contract directory: ${fallback}`);
+          break;
+        }
+      }
+    }
+
     try {
-      if (!existsSync(CONTRACT_DIR)) {
-        logger.warn(`[CAPABILITY_REGISTRY] Contract directory not found: ${CONTRACT_DIR}`);
+      if (!existsSync(contractsDir)) {
+        logger.warn(`[CAPABILITY_REGISTRY] Contract directory not found: ${contractsDir}. Registry will be empty.`);
         this.loadedAt = new Date();
         return this;
       }
 
-      const contractFiles = readdirSync(CONTRACT_DIR).filter(
+      const contractFiles = readdirSync(contractsDir).filter(
         f => f.endsWith('.json') && !f.includes('route_map')
       );
 
       for (const file of contractFiles) {
         try {
-          const filePath = join(CONTRACT_DIR, file);
+          const filePath = join(contractsDir, file);
           const raw = readFileSync(filePath, 'utf-8');
           const contract = JSON.parse(raw);
           const capId = contract.capability_id;
@@ -121,7 +143,7 @@ class CapabilityRegistryService {
       }
 
       // Load route-to-capability mapping
-      this._loadRouteMap();
+      this._loadRouteMap(routeMapPath);
 
       this.loadedAt = new Date();
       this.registrationId = `REG-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
@@ -142,10 +164,11 @@ class CapabilityRegistryService {
   /**
    * Load route-to-capability mapping from JSON or build fallback.
    */
-  _loadRouteMap() {
+  _loadRouteMap(customPath) {
     try {
-      if (existsSync(ROUTE_MAP_FILE)) {
-        const raw = readFileSync(ROUTE_MAP_FILE, 'utf-8');
+      const routeMapFile = customPath || ROUTE_MAP_FILE;
+      if (existsSync(routeMapFile)) {
+        const raw = readFileSync(routeMapFile, 'utf-8');
         const map = JSON.parse(raw);
         this.routeMap = (map.routes || []).sort((a, b) => b.prefix.length - a.prefix.length);
       } else {

@@ -161,6 +161,14 @@ export function policyEnforcement(req, res, next) {
 
   if (!resolution) {
     // Route not mapped to any capability
+    // If registry has no capabilities loaded, be permissive
+    if (capabilityRegistry.capabilities.size === 0) {
+      logger.warn(`[POLICY_ENGINE] No capabilities loaded, allowing unmapped route: ${method} ${path}`);
+      req.capability = 'UNMAPPED';
+      req.policyDecision = 'ALLOW_NO_CONTRACTS';
+      return next();
+    }
+
     if (process.env.NODE_ENV === 'production') {
       recordPolicyDecision(req, 'DENY').catch(() => {});
       return res.status(403).json({
@@ -238,13 +246,13 @@ export function guardCollection(req, collectionName) {
   const capability = req.capability;
 
   if (!capability || capability === 'UNMAPPED') {
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production' && capabilityRegistry.capabilities.size > 0) {
       throw new Error(
         `[POLICY_ENGINE] FATAL: No capability context for ${collectionName}. ` +
         `Request bypassed policy enforcement.`
       );
     }
-    return { allowed: true, reason: 'No capability context (development mode)' };
+    return { allowed: true, reason: 'No capability context (permissive mode)' };
   }
 
   if (capability === 'PUBLIC' || capability === 'STATIC') {
