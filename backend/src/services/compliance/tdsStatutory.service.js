@@ -4,14 +4,15 @@ import TDSEntry from '../../models/TDSEntry.js';
 import TDSChallan from '../../models/TDSChallan.js';
 import ComplianceFiling from '../../models/ComplianceFiling.js';
 import { buildTraceId, parseQuarterPeriod } from './period.util.js';
+import traceabilityService from '../traceability.service.js';
 
 const FORM26Q_SECTIONS = ['194A', '194C', '194H', '194I', '194J', '194Q', 'other'];
 
 class TDSStatutoryService {
-  async generateForm26Q(quarter, financialYear, userId) {
+  async generateForm26Q(quarter, financialYear, userId, existingTraceId = null) {
     const { startDate, endDate } = parseQuarterPeriod(quarter, financialYear);
     const settings = await CompanySettings.findById('company_settings').lean();
-    const traceId = buildTraceId();
+    const traceId = existingTraceId || buildTraceId();
 
     const entries = await TDSEntry.find({
       transactionDate: { $gte: startDate, $lte: endDate },
@@ -88,13 +89,34 @@ class TDSStatutoryService {
       jsonData: filing,
     });
 
+    // Initialize unified trace and record FILING_CREATED stage
+    try {
+      if (!existingTraceId) {
+        await traceabilityService.initializeTrace({
+          source: 'TDS_FILING',
+          source_id: record._id,
+          user_id: userId,
+          metadata: { filing_type: 'FORM-26Q', quarter, financial_year: financialYear },
+        });
+      }
+      await traceabilityService.addStage(traceId, {
+        stage: 'FILING_CREATED',
+        entity_type: 'ComplianceFiling',
+        entity_id: String(record._id),
+        status: 'SUCCESS',
+        metadata: { filing_type: 'FORM-26Q', quarter, financial_year: financialYear, filing_id: record.filingId },
+      });
+    } catch (traceErr) {
+      // Trace failures must not break filing generation
+    }
+
     return { filing, traceId, filingId: record.filingId };
   }
 
-  async generateForm24Q(quarter, financialYear, userId) {
+  async generateForm24Q(quarter, financialYear, userId, existingTraceId = null) {
     const { startDate, endDate } = parseQuarterPeriod(quarter, financialYear);
     const settings = await CompanySettings.findById('company_settings').lean();
-    const traceId = buildTraceId();
+    const traceId = existingTraceId || buildTraceId();
 
     const entries = await TDSEntry.find({
       transactionDate: { $gte: startDate, $lte: endDate },
@@ -143,6 +165,27 @@ class TDSStatutoryService {
       })),
       jsonData: filing,
     });
+
+    // Initialize unified trace and record FILING_CREATED stage
+    try {
+      if (!existingTraceId) {
+        await traceabilityService.initializeTrace({
+          source: 'TDS_FILING',
+          source_id: record._id,
+          user_id: userId,
+          metadata: { filing_type: 'FORM-24Q', quarter, financial_year: financialYear },
+        });
+      }
+      await traceabilityService.addStage(traceId, {
+        stage: 'FILING_CREATED',
+        entity_type: 'ComplianceFiling',
+        entity_id: String(record._id),
+        status: 'SUCCESS',
+        metadata: { filing_type: 'FORM-24Q', quarter, financial_year: financialYear, filing_id: record.filingId },
+      });
+    } catch (traceErr) {
+      // Trace failures must not break filing generation
+    }
 
     return { filing, traceId, filingId: record.filingId };
   }

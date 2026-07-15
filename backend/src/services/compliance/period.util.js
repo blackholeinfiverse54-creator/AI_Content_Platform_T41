@@ -42,4 +42,8 @@ export const parseQuarterPeriod = (quarter, financialYear) => {
   return { startDate, endDate, quarter: String(quarter).toUpperCase(), financialYear };
 };
 
-export const buildTraceId = () => randomUUID();
+export const buildTraceId = () => {
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const uuid = randomUUID().slice(0, 8);
+  return `TRC-${date}-${uuid}`;
+};

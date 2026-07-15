@@ -127,7 +127,21 @@ class TraceabilityService {
     try {
       const trace = await UnifiedTrace.findOne({ trace_id });
       if (!trace) {
-        throw new Error(`Trace not found: ${trace_id}`);
+        // Graceful degradation: return partial info instead of throwing
+        logger.warn(`Trace not found: ${trace_id}, returning partial response`);
+        return {
+          trace: null,
+          source_entity: null,
+          runtime_proofs: [],
+          continuity_verified: {
+            is_continuous: false,
+            missing_stages: [],
+            total_stages: 0,
+            current_stage: 'UNKNOWN',
+            status: 'NOT_FOUND',
+          },
+          error: `Trace not found: ${trace_id}`,
+        };
       }
       
       // Populate all linked entities
@@ -218,7 +232,14 @@ class TraceabilityService {
     try {
       const trace = await UnifiedTrace.findOne({ trace_id });
       if (!trace) {
-        throw new Error(`Trace not found: ${trace_id}`);
+        // Graceful degradation: return empty lineage instead of throwing
+        logger.warn(`Trace not found for lineage: ${trace_id}, returning empty lineage`);
+        return {
+          root: null,
+          lineage: { parents: [], children: [], depth: 0 },
+          execution_flow: [],
+          error: `Trace not found: ${trace_id}`,
+        };
       }
       
       // Get parent traces
@@ -305,7 +326,7 @@ class TraceabilityService {
       trace.last_replayed_at = new Date();
       await trace.save();
       
-      // Get full chain for replay context
+      // Get full chain for replay context (now handles missing traces gracefully)
       const chain = await this.getFullChain(trace_id);
       
       logger.info(`Trace replayed: ${trace_id} (attempt ${trace.replay_count})`);

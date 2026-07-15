@@ -16,6 +16,7 @@ import { randomUUID } from 'crypto';
 import auditService from '../services/audit.service.js';
 import evidenceAutomationService from '../services/evidenceAutomation.service.js';
 import tantraService from '../services/tantra.service.js';
+import traceabilityService from '../services/traceability.service.js';
 
 const respondWithCsv = (res, filename, csv) => {
   res.setHeader('Content-Type', 'text/csv');
@@ -39,11 +40,33 @@ export const generateGSTR1 = async (req, res) => {
     });
 
     // Emit canonical signal for filing result
-    await signalEngineService.evaluateFilingResult({
+    const signalResult = await signalEngineService.evaluateFilingResult({
       filingId, filingType: 'GSTR-1', period, traceId,
       filing_ready: validation.filing_ready,
       errors: validation.errors,
     });
+
+    // Record FILING_VALIDATED and SIGNAL_GENERATED stages on the trace
+    try {
+      await traceabilityService.addStage(traceId, {
+        stage: 'FILING_VALIDATED',
+        entity_type: 'ComplianceValidationLog',
+        entity_id: filingId,
+        status: validation.filing_ready ? 'SUCCESS' : 'FAILED',
+        metadata: { filing_ready: validation.filing_ready, error_count: validation.errors?.length || 0 },
+      });
+      if (signalResult?.payload?.trace_id) {
+        await traceabilityService.addStage(traceId, {
+          stage: 'SIGNAL_GENERATED',
+          entity_type: 'ComplianceSignal',
+          entity_id: signalResult.payload.signal_id,
+          status: 'SUCCESS',
+          metadata: { signal_id: signalResult.payload.signal_id, severity: signalResult.payload.severity },
+        });
+      }
+    } catch (traceErr) {
+      // Trace failures must not break compliance flow
+    }
 
     // Audit trail
     await auditService.recordEvent({
@@ -112,6 +135,26 @@ export const generateGSTR3B = async (req, res) => {
       errors: validation.errors,
     });
 
+    // Record FILING_VALIDATED and SIGNAL_GENERATED stages on the trace
+    try {
+      await traceabilityService.addStage(traceId, {
+        stage: 'FILING_VALIDATED',
+        entity_type: 'ComplianceValidationLog',
+        entity_id: filingId,
+        status: validation.filing_ready ? 'SUCCESS' : 'FAILED',
+        metadata: { filing_ready: validation.filing_ready, error_count: validation.errors?.length || 0 },
+      });
+      await traceabilityService.addStage(traceId, {
+        stage: 'SIGNAL_GENERATED',
+        entity_type: 'ComplianceSignal',
+        entity_id: `SIG_FILING_${validation.filing_ready ? 'GENERATED' : 'NOT_READY'}`,
+        status: 'SUCCESS',
+        metadata: { filing_type: 'GSTR-3B', filing_ready: validation.filing_ready },
+      });
+    } catch (traceErr) {
+      // Trace failures must not break compliance flow
+    }
+
     // Audit trail
     await auditService.recordEvent({
       eventType: 'GSTR3B_GENERATED',
@@ -178,6 +221,26 @@ export const generateForm26Q = async (req, res) => {
       filing_ready: validation.filing_ready,
       errors: validation.errors,
     });
+
+    // Record FILING_VALIDATED and SIGNAL_GENERATED stages on the trace
+    try {
+      await traceabilityService.addStage(traceId, {
+        stage: 'FILING_VALIDATED',
+        entity_type: 'ComplianceValidationLog',
+        entity_id: filingId,
+        status: validation.filing_ready ? 'SUCCESS' : 'FAILED',
+        metadata: { filing_ready: validation.filing_ready, error_count: validation.errors?.length || 0 },
+      });
+      await traceabilityService.addStage(traceId, {
+        stage: 'SIGNAL_GENERATED',
+        entity_type: 'ComplianceSignal',
+        entity_id: `SIG_FILING_${validation.filing_ready ? 'GENERATED' : 'NOT_READY'}`,
+        status: 'SUCCESS',
+        metadata: { filing_type: 'FORM-26Q', filing_ready: validation.filing_ready },
+      });
+    } catch (traceErr) {
+      // Trace failures must not break compliance flow
+    }
 
     // Audit trail
     await auditService.recordEvent({
@@ -246,6 +309,26 @@ export const generateForm24Q = async (req, res) => {
       filing_ready: validation.filing_ready,
       errors: validation.errors,
     });
+
+    // Record FILING_VALIDATED and SIGNAL_GENERATED stages on the trace
+    try {
+      await traceabilityService.addStage(traceId, {
+        stage: 'FILING_VALIDATED',
+        entity_type: 'ComplianceValidationLog',
+        entity_id: filingId,
+        status: validation.filing_ready ? 'SUCCESS' : 'FAILED',
+        metadata: { filing_ready: validation.filing_ready, error_count: validation.errors?.length || 0 },
+      });
+      await traceabilityService.addStage(traceId, {
+        stage: 'SIGNAL_GENERATED',
+        entity_type: 'ComplianceSignal',
+        entity_id: `SIG_FILING_${validation.filing_ready ? 'GENERATED' : 'NOT_READY'}`,
+        status: 'SUCCESS',
+        metadata: { filing_type: 'FORM-24Q', filing_ready: validation.filing_ready },
+      });
+    } catch (traceErr) {
+      // Trace failures must not break compliance flow
+    }
 
     // Audit trail
     await auditService.recordEvent({

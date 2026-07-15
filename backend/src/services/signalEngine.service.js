@@ -1,5 +1,4 @@
 import Decimal from 'decimal.js';
-import { randomUUID } from 'crypto';
 import ChartOfAccounts from '../models/ChartOfAccounts.js';
 import LedgerEntry from '../models/LedgerEntry.js';
 import ComplianceSignal from '../models/ComplianceSignal.js';
@@ -7,13 +6,7 @@ import SetuDispatch from '../models/SetuDispatch.js';
 import RuntimeProof from '../models/RuntimeProof.js';
 import Invoice from '../models/Invoice.js';
 import logger from '../config/logger.js';
-
-// ─── Trace ID ────────────────────────────────────────────────────────────────
-
-function buildTraceId() {
-  const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  return `TRC-${date}-${randomUUID().replace(/-/g, '').slice(0, 8)}`;
-}
+import { buildTraceId } from './compliance/period.util.js';
 
 // ─── Recommendation map ───────────────────────────────────────────────────────
 
@@ -70,22 +63,37 @@ function buildSignalPayload({ signalId, traceId, module: mod, entityType, entity
 
 async function persistSignal(payload) {
   try {
-    // Deduplication: skip if same signal type + entity_id already exists today
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const todayEnd = new Date();
-    todayEnd.setHours(23, 59, 59, 999);
+    const filingSignals = ['SIG_FILING_GENERATED', 'SIG_FILING_NOT_READY'];
 
-    const entityId = payload.source?.entity_id || 'UNKNOWN';
-    const existing = await ComplianceSignal.findOne({
-      type: payload.signal_id,
-      'context.source.entity_id': entityId,
-      created_at: { $gte: todayStart, $lte: todayEnd },
-    }).select('_id');
+    if (filingSignals.includes(payload.signal_id)) {
+      // Filing signals: deduplicate by trace_id (one signal per trace)
+      const existing = await ComplianceSignal.findOne({
+        type: payload.signal_id,
+        trace_id: payload.trace_id,
+      }).select('_id');
 
-    if (existing) {
-      logger.debug(`Signal deduplicated: ${payload.signal_id} entity=${entityId} already exists today`);
-      return existing;
+      if (existing) {
+        logger.debug(`Signal deduplicated: ${payload.signal_id} trace=${payload.trace_id} already exists`);
+        return existing;
+      }
+    } else {
+      // Non-filing signals: deduplicate by entity + date (existing behavior)
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+
+      const entityId = payload.source?.entity_id || 'UNKNOWN';
+      const existing = await ComplianceSignal.findOne({
+        type: payload.signal_id,
+        'context.source.entity_id': entityId,
+        created_at: { $gte: todayStart, $lte: todayEnd },
+      }).select('_id');
+
+      if (existing) {
+        logger.debug(`Signal deduplicated: ${payload.signal_id} entity=${entityId} already exists today`);
+        return existing;
+      }
     }
 
     const signal = await ComplianceSignal.create({

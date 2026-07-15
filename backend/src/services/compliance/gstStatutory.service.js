@@ -4,6 +4,7 @@ import CompanySettings from '../../models/CompanySettings.js';
 import ComplianceFiling from '../../models/ComplianceFiling.js';
 import { GST_ENGINE } from '../gstEngine.service.js';
 import { buildTraceId, parseMonthPeriod } from './period.util.js';
+import traceabilityService from '../traceability.service.js';
 
 const B2CL_THRESHOLD = new Decimal(250000);
 
@@ -74,10 +75,10 @@ class GSTStatutoryService {
     }).sort({ date: 1, entryNumber: 1 });
   }
 
-  async generateGSTR1(period, gstin, userId) {
+  async generateGSTR1(period, gstin, userId, existingTraceId = null) {
     const { year, month, startDate, endDate } = parseMonthPeriod(period);
     const settings = await CompanySettings.findById('company_settings').lean();
-    const traceId = buildTraceId();
+    const traceId = existingTraceId || buildTraceId();
     const entries = await this.getJournalEntries({ startDate, endDate });
 
     const sections = {
@@ -127,13 +128,34 @@ class GSTStatutoryService {
       jsonData: filing,
     });
 
+    // Initialize unified trace and record FILING_CREATED stage
+    try {
+      if (!existingTraceId) {
+        await traceabilityService.initializeTrace({
+          source: 'GST_FILING',
+          source_id: record._id,
+          user_id: userId,
+          metadata: { filing_type: 'GSTR-1', period },
+        });
+      }
+      await traceabilityService.addStage(traceId, {
+        stage: 'FILING_CREATED',
+        entity_type: 'ComplianceFiling',
+        entity_id: String(record._id),
+        status: 'SUCCESS',
+        metadata: { filing_type: 'GSTR-1', period, filing_id: record.filingId },
+      });
+    } catch (traceErr) {
+      // Trace failures must not break filing generation
+    }
+
     return { filing, traceId, filingId: record.filingId };
   }
 
-  async generateGSTR3B(period, gstin, userId) {
+  async generateGSTR3B(period, gstin, userId, existingTraceId = null) {
     const { year, month, startDate, endDate } = parseMonthPeriod(period);
     const settings = await CompanySettings.findById('company_settings').lean();
-    const traceId = buildTraceId();
+    const traceId = existingTraceId || buildTraceId();
     const entries = await this.getJournalEntries({ startDate, endDate });
 
     let outwardTaxable = new Decimal(0);
@@ -231,6 +253,27 @@ class GSTStatutoryService {
       sourceTransactions,
       jsonData: filing,
     });
+
+    // Initialize unified trace and record FILING_CREATED stage
+    try {
+      if (!existingTraceId) {
+        await traceabilityService.initializeTrace({
+          source: 'GST_FILING',
+          source_id: record._id,
+          user_id: userId,
+          metadata: { filing_type: 'GSTR-3B', period },
+        });
+      }
+      await traceabilityService.addStage(traceId, {
+        stage: 'FILING_CREATED',
+        entity_type: 'ComplianceFiling',
+        entity_id: String(record._id),
+        status: 'SUCCESS',
+        metadata: { filing_type: 'GSTR-3B', period, filing_id: record.filingId },
+      });
+    } catch (traceErr) {
+      // Trace failures must not break filing generation
+    }
 
     return { filing, traceId, filingId: record.filingId };
   }
