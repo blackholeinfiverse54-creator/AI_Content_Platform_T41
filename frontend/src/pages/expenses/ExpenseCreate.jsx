@@ -25,6 +25,8 @@ const expenseSchema = z.object({
   date: z.string().min(1, 'Date is required'),
   notes: z.string().optional(),
   gstAmount: z.number().optional(),
+  gstRate: z.number().min(0).max(28).optional(),
+  supplierState: z.string().optional(),
 });
 
 const ExpenseCreate = () => {
@@ -53,11 +55,15 @@ const ExpenseCreate = () => {
       date: new Date().toISOString().split('T')[0],
       notes: '',
       gstAmount: 0,
+      gstRate: 0,
+      supplierState: '',
     },
   });
 
   const watchAmount = watch('amount');
   const watchGstAmount = watch('gstAmount');
+  const watchGstRate = watch('gstRate');
+  const showGstFields = (watchGstAmount > 0) || (watchGstRate > 0);
 
   useEffect(() => {
     if (isEditing) {
@@ -230,6 +236,8 @@ const ExpenseCreate = () => {
       formData.append('taxAmount', String(data.gstAmount || 0));
       formData.append('totalAmount', String(data.amount));
       formData.append('paymentMethod', 'other');
+      if (data.gstRate) formData.append('gstRate', String(data.gstRate));
+      if (data.supplierState) formData.append('supplierState', data.supplierState);
       if (data.notes) formData.append('notes', data.notes);
       
       files.forEach((file) => {
@@ -299,6 +307,49 @@ const ExpenseCreate = () => {
                   helperText="GST included in total amount"
                   {...register('gstAmount', { valueAsNumber: true })}
                 />
+                {showGstFields && (
+                  <>
+                    <Input
+                      label="GST Rate (%)"
+                      type="number"
+                      placeholder="e.g. 18"
+                      helperText="Required when GST amount is provided"
+                      error={errors.gstRate?.message}
+                      {...register('gstRate', { valueAsNumber: true })}
+                    />
+                    <Select
+                      label="Supplier State"
+                      placeholder="Select state"
+                      helperText="Required for GST compliance"
+                      error={errors.supplierState?.message}
+                      options={[
+                        { value: 'ANDHRA_PRADESH', label: 'Andhra Pradesh' },
+                        { value: 'ASSAM', label: 'Assam' },
+                        { value: 'BIHAR', label: 'Bihar' },
+                        { value: 'CHHATTISGARH', label: 'Chhattisgarh' },
+                        { value: 'DELHI', label: 'Delhi' },
+                        { value: 'GOA', label: 'Goa' },
+                        { value: 'GUJARAT', label: 'Gujarat' },
+                        { value: 'HARYANA', label: 'Haryana' },
+                        { value: 'HIMACHAL_PRADESH', label: 'Himachal Pradesh' },
+                        { value: 'JHARKHAND', label: 'Jharkhand' },
+                        { value: 'KARNATAKA', label: 'Karnataka' },
+                        { value: 'KERALA', label: 'Kerala' },
+                        { value: 'MADHYA_PRADESH', label: 'Madhya Pradesh' },
+                        { value: 'MAHARASHTRA', label: 'Maharashtra' },
+                        { value: 'ODISHA', label: 'Odisha' },
+                        { value: 'PUNJAB', label: 'Punjab' },
+                        { value: 'RAJASTHAN', label: 'Rajasthan' },
+                        { value: 'TAMIL_NADU', label: 'Tamil Nadu' },
+                        { value: 'TELANGANA', label: 'Telangana' },
+                        { value: 'UTTAR_PRADESH', label: 'Uttar Pradesh' },
+                        { value: 'WEST_BENGAL', label: 'West Bengal' },
+                        { value: 'OTHER', label: 'Other' },
+                      ]}
+                      {...register('supplierState')}
+                    />
+                  </>
+                )}
                 <Select
                   label="Category"
                   placeholder="Select category"
