@@ -34,7 +34,15 @@ export function useSignals() {
       setRawPayload(res.data);
 
       if (list.length > 0) {
-        setSignals(list);
+        // Deduplicate by type — keep only newest per type
+        const seen = new Map();
+        list.forEach(sig => {
+          const type = sig.type || sig.signal_type;
+          if (!seen.has(type)) {
+            seen.set(type, sig);
+          }
+        });
+        setSignals(Array.from(seen.values()));
         setSource(SIGNAL_SOURCE.LIVE_LIST);
         setLoading(false);
         return;

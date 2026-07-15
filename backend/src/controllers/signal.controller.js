@@ -50,7 +50,7 @@ export const evaluateOverdueInvoices = async (req, res) => {
   }
 };
 
-// @desc    List persisted compliance signals
+// @desc    List persisted compliance signals (deduplicated)
 // @route   GET /api/v1/signals
 // @access  Private
 export const listSignals = async (req, res) => {
@@ -61,13 +61,33 @@ export const listSignals = async (req, res) => {
     if (type)     query.type = type;
 
     const skip = (parseInt(page, 10) - 1) * parseInt(limit, 10);
-    const [signals, total] = await Promise.all([
-      ComplianceSignal.find(query)
-        .sort({ created_at: -1 })
-        .skip(skip)
-        .limit(parseInt(limit, 10)),
-      ComplianceSignal.countDocuments(query),
+
+    // Aggregate with deduplication: keep only the newest signal per type
+    const dedupPipeline = [
+      { $match: query },
+      { $sort: { created_at: -1 } },
+      {
+        $group: {
+          _id: '$type',
+          doc: { $first: '$$ROOT' },
+        },
+      },
+      { $replaceRoot: { newRoot: '$doc' } },
+      { $sort: { created_at: -1 } },
+      { $skip: skip },
+      { $limit: parseInt(limit, 10) },
+    ];
+
+    const [signals, totalResult] = await Promise.all([
+      ComplianceSignal.aggregate(dedupPipeline),
+      ComplianceSignal.aggregate([
+        { $match: query },
+        { $group: { _id: '$type' } },
+        { $count: 'total' },
+      ]),
     ]);
+
+    const total = totalResult[0]?.total || 0;
 
     res.json({
       success: true,
@@ -395,22 +415,16 @@ export const dispatchSignal = async (req, res) => {
   }
 };
 
-// @desc    Clean up duplicate signals (keep only newest per type+entity per day)
+// @desc    Clean up duplicate signals (keep only newest per type)
 // @route   POST /api/v1/signals/cleanup
 // @access  Private (admin)
 export const cleanupDuplicateSignals = async (req, res) => {
   try {
-    // Group signals by type + entity_id + day, keep only the newest
+    // Find duplicates: group by type, keep only the newest
     const duplicates = await ComplianceSignal.aggregate([
       {
-        $addFields: {
-          day: { $dateToString: { format: '%Y-%m-%d', date: '$created_at' } },
-          entityId: '$context.source.entity_id',
-        },
-      },
-      {
         $group: {
-          _id: { type: '$type', entityId: '$entityId', day: '$day' },
+          _id: '$type',
           ids: { $push: '$_id' },
           count: { $sum: 1 },
           newest: { $max: '$created_at' },
@@ -423,15 +437,24 @@ export const cleanupDuplicateSignals = async (req, res) => {
 
     let totalRemoved = 0;
     for (const group of duplicates) {
-      // Keep the newest, remove the rest
-      const toRemove = group.ids.slice(0, -1);
+      // Sort ids by created_at desc, keep only the first (newest)
+      const sortedIds = group.ids;
+      const toRemove = sortedIds.slice(1); // remove all but the first
       if (toRemove.length > 0) {
         await ComplianceSignal.deleteMany({ _id: { $in: toRemove } });
         totalRemoved += toRemove.length;
       }
     }
 
-    logger.info(`Signal cleanup: removed ${totalRemoved} duplicate signals`);
+    // Also remove any signals older than 30 days (stale signals)
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const staleResult = await ComplianceSignal.deleteMany({
+      created_at: { $lt: thirtyDaysAgo },
+      type: { $in: ['SIG_CASHFLOW_NEGATIVE', 'SIG_GST_TDS_LOAD'] },
+    });
+    totalRemoved += staleResult.deletedCount;
+
+    logger.info(`Signal cleanup: removed ${totalRemoved} duplicate/stale signals`);
     res.json({ success: true, data: { groupsFound: duplicates.length, signalsRemoved: totalRemoved } });
   } catch (error) {
     logger.error('Signal cleanup error:', error);

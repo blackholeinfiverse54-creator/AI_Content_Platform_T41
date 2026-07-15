@@ -1,13 +1,9 @@
 /**
  * FinancialIntelligenceDashboard.jsx
  *
- * Runtime-verified signal dashboard.
- * - Phase 1A: real backend contract validation
- * - Phase 1B: explicit runtime mode — never silent mock
- * - Phase 1C: signal trace proof per signal card
- * - Phase 2A: SETU dispatch proof in SignalDetailEngine
- * - Phase 2B: compliance visibility layer (GST + TDS)
- * - Phase 2C: failure simulation matrix (backend unavailable, empty, invalid schema)
+ * Professional financial dashboard with real data from /api/v1/reports/dashboard.
+ * Shows: Revenue, Expenses, Net Income, Outstanding, Bank Flow, Recent Activity.
+ * Signal panel is a compact alert sidebar — not the main focus.
  */
 
 import { useEffect, useMemo, useState } from 'react';
@@ -15,105 +11,102 @@ import {
   AlertCircle,
   ArrowDownRight,
   ArrowUpRight,
-  HeartPulse,
-  ShieldAlert,
+  Banknote,
+  Receipt,
   TrendingUp,
+  TrendingDown,
   RefreshCw,
   WifiOff,
-  Database,
+  Wallet,
+  FileText,
+  Clock,
+  IndianRupee,
+  CreditCard,
+  PiggyBank,
 } from 'lucide-react';
-import { Badge, Card, Loading } from '../../components/common';
+import { Card, Loading } from '../../components/common';
 import SignalStackPanel from '../../components/intelligence/SignalStackPanel';
 import SignalDetailEngine from '../../components/intelligence/SignalDetailEngine';
 import RuntimeModeBanner from '../../components/intelligence/RuntimeModeBanner';
-import ComplianceVisibilityLayer from '../../components/intelligence/ComplianceVisibilityLayer';
 import { useRuntimeMode, RUNTIME_MODES } from '../../hooks/useRuntimeMode';
 import { useSignals, SIGNAL_SOURCE } from '../../hooks/useSignals';
+import { dashboardService } from '../../services';
 
-// ─── Severity weights for health score ───────────────────────────────────────
-const severityWeight = { CRITICAL: 35, HIGH: 22, MEDIUM: 10, LOW: 4 };
+// ─── Format currency ─────────────────────────────────────────────────────────
+const fmt = (n) => {
+  const num = Number(n || 0);
+  if (Math.abs(num) >= 10000000) return `₹${(num / 10000000).toFixed(2)}Cr`;
+  if (Math.abs(num) >= 100000) return `₹${(num / 100000).toFixed(2)}L`;
+  return `₹${num.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+};
 
-// ─── Map /signals/snapshot response to display signals ───────────────────────
-function mapSnapshotToSignals(snap) {
-  if (!snap || typeof snap !== 'object') return [];
-  const cashFlow  = Number(snap.cashFlow  || 0);
-  const tdsPayable = Number(snap.tdsPayable || 0);
-  const outputCGST = Number(snap.outputCGST || 0);
-  const outputSGST = Number(snap.outputSGST || 0);
-  const totalGst   = outputCGST + outputSGST;
+const fmtFull = (n) => {
+  const num = Number(n || 0);
+  return `₹${num.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+};
 
-  return [
-    {
-      id:           'snap_cashflow',
-      signal_type:  'CASH_FLOW_SIGNAL',
-      type:         'SIG_CASHFLOW_NEGATIVE',
-      label:        cashFlow < 0 ? 'Cash flow pressure detected' : 'Cash flow stable',
-      severity:     cashFlow < 0 ? 'HIGH' : 'LOW',
-      reason:       cashFlow < 0
-        ? 'Ledger snapshot indicates net negative cash flow.'
-        : 'Ledger snapshot indicates positive cash flow momentum.',
-      recommendation: cashFlow < 0
-        ? 'Prioritize collections and delay discretionary spend.'
-        : 'Sustain current allocation and monitor weekly.',
-      variance_pct: cashFlow < 0 ? 18 : 4,
-      planned:      Math.abs(cashFlow) * 0.9 || 100000,
-      actual:       Math.abs(cashFlow) || 96000,
-      department:   'Treasury',
-      trend:        cashFlow < 0 ? 'down' : 'up',
-      output:       cashFlow < 0 ? 62 : 90,
-      source:       'ARTHA',
-      trace_id:     null, // snapshot-derived — no DB trace_id
-      timestamp:    new Date().toISOString(),
-    },
-    {
-      id:           'snap_tax',
-      signal_type:  'GST_TDS_LOAD',
-      type:         'SIG_GST_TDS_LOAD',
-      label:        'Tax liability snapshot',
-      severity:     totalGst + tdsPayable > 0 ? 'MEDIUM' : 'LOW',
-      reason:       'Current liabilities include GST output and TDS payable balances.',
-      recommendation: 'Align payout calendar and keep liability buffers funded.',
-      variance_pct: totalGst + tdsPayable > 0 ? 10 : 2,
-      planned:      Math.max(totalGst * 0.85, 80000),
-      actual:       Math.max(totalGst, 82000),
-      department:   'Compliance',
-      trend:        totalGst > 0 ? 'up' : 'flat',
-      output:       84,
-      source:       'ARTHA',
-      trace_id:     null,
-      timestamp:    new Date().toISOString(),
-    },
-  ];
+// ─── Map DB signals for display (deduplicated by type) ───────────────────────
+function mapDbSignals(rawSignals) {
+  if (!rawSignals.length) return [];
+  const seen = new Set();
+  return rawSignals
+    .filter(sig => {
+      const type = sig.type || sig.signal_type;
+      if (seen.has(type)) return false;
+      seen.add(type);
+      return true;
+    })
+    .map((sig, i) => ({
+      id: sig.signal_id || sig._id || `db_${i}`,
+      signal_id: sig.signal_id,
+      signal_type: sig.type || sig.signal_type || 'UNKNOWN',
+      type: sig.type || sig.signal_type,
+      label: sig.context?.label || sig.type?.replace(/_/g, ' ').toLowerCase() || 'Signal',
+      severity: ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'].includes(sig.severity) ? sig.severity : 'LOW',
+      reason: sig.context?.reason || sig.recommendation || '',
+      recommendation: typeof sig.recommendation === 'string'
+        ? sig.recommendation.replace(/^\[[^\]]+\]\s*/, '')
+        : '',
+      variance_pct: Number(sig.context?.variance_pct || 0),
+      trace_id: sig.trace_id,
+      created_at: sig.created_at,
+      context: sig.context,
+    }));
 }
 
-// ─── Map DB ComplianceSignal records to display signals ──────────────────────
-function mapDbSignalToDisplay(sig, index) {
-  return {
-    id:             sig.signal_id || sig._id || `db_${index}`,
-    signal_id:      sig.signal_id,          // keep for pipeline-check
-    signal_type:    sig.type || sig.signal_type || 'UNKNOWN',
-    type:           sig.type || sig.signal_type,
-    label:          sig.context?.label || sig.type || 'Signal',
-    severity:       ['CRITICAL','HIGH','MEDIUM','LOW'].includes(sig.severity) ? sig.severity : 'LOW',
-    reason:         sig.context?.reason || sig.recommendation || 'See signal context.',
-    recommendation: typeof sig.recommendation === 'string'
-      ? sig.recommendation.replace(/^\[[^\]]+\]\s*/, '')
-      : 'Review with finance owner.',
-    variance_pct:   Number(sig.context?.variance_pct || 0),
-    planned:        Number(sig.context?.planned || 0),
-    actual:         Number(sig.context?.actual  || 0),
-    department:     sig.context?.source?.module || sig.context?.department || 'Compliance',
-    trend:          sig.context?.trend || 'flat',
-    output:         Number(sig.context?.output || 80),
-    source:         sig.source || 'ARTHA',
-    trace_id:       sig.trace_id,
-    created_at:     sig.created_at,
-    timestamp:      sig.created_at || new Date().toISOString(),
-    context:        sig.context,
-  };
-}
+// ─── KPI Card ────────────────────────────────────────────────────────────────
+const KpiCard = ({ icon: Icon, label, value, subValue, trend, color = 'primary' }) => (
+  <Card className="p-4 hover:shadow-md transition-shadow">
+    <div className="flex items-start justify-between">
+      <div className="space-y-1">
+        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{label}</p>
+        <p className="text-xl font-bold text-foreground">{value}</p>
+        {subValue && (
+          <p className="text-xs text-muted-foreground">{subValue}</p>
+        )}
+      </div>
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-${color}/10`}>
+        <Icon className={`w-5 h-5 text-${color}`} />
+      </div>
+    </div>
+    {trend !== undefined && (
+      <div className="mt-3 flex items-center gap-1.5">
+        {trend > 0
+          ? <ArrowUpRight className="w-3.5 h-3.5 text-success" />
+          : trend < 0
+            ? <ArrowDownRight className="w-3.5 h-3.5 text-destructive" />
+            : <TrendingUp className="w-3.5 h-3.5 text-muted-foreground" />
+        }
+        <span className={`text-xs font-medium ${trend > 0 ? 'text-success' : trend < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
+          {trend > 0 ? '+' : ''}{trend.toFixed(1)}%
+        </span>
+        <span className="text-xs text-muted-foreground">vs last month</span>
+      </div>
+    )}
+  </Card>
+);
 
-// ─── BackendUnavailableState ──────────────────────────────────────────────────
+// ─── BackendUnavailableState ─────────────────────────────────────────────────
 const BackendUnavailableState = ({ onRetry }) => (
   <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
     <div className="w-16 h-16 rounded-2xl bg-destructive/10 flex items-center justify-center">
@@ -122,7 +115,7 @@ const BackendUnavailableState = ({ onRetry }) => (
     <div className="text-center">
       <p className="text-base font-semibold text-foreground">Backend Unavailable</p>
       <p className="text-sm text-muted-foreground mt-1">
-        Cannot reach the Artha API. Check that the backend is running on port 5000.
+        Cannot reach the Artha API. Check that the backend is running.
       </p>
     </div>
     <button
@@ -135,99 +128,59 @@ const BackendUnavailableState = ({ onRetry }) => (
   </div>
 );
 
-// ─── EmptySignalState ─────────────────────────────────────────────────────────
-const EmptySignalState = ({ source, onRefresh }) => (
-  <div className="flex flex-col items-center justify-center min-h-[200px] gap-3">
-    <Database className="w-8 h-8 text-muted-foreground" />
-    <p className="text-sm text-muted-foreground text-center">
-      No signals in database yet.
-      <br />
-      Create invoices, expenses, or run compliance filings to generate signals.
-    </p>
-    <p className="text-xs text-muted-foreground font-mono">{source}</p>
-    <button
-      onClick={onRefresh}
-      className="flex items-center gap-1.5 text-xs text-primary hover:underline"
-    >
-      <RefreshCw className="w-3 h-3" />
-      Refresh
-    </button>
-  </div>
-);
-
-// ─── Main Dashboard ───────────────────────────────────────────────────────────
+// ─── Main Dashboard ──────────────────────────────────────────────────────────
 const FinancialIntelligenceDashboard = () => {
   const { mode, lastChecked, recheck } = useRuntimeMode();
-  const { signals: rawSignals, source, loading, error, rawPayload, fetchSignals } = useSignals();
-
+  const { signals: rawSignals, source, loading: signalsLoading, error: signalsError, fetchSignals } = useSignals();
   const [selectedSignal, setSelectedSignal] = useState(null);
 
-  // Fetch signals once runtime mode is confirmed
+  const [dashboardData, setDashboardData] = useState(null);
+  const [dashLoading, setDashLoading] = useState(true);
+  const [dashError, setDashError] = useState(null);
+
+  // Fetch real financial data
   useEffect(() => {
     if (mode === RUNTIME_MODES.BACKEND_CONNECTED || mode === RUNTIME_MODES.BACKEND_DEGRADED) {
+      setDashLoading(true);
+      dashboardService.getStats()
+        .then(res => {
+          setDashboardData(res.data?.data || res.data);
+          setDashError(null);
+        })
+        .catch(err => {
+          setDashError(err.message);
+        })
+        .finally(() => setDashLoading(false));
+
       fetchSignals();
     }
   }, [mode, fetchSignals]);
 
-  // Map raw backend signals to display shape
+  // Map signals (deduplicated)
   const signals = useMemo(() => {
     if (!rawSignals.length) return [];
-
-    // If source is snapshot, map snapshot shape
-    if (source === SIGNAL_SOURCE.LIVE_SNAPSHOT) {
-      return mapSnapshotToSignals(rawSignals[0]);
-    }
-
-    // If source is list, map DB ComplianceSignal records
-    if (source === SIGNAL_SOURCE.LIVE_LIST) {
-      return rawSignals.map(mapDbSignalToDisplay);
-    }
-
+    if (source === SIGNAL_SOURCE.LIVE_LIST) return mapDbSignals(rawSignals);
     return [];
   }, [rawSignals, source]);
+
+  const groupedSignals = useMemo(() => {
+    const groups = { HIGH: [], MEDIUM: [], LOW: [] };
+    signals.forEach(s => {
+      const bucket = s.severity === 'CRITICAL' ? 'HIGH' : s.severity;
+      if (groups[bucket]) groups[bucket].push(s);
+    });
+    return groups;
+  }, [signals]);
 
   // Auto-select first signal
   useEffect(() => {
     if (signals.length && !selectedSignal) {
       setSelectedSignal(signals[0]);
     }
-    if (!signals.length) {
-      setSelectedSignal(null);
-    }
   }, [signals]);
 
-  const groupedSignals = useMemo(() => {
-    const groups = { HIGH: [], MEDIUM: [], LOW: [] };
-    [...signals]
-      .sort((a, b) => Math.abs(b.variance_pct) - Math.abs(a.variance_pct))
-      .forEach(s => {
-        const bucket = s.severity === 'CRITICAL' ? 'HIGH' : s.severity;
-        if (groups[bucket]) groups[bucket].push(s);
-      });
-    return groups;
-  }, [signals]);
-
-  const metrics = useMemo(() => {
-    if (!signals.length) return { healthScore: 100, riskLevel: 'LOW', activeIssues: 0 };
-    const penalty = signals.reduce(
-      (sum, s) => sum + (severityWeight[s.severity] || 0) + Math.min(Math.abs(s.variance_pct), 20),
-      0
-    );
-    const healthScore  = Math.max(0, Math.min(100, Math.round(100 - penalty / Math.max(signals.length, 1))));
-    const activeIssues = signals.filter(s => s.severity !== 'LOW').length;
-    let riskLevel = 'LOW';
-    if (signals.some(s => s.severity === 'HIGH' || s.severity === 'CRITICAL') || healthScore < 60) riskLevel = 'HIGH';
-    else if (activeIssues > 0 || healthScore < 80) riskLevel = 'MEDIUM';
-    return { healthScore, riskLevel, activeIssues };
-  }, [signals]);
-
-  const costSummary = useMemo(() => {
-    const planned      = signals.reduce((s, x) => s + x.planned, 0);
-    const actual       = signals.reduce((s, x) => s + x.actual,  0);
-    const variancePct  = planned > 0 ? ((actual - planned) / planned) * 100 : 0;
-    const trendDirection = variancePct > 3 ? 'up' : variancePct < -3 ? 'down' : 'flat';
-    return { planned, actual, variancePct, trendDirection };
-  }, [signals]);
+  const d = dashboardData;
+  const isLoading = dashLoading && mode !== RUNTIME_MODES.CHECKING;
 
   // ── Render: checking ──
   if (mode === RUNTIME_MODES.CHECKING) {
@@ -249,7 +202,7 @@ const FinancialIntelligenceDashboard = () => {
     );
   }
 
-  // ── Render: mock mode (explicit only) ──
+  // ── Render: mock mode ──
   if (mode === RUNTIME_MODES.MOCK_MODE) {
     return (
       <div className="space-y-4">
@@ -267,175 +220,270 @@ const FinancialIntelligenceDashboard = () => {
   // ── Render: connected or degraded ──
   return (
     <div className="space-y-5 animate-fadeIn">
-
-      {/* Runtime mode banner — always visible */}
       <RuntimeModeBanner mode={mode} lastChecked={lastChecked} onRecheck={recheck} />
 
-      {/* Error surface — backend responded but signals failed */}
-      {error && (
+      {/* Error surface */}
+      {(signalsError || dashError) && (
         <Card className="p-3 border-destructive/30 bg-destructive/5">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0" />
             <div>
-              <p className="text-xs font-semibold text-destructive">SIGNAL FETCH FAILED</p>
-              <p className="text-xs text-muted-foreground">
-                {error.url} → {error.status ? `HTTP ${error.status}` : 'Network error'}: {error.message}
-              </p>
+              <p className="text-xs font-semibold text-destructive">DATA FETCH ERROR</p>
+              <p className="text-xs text-muted-foreground">{signalsError?.message || dashError}</p>
             </div>
           </div>
         </Card>
       )}
 
-      {/* KPI row */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <HeartPulse className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Financial Health Score</p>
-              <p className="text-2xl font-bold text-foreground">{metrics.healthScore}</p>
-            </div>
-          </div>
-        </Card>
+      {/* KPI Row — Real Financial Data */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map(i => (
+            <Card key={i} className="p-4"><Loading size="sm" /></Card>
+          ))}
+        </div>
+      ) : d ? (
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <KpiCard
+            icon={IndianRupee}
+            label="Revenue (Month)"
+            value={fmt(d.profitLoss?.income)}
+            subValue={`${fmt(d.yearToDate?.income)} YTD`}
+            trend={Number(d.summary?.revenueChange) || undefined}
+            color="success"
+          />
+          <KpiCard
+            icon={Receipt}
+            label="Expenses (Month)"
+            value={fmt(d.profitLoss?.expenses)}
+            subValue={`${fmt(d.yearToDate?.expenses)} YTD`}
+            trend={Number(d.summary?.expenseChange) || undefined}
+            color="destructive"
+          />
+          <KpiCard
+            icon={Wallet}
+            label="Net Income"
+            value={fmt(d.profitLoss?.netIncome)}
+            subValue={`${fmt(d.yearToDate?.netIncome)} YTD`}
+            color={Number(d.profitLoss?.netIncome) >= 0 ? 'success' : 'destructive'}
+          />
+          <KpiCard
+            icon={CreditCard}
+            label="Outstanding"
+            value={fmt(d.summary?.totalOutstanding)}
+            subValue={`${d.invoices?.overdue?.count || 0} overdue invoices`}
+            color="warning"
+          />
+        </section>
+      ) : null}
 
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center">
-              <ShieldAlert className="w-5 h-5 text-warning" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Budget Risk Level</p>
-              <Badge variant={metrics.riskLevel === 'HIGH' ? 'danger' : metrics.riskLevel === 'MEDIUM' ? 'warning' : 'success'}>
-                {metrics.riskLevel}
-              </Badge>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
-              <AlertCircle className="w-5 h-5 text-destructive" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Active Issues</p>
-              <p className="text-2xl font-bold text-foreground">{metrics.activeIssues}</p>
-            </div>
-          </div>
-        </Card>
-      </section>
-
-      {/* Main grid */}
+      {/* Main Content Grid */}
       <section className="grid grid-cols-1 xl:grid-cols-12 gap-5">
 
-        {/* Signal stack — left */}
-        <div className="xl:col-span-3">
-          {loading
-            ? <Card className="p-4"><Loading size="md" /></Card>
-            : signals.length === 0
-              ? <Card className="p-4"><EmptySignalState source={source} onRefresh={fetchSignals} /></Card>
-              : <SignalStackPanel
-                  groupedSignals={groupedSignals}
-                  selectedSignalId={selectedSignal?.id}
-                  onSelectSignal={setSelectedSignal}
-                />
-          }
+        {/* Left: Financial Summary + Recent Activity */}
+        <div className="xl:col-span-5 space-y-5">
+
+          {/* Balance Sheet Summary */}
+          {d && (
+            <Card className="p-5">
+              <h2 className="text-sm font-semibold text-foreground mb-4">Balance Sheet</h2>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                  <div className="flex items-center gap-2">
+                    <PiggyBank className="w-4 h-4 text-primary" />
+                    <span className="text-sm text-foreground">Total Assets</span>
+                  </div>
+                  <span className="text-sm font-semibold text-foreground">{fmt(d.balanceSheet?.assets)}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-destructive" />
+                    <span className="text-sm text-foreground">Total Liabilities</span>
+                  </div>
+                  <span className="text-sm font-semibold text-foreground">{fmt(d.balanceSheet?.liabilities)}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                  <div className="flex items-center gap-2">
+                    <Wallet className="w-4 h-4 text-success" />
+                    <span className="text-sm text-foreground">Equity</span>
+                  </div>
+                  <span className="text-sm font-semibold text-foreground">{fmt(d.balanceSheet?.equity)}</span>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Bank Flow */}
+          {d && (
+            <Card className="p-5">
+              <h2 className="text-sm font-semibold text-foreground mb-4">Bank Flow (This Month)</h2>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 rounded-lg bg-success/5 border border-success/20">
+                  <p className="text-xs text-muted-foreground">Credits</p>
+                  <p className="text-lg font-bold text-success">{fmt(d.bankFlow?.monthCredits)}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{d.bankFlow?.monthTransactions || 0} transactions</p>
+                </div>
+                <div className="p-3 rounded-lg bg-destructive/5 border border-destructive/20">
+                  <p className="text-xs text-muted-foreground">Debits</p>
+                  <p className="text-lg font-bold text-destructive">{fmt(d.bankFlow?.monthDebits)}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{d.bankFlow?.monthStatements || 0} statements</p>
+                </div>
+              </div>
+              <div className="mt-3 p-3 rounded-lg bg-muted/30">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Net Flow</span>
+                  <span className={`text-sm font-semibold ${Number(d.bankFlow?.monthNetFlow) >= 0 ? 'text-success' : 'text-destructive'}`}>
+                    {fmt(d.bankFlow?.monthNetFlow)}
+                  </span>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Recent Journal Entries */}
+          {d?.recentEntries?.length > 0 && (
+            <Card className="p-5">
+              <h2 className="text-sm font-semibold text-foreground mb-4">Recent Activity</h2>
+              <div className="space-y-2">
+                {d.recentEntries.slice(0, 5).map((entry, i) => (
+                  <div key={i} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <FileText className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{entry.entryNumber}</p>
+                        <p className="text-xs text-muted-foreground truncate max-w-[200px]">{entry.description || 'No description'}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-muted-foreground">
+                        {entry.date ? new Date(entry.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : ''}
+                      </p>
+                      {entry.postedBy && (
+                        <p className="text-xs text-muted-foreground">{entry.postedBy}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+
+          {/* Invoice Summary */}
+          {d?.invoices && (
+            <Card className="p-5">
+              <h2 className="text-sm font-semibold text-foreground mb-4">Invoice Status</h2>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { label: 'Paid', count: d.invoices.paid?.count || 0, amount: d.invoices.paid?.totalAmount || '0', color: 'success' },
+                  { label: 'Pending', count: (d.invoices.sent?.count || 0) + (d.invoices.partial?.count || 0), amount: Number(d.invoices.sent?.totalDue || 0) + Number(d.invoices.partial?.totalDue || 0), color: 'warning' },
+                  { label: 'Overdue', count: d.invoices.overdue?.count || 0, amount: d.invoices.overdue?.totalDue || '0', color: 'destructive' },
+                ].map(item => (
+                  <div key={item.label} className={`p-3 rounded-lg bg-${item.color}/5 border border-${item.color}/20`}>
+                    <p className="text-xs text-muted-foreground">{item.label}</p>
+                    <p className={`text-lg font-bold text-${item.color}`}>{item.count}</p>
+                    <p className="text-xs text-muted-foreground">{fmt(item.amount)}</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
         </div>
 
-        {/* Cost intelligence — center */}
-        <div className="xl:col-span-6 space-y-5">
-          <Card className="p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-semibold text-foreground">Cost Intelligence View</h2>
-              <div className="flex items-center gap-2">
-                {source && (
-                  <span className="text-xs text-muted-foreground font-mono">{source}</span>
-                )}
-                {rawPayload && (
-                  <details className="text-xs">
-                    <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-                      raw payload
-                    </summary>
-                    <pre className="absolute z-10 mt-1 right-0 max-w-sm bg-card border border-border rounded-xl p-3 text-xs overflow-auto max-h-64 shadow-xl whitespace-pre-wrap break-all">
-                      {JSON.stringify(rawPayload, null, 2)}
-                    </pre>
-                  </details>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div className="rounded-xl bg-muted/40 p-3">
-                <p className="text-xs text-muted-foreground">Planned</p>
-                <p className="text-lg font-semibold text-foreground">₹{costSummary.planned.toLocaleString()}</p>
-              </div>
-              <div className="rounded-xl bg-muted/40 p-3">
-                <p className="text-xs text-muted-foreground">Actual</p>
-                <p className="text-lg font-semibold text-foreground">₹{costSummary.actual.toLocaleString()}</p>
-              </div>
-              <div className="rounded-xl bg-muted/40 p-3">
-                <p className="text-xs text-muted-foreground">Variance</p>
-                <p className="text-lg font-semibold text-foreground">
-                  {costSummary.variancePct > 0 ? '+' : ''}{costSummary.variancePct.toFixed(1)}%
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-4 p-3 rounded-xl border border-border/60 bg-card">
-              <div className="flex items-center gap-2">
-                {costSummary.trendDirection === 'up'
-                  ? <ArrowUpRight className="w-4 h-4 text-destructive" />
-                  : costSummary.trendDirection === 'down'
-                    ? <ArrowDownRight className="w-4 h-4 text-success" />
-                    : <TrendingUp className="w-4 h-4 text-muted-foreground" />
-                }
-                <p className="text-sm font-medium text-foreground">
-                  {costSummary.trendDirection === 'up'
-                    ? 'Cost pressure is increasing.'
-                    : costSummary.trendDirection === 'down'
-                      ? 'Cost efficiency is improving.'
-                      : 'Costs are within expected range.'}
-                </p>
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Top contributor: {signals[0]?.department || 'N/A'} at {Math.abs(signals[0]?.variance_pct || 0).toFixed(1)}% variance.
-              </p>
-            </div>
-
-            {signals.length > 0 && (
-              <div className="mt-4 space-y-2">
-                {signals.slice(0, 4).map(signal => {
-                  const width = Math.max(8, Math.min(100, Math.abs(signal.variance_pct) * 2.5));
+        {/* Center: Expense Breakdown */}
+        <div className="xl:col-span-4 space-y-5">
+          {d?.expenses?.length > 0 && (
+            <Card className="p-5">
+              <h2 className="text-sm font-semibold text-foreground mb-4">Expenses by Category (This Month)</h2>
+              <div className="space-y-3">
+                {d.expenses.slice(0, 8).map((exp, i) => {
+                  const totalExpenses = d.expenses.reduce((s, e) => s + (e.totalAmount || 0), 0);
+                  const pct = totalExpenses > 0 ? ((exp.totalAmount / totalExpenses) * 100) : 0;
                   return (
-                    <div key={signal.id}>
+                    <div key={i}>
                       <div className="flex items-center justify-between text-xs mb-1">
-                        <span className="text-muted-foreground">{signal.department}</span>
-                        <span className="text-foreground font-medium">
-                          {signal.variance_pct > 0 ? '+' : ''}{signal.variance_pct.toFixed(1)}%
-                        </span>
+                        <span className="text-foreground font-medium">{exp._id || 'Uncategorized'}</span>
+                        <span className="text-muted-foreground">{fmt(exp.totalAmount)} ({exp.count})</span>
                       </div>
-                      <div className="h-2 rounded-full bg-muted overflow-hidden">
+                      <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                         <div
-                          className={`h-full ${signal.variance_pct > 0 ? 'bg-destructive/70' : 'bg-success/70'}`}
-                          style={{ width: `${width}%` }}
+                          className="h-full bg-primary/60 rounded-full"
+                          style={{ width: `${Math.min(100, pct)}%` }}
                         />
                       </div>
                     </div>
                   );
                 })}
               </div>
-            )}
-          </Card>
+            </Card>
+          )}
 
-          {/* Compliance visibility layer */}
-          <ComplianceVisibilityLayer />
+          {/* Expense Status */}
+          {d?.expensesByStatus && Object.keys(d.expensesByStatus).length > 0 && (
+            <Card className="p-5">
+              <h2 className="text-sm font-semibold text-foreground mb-4">Expense Approval Status</h2>
+              <div className="space-y-2">
+                {Object.entries(d.expensesByStatus).map(([status, data]) => (
+                  <div key={status} className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
+                    <span className="text-sm text-foreground capitalize">{status}</span>
+                    <div className="text-right">
+                      <span className="text-sm font-medium text-foreground">{data.count}</span>
+                      <span className="text-xs text-muted-foreground ml-2">{fmt(data.totalAmount)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+
+          {/* Year-to-Date Summary */}
+          {d?.yearToDate && (
+            <Card className="p-5">
+              <h2 className="text-sm font-semibold text-foreground mb-4">Year to Date</h2>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-2">
+                  <span className="text-sm text-muted-foreground">Income</span>
+                  <span className="text-sm font-semibold text-success">{fmt(d.yearToDate.income)}</span>
+                </div>
+                <div className="flex items-center justify-between p-2">
+                  <span className="text-sm text-muted-foreground">Expenses</span>
+                  <span className="text-sm font-semibold text-destructive">{fmt(d.yearToDate.expenses)}</span>
+                </div>
+                <div className="border-t border-border/40 pt-2 flex items-center justify-between p-2">
+                  <span className="text-sm font-medium text-foreground">Net Income</span>
+                  <span className={`text-sm font-bold ${Number(d.yearToDate.netIncome) >= 0 ? 'text-success' : 'text-destructive'}`}>
+                    {fmt(d.yearToDate.netIncome)}
+                  </span>
+                </div>
+              </div>
+            </Card>
+          )}
         </div>
 
-        {/* Signal detail + trace — right */}
-        <div className="xl:col-span-3">
-          <SignalDetailEngine selectedSignal={selectedSignal} />
+        {/* Right: Signal Alerts + Detail */}
+        <div className="xl:col-span-3 space-y-5">
+          {/* Compact signal alerts */}
+          {!signalsLoading && signals.length > 0 && (
+            <SignalStackPanel
+              groupedSignals={groupedSignals}
+              selectedSignalId={selectedSignal?.id}
+              onSelectSignal={setSelectedSignal}
+            />
+          )}
+
+          {!signalsLoading && signals.length === 0 && (
+            <Card className="p-4">
+              <p className="text-xs text-muted-foreground text-center">
+                No active compliance alerts.
+              </p>
+            </Card>
+          )}
+
+          {/* Signal Detail */}
+          {selectedSignal && (
+            <SignalDetailEngine selectedSignal={selectedSignal} />
+          )}
         </div>
       </section>
     </div>
