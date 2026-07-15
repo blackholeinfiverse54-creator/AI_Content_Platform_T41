@@ -201,7 +201,7 @@ export const pipelineCheck = async (req, res) => {
   }
 };
 
-// @desc    Dispatch a persisted signal to SETU — real HTTP attempt, explicit result
+// @desc    Dispatch a persisted signal to SETU — real HTTP attempt with retry on 429
 // @route   POST /api/v1/signals/:signalId/dispatch
 // @access  Private (admin, accountant)
 export const dispatchSignal = async (req, res) => {
@@ -249,58 +249,145 @@ export const dispatchSignal = async (req, res) => {
       correlation_id: process.env.SAMPADA_SETU_CORRELATION_ID,
     });
 
-    // Real dispatch attempt
+    // Real dispatch attempt with retry on 429
     const timeoutMs = parseInt(process.env.SETU_TIMEOUT_MS || '5000', 10);
-    const dispatchedAt = new Date().toISOString();
+    const maxRetries = 3;
+    const baseDelayMs = 5000;
 
-    try {
-      const setuRes = await axios.post(
-        sampadaEndpoint,
-        sampadaBody,
-        {
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${setuApiKey}` },
-          timeout: timeoutMs,
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      const dispatchedAt = new Date().toISOString();
+
+      try {
+        const setuRes = await axios.post(
+          sampadaEndpoint,
+          sampadaBody,
+          {
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${setuApiKey}` },
+            timeout: timeoutMs,
+          }
+        );
+
+        const ack = parseSampadaAcknowledge(setuRes.data);
+        logger.info(`Signal dispatched to Sampada SETU: ${signal.signal_id} trace=${signal.trace_id} ref=${ack.setuReference} attempt=${attempt}`);
+
+        // Update signal dispatch status
+        await ComplianceSignal.updateOne(
+          { signal_id: signal.signal_id },
+          {
+            $set: {
+              dispatch_status: 'DISPATCHED',
+              dispatch_attempt: attempt,
+              dispatched_at: dispatchedAt,
+              setu_reference: ack.setuReference,
+              retry_count: attempt - 1,
+            },
+            $push: {
+              dispatch_history: {
+                attempt_number: attempt,
+                attempted_at: dispatchedAt,
+                dispatch_status: 'DISPATCHED',
+                response_status: setuRes.status,
+                response_body: setuRes.data,
+              },
+            },
+          }
+        );
+
+        return res.json({
+          success: true,
+          dispatch_attempted: true,
+          setu_enabled: true,
+          dispatched_at: dispatchedAt,
+          setu_status: setuRes.status,
+          setu_response: setuRes.data,
+          setu_ack: ack,
+          sampada_endpoint: sampadaEndpoint,
+          pipeline_stage: 'COMPLETE',
+          payload: pipeline.payload,
+          sampada_envelope: sampadaBody,
+          headers: pipeline.headers,
+          warnings: pipeline.warnings || [],
+          attempt,
+        });
+      } catch (setuErr) {
+        const isTimeout = setuErr.code === 'ECONNABORTED' || setuErr.message?.includes('timeout');
+        const isUnreachable = setuErr.code === 'ECONNREFUSED' || setuErr.code === 'ENOTFOUND';
+        const isRateLimited = setuErr.response?.status === 429;
+
+        logger.warn(`SETU dispatch attempt ${attempt}/${maxRetries} failed for ${signal.signal_id}: ${setuErr.message}${isRateLimited ? ' (rate limited)' : ''}`);
+
+        // Update signal with rate limit status
+        if (isRateLimited) {
+          await ComplianceSignal.updateOne(
+            { signal_id: signal.signal_id },
+            {
+              $set: {
+                dispatch_status: 'PENDING',
+                dispatch_attempt: attempt,
+                retry_count: attempt,
+                next_retry_at: new Date(Date.now() + baseDelayMs * Math.pow(2, attempt - 1)),
+              },
+              $push: {
+                dispatch_history: {
+                  attempt_number: attempt,
+                  attempted_at: dispatchedAt,
+                  dispatch_status: 'RATE_LIMITED',
+                  response_status: 429,
+                  response_body: { error: setuErr.message },
+                },
+              },
+            }
+          );
         }
-      );
 
-      const ack = parseSampadaAcknowledge(setuRes.data);
-      logger.info(`Signal dispatched to Sampada SETU: ${signal.signal_id} trace=${signal.trace_id} ref=${ack.setuReference}`);
+        // Retry on 429 (rate limit) or 5xx (server error)
+        if (isRateLimited && attempt < maxRetries) {
+          const delayMs = baseDelayMs * Math.pow(2, attempt - 1);
+          logger.info(`Retrying SETU dispatch in ${delayMs}ms due to rate limit...`);
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+          continue;
+        }
 
-      return res.json({
-        success: true,
-        dispatch_attempted: true,
-        setu_enabled: true,
-        dispatched_at: dispatchedAt,
-        setu_status: setuRes.status,
-        setu_response: setuRes.data,
-        setu_ack: ack,
-        sampada_endpoint: sampadaEndpoint,
-        pipeline_stage: 'COMPLETE',
-        payload: pipeline.payload,
-        sampada_envelope: sampadaBody,
-        headers: pipeline.headers,
-        warnings: pipeline.warnings || [],
-      });
-    } catch (setuErr) {
-      const isTimeout = setuErr.code === 'ECONNABORTED' || setuErr.message?.includes('timeout');
-      const isUnreachable = setuErr.code === 'ECONNREFUSED' || setuErr.code === 'ENOTFOUND';
+        // Final failure — update signal status
+        const failureReason = isTimeout ? 'SETU_TIMEOUT' : isUnreachable ? 'SETU_UNREACHABLE' : isRateLimited ? 'SETU_RATE_LIMITED' : 'SETU_ERROR';
+        await ComplianceSignal.updateOne(
+          { signal_id: signal.signal_id },
+          {
+            $set: {
+              dispatch_status: 'FAILED',
+              dispatch_attempt: attempt,
+              retry_count: attempt - 1,
+            },
+            $push: {
+              dispatch_history: {
+                attempt_number: attempt,
+                attempted_at: dispatchedAt,
+                dispatch_status: failureReason,
+                response_status: setuErr.response?.status || 0,
+                response_body: { error: setuErr.message },
+              },
+            },
+          }
+        );
 
-      logger.warn(`SETU dispatch failed for ${signal.signal_id}: ${setuErr.message}`);
-
-      return res.status(502).json({
-        success: false,
-        dispatch_attempted: true,
-        setu_enabled: true,
-        dispatched_at: dispatchedAt,
-        failure_reason: isTimeout ? 'SETU_TIMEOUT' : isUnreachable ? 'SETU_UNREACHABLE' : 'SETU_ERROR',
-        failure_message: setuErr.response?.data?.message || setuErr.message,
-        setu_status: setuErr.response?.status || null,
-        pipeline_stage: 'COMPLETE',
-        payload: pipeline.payload,
-        sampada_envelope: sampadaBody,
-        headers: pipeline.headers,
-        warnings: pipeline.warnings || [],
-      });
+        return res.status(502).json({
+          success: false,
+          dispatch_attempted: true,
+          setu_enabled: true,
+          dispatched_at: dispatchedAt,
+          failure_reason: failureReason,
+          failure_message: setuErr.response?.data?.message || setuErr.message,
+          setu_status: setuErr.response?.status || null,
+          pipeline_stage: 'COMPLETE',
+          payload: pipeline.payload,
+          sampada_envelope: sampadaBody,
+          headers: pipeline.headers,
+          warnings: pipeline.warnings || [],
+          attempts_made: attempt,
+          max_retries: maxRetries,
+          retry_after_ms: isRateLimited ? baseDelayMs * Math.pow(2, attempt - 1) : null,
+        });
+      }
     }
   } catch (error) {
     logger.error('Dispatch signal error:', error);
