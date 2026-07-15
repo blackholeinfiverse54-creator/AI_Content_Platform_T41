@@ -19,6 +19,7 @@ import {
   CreditCard,
   Zap,
   Radio,
+  Database,
 } from 'lucide-react';
 import { useState } from 'react';
 import clsx from 'clsx';
@@ -35,6 +36,12 @@ const menuItems = [
     title: 'Smart Upload',
     icon: Zap,
     path: '/upload',
+  },
+  {
+    title: 'Data Ingestion',
+    icon: Database,
+    path: '/ingestion',
+    roles: ['admin', 'accountant'],
   },
   {
     title: 'Invoices',

@@ -1,5 +1,6 @@
 import tallyCompatibilityService from '../services/tallyCompatibility.service.js';
 import logger from '../config/logger.js';
+import fs from 'fs/promises';
 
 class TallyController {
   async exportVouchers(req, res) {
@@ -65,6 +66,73 @@ class TallyController {
       });
       res.json({ success: true, data: result });
     } catch (err) {
+      res.status(400).json({ success: false, message: err.message });
+    }
+  }
+
+  async importFile(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, message: 'No file uploaded' });
+      }
+
+      const ext = req.file.originalname.split('.').pop().toLowerCase();
+      const result = await tallyCompatibilityService.ingestFile(req.file.path, ext, {
+        userId: req.user._id,
+        companyId: req.body.companyId,
+        source: 'tally-file-upload',
+        createJournals: req.body.createJournals !== 'false',
+        importType: req.body.importType || 'vouchers',
+      });
+
+      await fs.unlink(req.file.path).catch(() => {});
+
+      res.json({ success: true, data: result });
+    } catch (err) {
+      if (req.file) {
+        await fs.unlink(req.file.path).catch(() => {});
+      }
+      logger.error('Tally file import error:', err);
+      res.status(400).json({ success: false, message: err.message });
+    }
+  }
+
+  async importFilePreview(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, message: 'No file uploaded' });
+      }
+
+      const ext = req.file.originalname.split('.').pop().toLowerCase();
+      let vouchers = [];
+
+      if (ext === 'xml') {
+        vouchers = await tallyCompatibilityService.parseTallyXMLFile(req.file.path);
+      } else if (ext === 'csv') {
+        vouchers = await tallyCompatibilityService.parseTallyCSVFile(req.file.path);
+      } else if (ext === 'json') {
+        const content = await fs.readFile(req.file.path, 'utf-8');
+        const parsed = JSON.parse(content);
+        vouchers = Array.isArray(parsed) ? parsed : parsed.vouchers || parsed.data || [];
+      }
+
+      await fs.unlink(req.file.path).catch(() => {});
+
+      res.json({
+        success: true,
+        data: {
+          fileName: req.file.originalname,
+          format: ext,
+          totalRecords: vouchers.length,
+          preview: vouchers.slice(0, 10),
+          vouchers,
+        },
+      });
+    } catch (err) {
+      if (req.file) {
+        await fs.unlink(req.file.path).catch(() => {});
+      }
+      logger.error('Tally file preview error:', err);
       res.status(400).json({ success: false, message: err.message });
     }
   }

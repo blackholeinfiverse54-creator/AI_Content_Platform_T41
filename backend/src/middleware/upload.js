@@ -123,6 +123,50 @@ export const handleUploadError = (err, req, res, next) => {
   next();
 };
 
+// Tally file upload directory
+const tallyDir = 'uploads/tally';
+if (!fs.existsSync(tallyDir)) {
+  fs.mkdirSync(tallyDir, { recursive: true });
+}
+
+const tallyStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, tallyDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}`;
+    const ext = path.extname(file.originalname);
+    cb(null, `tally-${uniqueSuffix}${ext}`);
+  },
+});
+
+const tallyFileFilter = (req, file, cb) => {
+  const ext = path.extname(file.originalname).toLowerCase();
+  const allowedExtensions = ['.xml', '.csv', '.json'];
+  const allowedTypes = [
+    'text/xml', 'application/xml',
+    'text/csv',
+    'application/json',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  ];
+
+  if (allowedExtensions.includes(ext) || allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only XML, CSV, and JSON files are allowed for Tally import.'), false);
+  }
+};
+
+export const uploadTally = multer({
+  storage: tallyStorage,
+  fileFilter: tallyFileFilter,
+  limits: {
+    fileSize: 50 * 1024 * 1024,
+    files: 1,
+  },
+});
+
 // Legacy export for backward compatibility
 const upload = multer({
   storage,

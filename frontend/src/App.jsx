@@ -49,6 +49,9 @@ import StatementDetail from './pages/statements/StatementDetail';
 // Smart Upload
 import SmartUpload from './pages/upload/SmartUpload';
 
+// Data Ingestion
+import DataIngestion from './pages/ingestion/DataIngestion';
+
 // Settings
 import CompanySettings from './pages/settings/CompanySettings';
 import UserManagement from './pages/settings/UserManagement';
@@ -174,6 +177,7 @@ function App() {
         <Route path="/signals" element={<RoleProtectedRoute allowedRoles={['admin', 'accountant']}><SignalDashboard /></RoleProtectedRoute>} />
 
         <Route path="/upload" element={<SmartUpload />} />
+        <Route path="/ingestion" element={<RoleProtectedRoute allowedRoles={['admin', 'accountant']}><DataIngestion /></RoleProtectedRoute>} />
 
         <Route path="/statements" element={<StatementsList />} />
         <Route path="/statements/upload" element={<RoleProtectedRoute allowedRoles={['admin', 'accountant']}><StatementsUpload /></RoleProtectedRoute>} />

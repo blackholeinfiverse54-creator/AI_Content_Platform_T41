@@ -138,6 +138,36 @@ export const smartUploadService = {
   },
 };
 
+// Tally Import/Export Services
+export const tallyService = {
+  importVouchers: (data) => api.post('/tally/import/vouchers', data),
+  importMasters: (data) => api.post('/tally/import/masters', data),
+  importFile: (file, options = {}) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    Object.keys(options).forEach(key => {
+      if (options[key] !== undefined && options[key] !== null) {
+        formData.append(key, options[key]);
+      }
+    });
+    return api.post('/tally/import/file', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  previewFile: (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post('/tally/import/file/preview', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  exportVouchers: (data) => api.post('/tally/export/vouchers', data),
+  exportMasters: (data) => api.post('/tally/export/masters', data),
+  exportOpeningBalances: (data) => api.post('/tally/export/opening-balances', data),
+  exportGSTData: (data) => api.post('/tally/export/gst-data', data),
+  validateMigration: (data) => api.post('/tally/validate-migration', data),
+};
+
 // Bank Statement Services
 export const bankStatementService = {
   upload: (file, data) => {
